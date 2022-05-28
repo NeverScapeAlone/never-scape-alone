@@ -17,7 +17,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 	name = "NeverScapeAlone",
 	description="This plugin lets you partner up with other players to complete bosses, minigames, skills, and other miscellaneous activities.",
 	tags={"Matchmaking", "Skill", "PVP", "Boss", "Minigame"},
-	enabledByDefault = True
+	enabledByDefault = true
 )
 public class NeverScapeAlonePlugin extends Plugin
 {
