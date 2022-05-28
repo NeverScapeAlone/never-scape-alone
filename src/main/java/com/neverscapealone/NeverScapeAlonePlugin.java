@@ -1,4 +1,4 @@
-package com.example;
+package com.neverscapealone;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -14,15 +14,18 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Example"
+	name = "NeverScapeAlone",
+	description="This plugin lets you partner up with other players to complete bosses, minigames, skills, and other miscellaneous activities.",
+	tags={"Matchmaking", "Skill", "PVP", "Boss", "Minigame"},
+	enabledByDefault = True
 )
-public class ExamplePlugin extends Plugin
+public class NeverScapeAlonePlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private ExampleConfig config;
+	private NeverScapeAloneConfig config;
 
 	@Override
 	protected void startUp() throws Exception
@@ -46,8 +49,8 @@ public class ExamplePlugin extends Plugin
 	}
 
 	@Provides
-	ExampleConfig provideConfig(ConfigManager configManager)
+	NeverScapeAloneConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(ExampleConfig.class);
+		return configManager.getConfig(NeverScapeAloneConfig.class);
 	}
 }
