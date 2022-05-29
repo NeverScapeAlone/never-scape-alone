@@ -46,8 +46,21 @@ public interface NeverScapeAloneConfig extends Config
 	/*
 	Configuration items for each section
 	 */
+
 	@ConfigItem(
 			position = 1,
+			keyName = "discordUsername",
+			name = "Discord Username",
+			description = "Set your discord username here, this will allow you to be verified through the system.<br>You don't need to verify your discord,<br> however by doing so you will prevent scammers from using your ID.",
+			section = authSection
+	)
+	default String discordUsername()
+	{
+		return "@UserName#1337";
+	}
+
+	@ConfigItem(
+			position = 2,
 			keyName = "authToken",
 			name = "Authentication Token",
 			description = "Set a custom Authentication token to confirm your identity.<br>Disable if you'd like us to create a token for you.",
@@ -140,6 +153,17 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 8,
+			keyName = "verifiedUsers",
+			name = "Verified Users",
+			description = "Allow strict matching with Verified users of the plugin.",
+			section = matchSection
+	)
+	default boolean verifiedPartners()
+	{
+		return false;
+	}
+	@ConfigItem(
+			position = 9,
 			keyName = "worldTypeSelection",
 			name = "World Type",
 			description = "Select if you would like to match on free-to-play, members or both",
@@ -152,7 +176,7 @@ public interface NeverScapeAloneConfig extends Config
 	@ConfigItem(
 			position = 1,
 			keyName = "usEast",
-			name = "Us East",
+			name = "US East",
 			description = "Allow for US East matches.",
 			section = regionSection
 	)
@@ -163,7 +187,7 @@ public interface NeverScapeAloneConfig extends Config
 	@ConfigItem(
 			position = 2,
 			keyName = "usWest",
-			name = "Us West",
+			name = "US West",
 			description = "Allow for US West matches.",
 			section = regionSection
 	)
@@ -173,34 +197,34 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 3,
-			keyName = "uk",
-			name = "United Kingdom",
-			description = "Allow for United Kingdom matches.",
+			keyName = "euWest",
+			name = "EU West",
+			description = "Allow for West Europe matches.",
 			section = regionSection
 	)
-	default boolean uk()
+	default boolean euWest()
 	{
 		return true;
 	}
 	@ConfigItem(
 			position = 4,
-			keyName = "ger",
-			name = "Germany",
-			description = "Allow for Germany matches.",
+			keyName = "euCentral",
+			name = "EU Central",
+			description = "Allow for Central Europe matches.",
 			section = regionSection
 	)
-	default boolean ger()
+	default boolean euCentral()
 	{
 		return true;
 	}
 	@ConfigItem(
 			position = 5,
-			keyName = "aus",
-			name = "Australia",
-			description = "Allow for Australia matches.",
+			keyName = "oceania",
+			name = "Oceania",
+			description = "Allow for Oceania matches.",
 			section = regionSection
 	)
-	default boolean aus()
+	default boolean oceania()
 	{
 		return true;
 	}
