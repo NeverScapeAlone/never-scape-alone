@@ -116,7 +116,7 @@ public interface NeverScapeAloneConfig extends Config
 	)
 	default experienceLevel userExperienceLevel()
 	{
-		return experienceLevel.NOVICE;
+		return experienceLevel.LEARNER;
 	}
 	@ConfigItem(
 			position = 5,
@@ -127,7 +127,7 @@ public interface NeverScapeAloneConfig extends Config
 	)
 	default experienceLevel partnerExperienceLevel()
 	{
-		return experienceLevel.NOVICE;
+		return experienceLevel.LEARNER;
 	}
 	@ConfigItem(
 			position = 6,
