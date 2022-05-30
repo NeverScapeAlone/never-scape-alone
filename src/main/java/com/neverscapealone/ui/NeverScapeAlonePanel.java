@@ -1,37 +1,17 @@
 package com.neverscapealone.ui;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.model.ServerStatus;
+import net.runelite.api.Client;
+import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,16 +19,19 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
-import net.runelite.client.ui.components.IconTextField;
-import net.runelite.client.ui.components.materialtabs.MaterialTab;
-import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
-import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.LinkBrowser;
-import net.runelite.client.util.QuantityFormatter;
-import org.apache.commons.text.StringEscapeUtils;
-import net.runelite.client.ui.PluginPanel;
 
 public class NeverScapeAlonePanel extends PluginPanel {
+    private static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
+    private static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
+    private static final Color LINK_HEADER_COLOR = ColorScheme.LIGHT_GRAY_COLOR;
+    private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
+    private static final int SUB_PANEL_SEPARATION_HEIGHT = 10;
+
+    private final JPanel linksPanel;
+    private final NeverScapeAloneConfig config;
+    private final NeverScapeAloneClient client;
+    private final Client user;
 
     @Getter
     @AllArgsConstructor
@@ -63,23 +46,24 @@ public class NeverScapeAlonePanel extends PluginPanel {
         private final String link;
     }
 
-    private static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
-    private static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
-    private static final Color LINK_HEADER_COLOR = ColorScheme.LIGHT_GRAY_COLOR;
-    private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
-    private final JPanel linksPanel;
-
     @Inject
     public NeverScapeAlonePanel(
             NeverScapeAlonePlugin plugin,
             NeverScapeAloneConfig config,
-            EventBus eventBus)
+            EventBus eventBus, JPanel serverPanel, NeverScapeAloneConfig config1, NeverScapeAloneClient client, Client user)
     {
+        this.config = config;
+        this.client = client;
+        this.user = user;
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(BACKGROUND_COLOR);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         linksPanel = linksPanel();
+        serverPanel = serverPanel();
+
         add(linksPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(serverPanel);
     }
 
 
@@ -101,10 +85,26 @@ public class NeverScapeAlonePanel extends PluginPanel {
                     LinkBrowser.browse(w.getLink());
                 }
             });
-
             linksPanel.add(link);
         }
-
         return linksPanel;
+    }
+
+    private JPanel serverPanel()
+    {
+        JPanel serverPanel = new JPanel();
+        JLabel title = new JLabel("Server Status:");
+        title.setHorizontalAlignment(JLabel.LEFT);
+        serverPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        serverPanel.setBackground(SUB_BACKGROUND_COLOR);
+        serverPanel.add(title);
+
+        String token = config.authToken();
+        try {
+            String login = user.getLocalPlayer().getName();
+            System.out.println(token);
+            System.out.println(login);
+        } catch(Exception e) { }
+        return serverPanel;
     }
 }

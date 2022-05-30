@@ -11,6 +11,7 @@ import net.runelite.client.ui.NavigationButton;
 import java.awt.image.BufferedImage;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.api.Client;
+import com.neverscapealone.events.NeverScapeAlonePanelActivated;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
