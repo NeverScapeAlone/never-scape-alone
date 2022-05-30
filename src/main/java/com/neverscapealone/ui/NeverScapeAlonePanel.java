@@ -3,13 +3,20 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.model.ServerStatus;
+import com.sun.jna.platform.win32.COM.IEnumIDList;
 import net.runelite.api.Client;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.NeverScapeAlonePlugin;
@@ -93,18 +100,37 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private JPanel serverPanel()
     {
         JPanel serverPanel = new JPanel();
+
+        ImageIcon serverOnline = Icons.SERVER_ONLINE;
+        ImageIcon serverPending = Icons.SERVER_PENDING;
+        ImageIcon serverDown = Icons.SERVER_DOWN;
+        ImageIcon serverFailure = Icons.SERVER_FAILURE;
+
+        JLabel jServerOnline = new JLabel(serverOnline);
+        JLabel jServerPending = new JLabel(serverPending);
+        JLabel jServerDown = new JLabel(serverDown);
+        JLabel jServerFailure = new JLabel(serverFailure);
+
         JLabel title = new JLabel("Server Status:");
         title.setHorizontalAlignment(JLabel.LEFT);
         serverPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         serverPanel.setBackground(SUB_BACKGROUND_COLOR);
         serverPanel.add(title);
 
-        String token = config.authToken();
-        try {
-            String login = user.getLocalPlayer().getName();
-            System.out.println(token);
-            System.out.println(login);
-        } catch(Exception e) { }
+        serverPanel.add(jServerFailure);
+
+        try {getServerStatus();} catch(Exception e){ System.out.println(e);}
         return serverPanel;
     }
+
+    private void getServerStatus() throws IOException {
+        String token = config.authToken();
+        String login = "Ferrariic";//user.getLocalPlayer().getName();
+        JsonObject ServerHealth = client.checkServerStatus(login, token);
+        String health = String.valueOf(ServerHealth.get("status"));
+        if(health == "alive"){
+
+        }
+    }
+
 }

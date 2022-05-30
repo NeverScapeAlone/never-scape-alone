@@ -1,18 +1,10 @@
 package com.neverscapealone.http;
 
+import com.google.gson.*;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.model.ServerStatus;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.Gson;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -27,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import jogamp.common.util.locks.SingletonInstanceServerSocket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -99,18 +93,21 @@ public class NeverScapeAloneClient {
                 .build();
     }
 
-    public CompletableFuture<String> checkServerStatus(String login, String token)
-    {
-        Request request = new Request.Builder()
-                .url(getUrl(ApiPath.SERVER_STATUS).newBuilder()
-                        .addPathSegment(token)
+    public JsonObject checkServerStatus(String login, String token) throws IOException {
+        Request request = new Request
+                .Builder()
+                .url(getUrl(ApiPath.SERVER_STATUS)
+                        .newBuilder()
+                        .addQueryParameter("login",login)
+                        .addQueryParameter("token",token)
                         .build())
-                .post(RequestBody.create(JSON, gson.toJson(new ServerStatusCheck(login, token))))
                 .build();
 
-        CompletableFuture<String> future = new CompletableFuture<>();
-        okHttpClient.newCall(request);
-        return future;
+        Call call = okHttpClient.newCall(request);
+        Response response = call.execute();
+        String jsonData = response.body().string();
+        JsonObject ServerHealth = new JsonParser().parse(jsonData).getAsJsonObject();
+        return ServerHealth;
     }
 
 
