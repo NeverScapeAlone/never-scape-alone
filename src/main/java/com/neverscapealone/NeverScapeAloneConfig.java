@@ -11,9 +11,11 @@ import net.runelite.client.config.Units;
 import com.neverscapealone.enums.experienceLevel;
 import com.neverscapealone.enums.worldTypeSelection;
 
-@ConfigGroup("Never Scape Alone")
+@ConfigGroup(NeverScapeAloneConfig.CONFIG_GROUP)
 public interface NeverScapeAloneConfig extends Config
 {
+	String CONFIG_GROUP = "NeverScapeAlone";
+	String AUTH_TOKEN_KEY = "authToken";
 	@ConfigSection(
 			position = 1,
 			name = "Authentication",
@@ -61,14 +63,15 @@ public interface NeverScapeAloneConfig extends Config
 
 	@ConfigItem(
 			position = 2,
-			keyName = "authToken",
+			keyName = AUTH_TOKEN_KEY,
 			name = "Authentication Token",
 			description = "Set a custom Authentication token to confirm your identity.<br>Disable if you'd like us to create a token for you.",
+			secret = false,
 			section = authSection
 	)
 	default String authToken()
 	{
-		return "generated_token_goes_here";
+		return "";
 	}
 	@ConfigItem(
 			position = 1,
