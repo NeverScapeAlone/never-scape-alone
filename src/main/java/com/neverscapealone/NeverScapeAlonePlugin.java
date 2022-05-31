@@ -9,6 +9,9 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import java.awt.image.BufferedImage;
+import java.security.SecureRandom;
+import java.util.Base64;
+
 import net.runelite.client.util.ImageUtil;
 import net.runelite.api.Client;
 import com.neverscapealone.events.NeverScapeAlonePanelActivated;
@@ -18,6 +21,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @PluginDescriptor(
@@ -32,6 +36,9 @@ public class NeverScapeAlonePlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private ConfigManager configManager;
+
+	@Inject
 	private ClientToolbar clientToolbar;
 
 	@Inject
@@ -40,10 +47,23 @@ public class NeverScapeAlonePlugin extends Plugin
 	private NeverScapeAlonePanel panel;
 	private NavigationButton navButton;
 
+	private static final SecureRandom secureRandom = new SecureRandom();
+	private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
+	public static String generateNewToken() {
+		byte[] randomBytes = new byte[24];
+		secureRandom.nextBytes(randomBytes);
+		return base64Encoder.encodeToString(randomBytes);
+	}
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		log.info("Never Scape Alone started!");
+
+		if(StringUtils.isBlank(config.authToken())){
+			String USER_GENERATED_TOKEN = generateNewToken();
+			configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.AUTH_TOKEN_KEY, USER_GENERATED_TOKEN);
+		}
 
 		panel = injector.getInstance(NeverScapeAlonePanel.class);
 		final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/tri-icon.png");
@@ -54,6 +74,7 @@ public class NeverScapeAlonePlugin extends Plugin
 				.priority(90)
 				.build();
 		clientToolbar.addNavigation(navButton);
+
 	}
 
 	@Override

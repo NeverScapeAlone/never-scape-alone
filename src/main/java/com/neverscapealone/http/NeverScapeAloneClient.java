@@ -2,6 +2,7 @@ package com.neverscapealone.http;
 
 import com.google.gson.*;
 import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.ServerStatusCode;
 import com.neverscapealone.model.ServerStatus;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -11,6 +12,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +42,7 @@ import okhttp3.Response;
 @Singleton
 public class NeverScapeAloneClient {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     private static final HttpUrl BASE_HTTP_URL = HttpUrl.parse(
             System.getProperty("NeverScapeAloneAPIPath", "http://touchgrass.online:5000/V1"));
     private static final Supplier<String> CURRENT_EPOCH_SUPPLIER = () -> String.valueOf(Instant.now().getEpochSecond());
@@ -82,7 +86,6 @@ public class NeverScapeAloneClient {
                 .addPathSegments(path.getPath())
                 .build();
     }
-
     @Inject
     public NeverScapeAloneClient(OkHttpClient rlClient)
     {
@@ -90,26 +93,74 @@ public class NeverScapeAloneClient {
                 .pingInterval(0, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
+                .addNetworkInterceptor(chain ->
+                {
+                    Request headerRequest = chain.request()
+                            .newBuilder()
+                            .header("Request-Epoch", CURRENT_EPOCH_SUPPLIER.get())
+                            .build();
+                    return chain.proceed(headerRequest);
+                })
                 .build();
     }
 
-    public JsonObject checkServerStatus(String login, String token) throws IOException {
-        Request request = new Request
-                .Builder()
-                .url(getUrl(ApiPath.SERVER_STATUS)
-                        .newBuilder()
-                        .addQueryParameter("login",login)
-                        .addQueryParameter("token",token)
+    /*
+    * Checks the server status by sending a get request with the login and token information provided by the user.
+    * "status":"alive" is expected when the server's API is functioning as intended. -> green dot
+    * "status":"message" is expected when the server is under maintenance, and has a server message provided. -> yellow dot
+    * No response but alive ping indicates that the server is Offline. -> red dot
+    * No response and no ping indicate that the server is down and Unreachable. -> black dot
+    */
+    public CompletableFuture<ServerStatus> requestServerStatus(String login, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.SERVER_STATUS).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("token", token)
                         .build())
                 .build();
 
-        Call call = okHttpClient.newCall(request);
-        Response response = call.execute();
-        String jsonData = response.body().string();
-        JsonObject ServerHealth = new JsonParser().parse(jsonData).getAsJsonObject();
-        return ServerHealth;
-    }
+        System.out.println(request);
 
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
 
     /**
      * Processes the body of the given response and parses out the contained JSON object.
@@ -127,6 +178,10 @@ public class NeverScapeAloneClient {
             if (response.code() == 404)
             {
                 return null;
+            }
+            else if (response.code() == 401)
+            {
+                throw new UnauthorizedTokenException("Auth Failure");
             }
 
             throw getIOException(response);
@@ -176,6 +231,14 @@ public class NeverScapeAloneClient {
         return new IOException("Error " + code + " from API");
     }
 
+    @Value
+    private static class ServerStatusLoad
+    {
+        @SerializedName("login")
+        String login;
+        @SerializedName("token")
+        String token;
+    }
 
     /**
      * Serializes a {@link Boolean} as the integers {@code 0} or {@code 1}.
@@ -206,14 +269,5 @@ public class NeverScapeAloneClient {
         {
             return Instant.ofEpochSecond(json.getAsLong());
         }
-    }
-
-    @Value
-    private static class ServerStatusCheck
-    {
-        @SerializedName("login")
-        String login;
-        @SerializedName("token")
-        String token;
     }
 }
