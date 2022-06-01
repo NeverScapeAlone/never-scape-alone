@@ -35,6 +35,7 @@ public enum ActivityReference
     RUNECRAFTING(Icons.RUNECRAFTING, "skill","Runecraft"),
     HUNTER(Icons.HUNTER, "skill","Hunter"),
     CONSTRUCTION(Icons.CONSTRUCTION, "skill","Construction"),
+    ALL_SKILLS(Icons.ALL_SKILLS,"skill","All Skills"),
 
     // solo
     ABYSSAL_SIRE(Icons.ABYSSAL_SIRE, "solo","Abyssal Sire"),
@@ -51,8 +52,8 @@ public enum ActivityReference
     GAUNTLET(Icons.GAUNTLET, "solo","Gauntlet"),
     GAUNTLET_CORRUPTED(Icons.GAUNTLET_CORRUPTED, "solo","The Corrupted Gauntlet"),
     THERMONUCLEARSMOKEDEVIL(Icons.THERMONUCLEARSMOKEDEVIL, "solo","Thermonuclearsmokedevil"),
-    TZ_KAL_ZUK(Icons.TZ_KAL_ZUK, "solo","TZ-KAL-ZUK"),
-    TZ_TOK_JAD(Icons.TZ_TOK_JAD, "solo","TZ-TOK-JAD"),
+    TZ_KAL_ZUK(Icons.TZ_KAL_ZUK, "solo","The Inferno"),
+    TZ_TOK_JAD(Icons.TZ_TOK_JAD, "solo","The Fight Caves"),
     VORKATH(Icons.VORKATH, "solo","Vorkath"),
     ZULRAH(Icons.ZULRAH, "solo","Zulrah"),
 

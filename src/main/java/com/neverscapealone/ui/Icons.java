@@ -45,6 +45,7 @@ public class Icons
     public static final ImageIcon RUNECRAFTING = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runecrafting.png"));
     public static final ImageIcon HUNTER = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/hunter.png"));
     public static final ImageIcon CONSTRUCTION = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/construction.png"));
+    public static final ImageIcon ALL_SKILLS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS,"/all_skills.png"));
 
     // SOLO
     public static final ImageIcon ABYSSAL_SIRE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/abyssalsire.png"));

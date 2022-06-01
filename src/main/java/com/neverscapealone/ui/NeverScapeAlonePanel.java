@@ -33,7 +33,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     private static final Color LINK_HEADER_COLOR = ColorScheme.LIGHT_GRAY_COLOR;
     private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
-    private static final int SUB_PANEL_SEPARATION_HEIGHT = 10;
+    private static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
 
     // CLASSES
     private final NeverScapeAlonePlugin plugin;
@@ -51,7 +51,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private JPanel soloPanel;
     private JPanel minigamePanel;
     private JPanel miscPanel;
-    private JLabel title;
 
 
     // ENUMS
@@ -102,10 +101,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(title("Skills"));
         add(skillPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
-        add(title("Multi Bosses"));
+        add(title("Multi-Bosses"));
         add(bossPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
-        add(title("Solo Bosses"));
+        add(title("Solo-Bosses"));
         add(soloPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(title("Raids"));
@@ -114,7 +113,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(title("Minigames"));
         add(minigamePanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
-        add(title("Misc."));
+        add(title("Miscellaneous"));
         add(miscPanel);
     }
 
@@ -154,7 +153,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             row=5;
             column=5;
         }
-        System.out.println(row);
         JPanel queuePanel = new JPanel();
         queuePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         queuePanel.setBackground(SUB_BACKGROUND_COLOR);
@@ -162,20 +160,25 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return queuePanel;
     }
 
-    private JLabel title(String title_text){
+    private JPanel title(String title_text){
+        JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
-        return label;
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        label_holder.add(label);
+        return label_holder;
     }
 
     private void addQueueButtons(){
         ActivityReference values[] = activityReference.values();
         for(ActivityReference value: values) {
             // button construction
-            JButton button = new JButton();
+            JToggleButton button = new JToggleButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getName());
-            button.putClientProperty("button_name:", String.valueOf(value.getName()));
+            button.addItemListener(e -> System.out.println(value.getName()));
+            // button.putClientProperty("button_name:", String.valueOf(value.getName()));
 
             switch(value.getActivity()){
                 case "skill":
