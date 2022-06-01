@@ -66,7 +66,7 @@ public interface NeverScapeAloneConfig extends Config
 			keyName = AUTH_TOKEN_KEY,
 			name = "Authentication Token",
 			description = "Set a custom Authentication token to confirm your identity.<br>Disable if you'd like us to create a token for you.",
-			secret = false,
+			secret = true,
 			section = authSection
 	)
 	default String authToken()

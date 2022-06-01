@@ -1,6 +1,5 @@
 package com.neverscapealone.ui;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.inject.Inject;
@@ -8,7 +7,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import com.neverscapealone.NeverScapeAloneConfig;
-import com.neverscapealone.http.UnauthorizedTokenException;
 import net.runelite.api.Client;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.NeverScapeAlonePlugin;
@@ -19,8 +17,11 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.LinkBrowser;
+import com.neverscapealone.enums.ActivityReference;
 
 public class NeverScapeAlonePanel extends PluginPanel {
+
+    // COLOR SELECTIONS
     private static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
     private static final Color SERVER_UNREACHABLE = ColorScheme.DARKER_GRAY_COLOR;
     private static final Color AUTH_FAILURE = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
@@ -34,13 +35,27 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
     private static final int SUB_PANEL_SEPARATION_HEIGHT = 10;
 
-    private final JPanel linksPanel;
+    // CLASSES
+    private final NeverScapeAlonePlugin plugin;
     private final NeverScapeAloneConfig config;
     private final NeverScapeAloneClient client;
     private final Client user;
-    private final NeverScapeAlonePlugin plugin;
 
+    // SWING OBJECTS
+    private final JPanel linksPanel;
     private JPanel serverPanel;
+    private JPanel queuePanel;
+    private JPanel skillPanel;
+    private JPanel bossPanel;
+    private JPanel raidPanel;
+    private JPanel soloPanel;
+    private JPanel minigamePanel;
+    private JPanel miscPanel;
+    private JLabel title;
+
+
+    // ENUMS
+    private ActivityReference activityReference;
 
     @Getter
     @AllArgsConstructor
@@ -69,11 +84,38 @@ public class NeverScapeAlonePanel extends PluginPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         linksPanel = linksPanel();
         serverPanel = serverPanel();
+        skillPanel = queuePanel(4,6);
+        bossPanel = queuePanel(4,6);
+        soloPanel = queuePanel(3,6);
+        raidPanel = queuePanel(2,2);
+        minigamePanel = queuePanel(6,6);
+        miscPanel = queuePanel(1,3);
+
+        // add panel checks
         checkServer();
+        addQueueButtons();
 
         add(linksPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(serverPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Skills"));
+        add(skillPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Multi Bosses"));
+        add(bossPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Solo Bosses"));
+        add(soloPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Raids"));
+        add(raidPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Minigames"));
+        add(minigamePanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Misc."));
+        add(miscPanel);
     }
 
 
@@ -105,6 +147,58 @@ public class NeverScapeAlonePanel extends PluginPanel {
         serverPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         serverPanel.add(new JLabel());
         return serverPanel;
+    }
+
+    private JPanel queuePanel(int row, int column){
+        if (row==0 || column==0){
+            row=5;
+            column=5;
+        }
+        System.out.println(row);
+        JPanel queuePanel = new JPanel();
+        queuePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        queuePanel.setBackground(SUB_BACKGROUND_COLOR);
+        queuePanel.setLayout(new GridLayout(row, column));
+        return queuePanel;
+    }
+
+    private JLabel title(String title_text){
+        JLabel label = new JLabel(title_text);
+        return label;
+    }
+
+    private void addQueueButtons(){
+        ActivityReference values[] = activityReference.values();
+        for(ActivityReference value: values) {
+            // button construction
+            JButton button = new JButton();
+            button.setIcon(value.getIcon());
+            button.setPreferredSize(new Dimension(25, 25));
+            button.setToolTipText(value.getName());
+            button.putClientProperty("button_name:", String.valueOf(value.getName()));
+
+            switch(value.getActivity()){
+                case "skill":
+                    skillPanel.add(button);
+                    break;
+                case "solo":
+                    soloPanel.add(button);
+                    break;
+                case "boss":
+                    bossPanel.add(button);
+                    break;
+                case "minigame":
+                    minigamePanel.add(button);
+                    break;
+                case "raid":
+                    raidPanel.add(button);
+                    break;
+                case "misc":
+                    miscPanel.add(button);
+            }
+
+        }
+
     }
 
     private void checkServer()
