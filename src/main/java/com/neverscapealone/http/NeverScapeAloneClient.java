@@ -120,8 +120,6 @@ public class NeverScapeAloneClient {
                         .build())
                 .build();
 
-        System.out.println(request);
-
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
         okHttpClient.newCall(request).enqueue(new Callback()
         {

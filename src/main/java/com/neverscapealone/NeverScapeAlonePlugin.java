@@ -60,6 +60,7 @@ public class NeverScapeAlonePlugin extends Plugin
 	{
 		log.info("Never Scape Alone started!");
 
+		// create and set a new auth token
 		if(StringUtils.isBlank(config.authToken())){
 			String USER_GENERATED_TOKEN = generateNewToken();
 			configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.AUTH_TOKEN_KEY, USER_GENERATED_TOKEN);

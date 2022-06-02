@@ -1,26 +1,34 @@
 package com.neverscapealone.ui;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Objects;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import com.neverscapealone.NeverScapeAloneConfig;
-import com.neverscapealone.http.UnauthorizedTokenException;
 import net.runelite.api.Client;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.LinkBrowser;
+import com.neverscapealone.enums.ActivityReference;
 
 public class NeverScapeAlonePanel extends PluginPanel {
+
+    @Inject
+    ConfigManager configManager;
+
+    // COLOR SELECTIONS
     private static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
     private static final Color SERVER_UNREACHABLE = ColorScheme.DARKER_GRAY_COLOR;
     private static final Color AUTH_FAILURE = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
@@ -32,22 +40,38 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     private static final Color LINK_HEADER_COLOR = ColorScheme.LIGHT_GRAY_COLOR;
     private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
-    private static final int SUB_PANEL_SEPARATION_HEIGHT = 10;
+    private static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
 
-    private final JPanel linksPanel;
+    // CLASSES
+    private final NeverScapeAlonePlugin plugin;
     private final NeverScapeAloneConfig config;
     private final NeverScapeAloneClient client;
     private final Client user;
-    private final NeverScapeAlonePlugin plugin;
 
+    // SWING OBJECTS
+    private final JPanel linksPanel;
     private JPanel serverPanel;
+    private JPanel skillPanel;
+    private JPanel bossPanel;
+    private JPanel raidPanel;
+    private JPanel soloPanel;
+    private JPanel minigamePanel;
+    private JPanel miscPanel;
+
+    // VARS
+
+    private ArrayList activity_buttons = new ArrayList<JToggleButton>();
+
+    // ENUMS
+    private ActivityReference activityReference;
 
     @Getter
     @AllArgsConstructor
     public enum WebLink
     {
         TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter!", "https://www.twitter.com/NeverScapeAlone"),
-        GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone");
+        GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
+        PATREON(Icons.PATREON_ICON, "Support us here!","https://www.patreon.com/bot_detector");
 
         private final ImageIcon image;
         private final String tooltip;
@@ -69,11 +93,38 @@ public class NeverScapeAlonePanel extends PluginPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         linksPanel = linksPanel();
         serverPanel = serverPanel();
-        checkServer();
+        skillPanel = queuePanel(4,6);
+        bossPanel = queuePanel(4,6);
+        soloPanel = queuePanel(3,6);
+        raidPanel = queuePanel(2,2);
+        minigamePanel = queuePanel(6,6);
+        miscPanel = queuePanel(1,3);
 
         add(linksPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(serverPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Skills"));
+        add(skillPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Multi-Bosses"));
+        add(bossPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Solo-Bosses"));
+        add(soloPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Raids"));
+        add(raidPanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Minigames"));
+        add(minigamePanel);
+        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(title("Miscellaneous"));
+        add(miscPanel);
+
+        // panel checks
+        checkServer();
+        addQueueButtons();
     }
 
 
@@ -107,6 +158,90 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return serverPanel;
     }
 
+    private JPanel queuePanel(int row, int column){
+        if (row==0 || column==0){
+            row=5;
+            column=5;
+        }
+        JPanel queuePanel = new JPanel();
+        queuePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        queuePanel.setBackground(SUB_BACKGROUND_COLOR);
+        queuePanel.setLayout(new GridLayout(row, column));
+        return queuePanel;
+    }
+
+    private JPanel title(String title_text){
+        JPanel label_holder = new JPanel();
+        JLabel label = new JLabel(title_text);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        label_holder.add(label);
+        return label_holder;
+    }
+
+    private void addQueueButtons(){
+        ActivityReference values[] = activityReference.values();
+        for(ActivityReference value: values) {
+            // button construction
+            JToggleButton button = new JToggleButton();
+            button.setIcon(value.getIcon());
+            button.setPreferredSize(new Dimension(25, 25));
+            button.setToolTipText(value.getTooltip());
+            button.setName(value.getLabel());
+            button.addItemListener(e -> button_setConfig(e));
+            button.setEnabled(false);
+            activity_buttons.add(button);
+
+            switch(value.getActivity()){
+                case "skill":
+                    skillPanel.add(button);
+                    break;
+                case "solo":
+                    soloPanel.add(button);
+                    break;
+                case "boss":
+                    bossPanel.add(button);
+                    break;
+                case "minigame":
+                    minigamePanel.add(button);
+                    break;
+                case "raid":
+                    raidPanel.add(button);
+                    break;
+                case "misc":
+                    miscPanel.add(button);
+            }
+        }
+    }
+
+    private void buttonsOpenandLoadConfigs(ArrayList<JToggleButton> activity_buttons){
+        for (JToggleButton button : activity_buttons){
+            // allows buttons to be clicked
+            button.setEnabled(true);
+            // restores old button state
+            String label_lower = "config_"+button.getName().toLowerCase();
+            System.out.println(label_lower);
+            String state = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label_lower);
+            if (Objects.equals(state, "true")){
+                button.setSelected(true);
+            } else {
+                button.setSelected(false);
+            }
+        }
+    }
+    private void button_setConfig(ItemEvent itemEvent){
+        Object object = itemEvent.getItem();
+        if (object instanceof JToggleButton){
+            String label = "config_"+((JToggleButton) object).getName().toLowerCase();
+            if(((JToggleButton) object).isSelected()==true){
+                configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label, true);
+            } else {
+                configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label, false);
+            }
+            String string = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label);
+        }
+    }
+
     private void checkServer()
     {
         JLabel label = (JLabel)(serverPanel.getComponent(0));
@@ -133,6 +268,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
                             serverPanel.setBackground(SERVER_ONLINE);
                             label.setText("SERVER ONLINE");
                             serverPanel.setToolTipText("Server is Online. Authentication was successful.");
+                            // If connection is successful, load button config and unlock buttons
+                            buttonsOpenandLoadConfigs(activity_buttons);
                             break;
                         case MAINTENANCE:
                             serverPanel.setBackground(SERVER_MAINTENANCE);

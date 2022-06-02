@@ -1,0 +1,140 @@
+package com.neverscapealone.enums;
+
+import com.neverscapealone.ui.Icons;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import javax.swing.*;
+
+@Getter
+@RequiredArgsConstructor
+public enum ActivityReference
+// "skill", "boss", "minigame", "misc", "solo", "raid"
+{
+    // skill
+    ATTACK(Icons.ATTACK, "skill","Attack","ATTACK"),
+    STRENGTH(Icons.STRENGTH,"skill","Strength","STRENGTH"),
+    DEFENCE(Icons.DEFENCE, "skill","Defence","DEFENCE"),
+    HITPOINTS(Icons.HITPOINTS, "skill","Hitpoints","HITPOINTS"),
+    RANGED(Icons.RANGED, "skill","Ranged","RANGED"),
+    PRAYER(Icons.PRAYER, "skill","Prayer","PRAYER"),
+    MAGIC(Icons.MAGIC, "skill","Magic","MAGIC"),
+    COOKING(Icons.COOKING, "skill","Cooking","COOKING"),
+    WOODCUTTING(Icons.WOODCUTTING, "skill","Woodcutting","WOODCUTTING"),
+    FLETCHING(Icons.FLETCHING, "skill","Fletching","FLETCHING"),
+    FISHING(Icons.FISHING, "skill","Fishing","FISHING"),
+    FIREMAKING(Icons.FIREMAKING, "skill","Firemaking","FIREMAKING"),
+    CRAFTING(Icons.CRAFTING, "skill","Crafting","CRAFTING"),
+    SMITHING(Icons.SMITHING, "skill","Smithing","SMITHING"),
+    MINING(Icons.MINING, "skill","Mining","MINING"),
+    HERBLORE(Icons.HERBLORE, "skill","Herblore","HERBLORE"),
+    AGILITY(Icons.AGILITY, "skill","Agility","AGILITY"),
+    THIEVING(Icons.THIEVING, "skill","Thieving","THIEVING"),
+    SLAYER(Icons.SLAYER, "skill","Slayer","SLAYER"),
+    FARMING(Icons.FARMING, "skill","Farming","FARMING"),
+    RUNECRAFT(Icons.RUNECRAFTING, "skill","Runecraft","RUNECRAFT"),
+    HUNTER(Icons.HUNTER, "skill","Hunter","HUNTER"),
+    CONSTRUCTION(Icons.CONSTRUCTION, "skill","Construction","CONSTRUCTION"),
+    ALL_SKILLS(Icons.ALL_SKILLS,"skill","All Skills","ALL_SKILLS"),
+
+    // solo
+    ABYSSAL_SIRE(Icons.ABYSSAL_SIRE, "solo","Abyssal Sire","ABYSSAL_SIRE"),
+    ALCHEMICAL_HYDRA(Icons.ALCHEMICAL_HYDRA, "solo","Alchemical Hydra","ALCHEMICAL_HYDRA"),
+    BRYOPHYTA(Icons.BRYOPHYTA, "solo","Bryophyta","BRYOPHYTA"),
+    CERBERUS(Icons.CERBERUS, "solo","Cerberus","CERBERUS"),
+    GROTESQUE_GUARDIANS(Icons.GROTESQUE_GUARDIANS, "solo","Grotesque Guardians","GROTESQUE_GUARDIANS"),
+    HESPORI(Icons.HESPORI, "solo","Hespori","HESPORI"),
+    KRAKEN(Icons.KRAKEN, "solo","Kraken","KRAKEN"),
+    MIMIC(Icons.MIMIC, "solo","Mimic","MIMIC"),
+    OBOR(Icons.OBOR, "solo","Obor","OBOR"),
+    PHOSANIS_NIGHTMARE(Icons.PHOSANIS_NIGHTMARE, "solo","Phosani's Nightmare","PHOSANIS_NIGHTMARE"),
+    SKOTIZO(Icons.SKOTIZO, "solo","Skotizo","SKOTIZO"),
+    GAUNTLET(Icons.GAUNTLET, "solo","Gauntlet","GAUNTLET"),
+    GAUNTLET_CORRUPTED(Icons.GAUNTLET_CORRUPTED, "solo","The Corrupted Gauntlet","GAUNTLET_CORRUPTED"),
+    THERMONUCLEARSMOKEDEVIL(Icons.THERMONUCLEARSMOKEDEVIL, "solo","Thermonuclearsmokedevil","THERMONUCLEARSMOKEDEVIL"),
+    TZ_KAL_ZUK(Icons.TZ_KAL_ZUK, "solo","The Inferno","TZ_KAL_ZUK"),
+    TZ_TOK_JAD(Icons.TZ_TOK_JAD, "solo","The Fight Caves","TZ_TOK_JAD"),
+    VORKATH(Icons.VORKATH, "solo","Vorkath","VORKATH"),
+    ZULRAH(Icons.ZULRAH, "solo","Zulrah","ZULRAH"),
+
+    // boss
+    BARROWS(Icons.BARROWS, "boss","Barrows Brothers","BARROWS"),
+    CALLISTO(Icons.CALLISTO, "boss","Callisto","CALLISTO"),
+    CHAOS_ELEMENTAL(Icons.CHAOS_ELEMENTAL, "boss","Chaos Elemental","CHAOS_ELEMENTAL"),
+    CHAOS_FANATIC(Icons.CHAOS_FANATIC, "boss","Chaos Fanatic","CHAOS_FANATIC"),
+    COMMANDER_ZILYANA(Icons.COMMANDER_ZILYANA, "boss","Commander Zilyana","COMMANDER_ZILYANA"),
+    CORPOREAL_BEAST(Icons.CORPOREAL_BEAST,"boss","Corporeal Beast","CORPOREAL_BEAST"),
+    ARCHAEOLOGIST_CRAZY(Icons.ARCHAEOLOGIST_CRAZY,"boss", "Crazy Archaeologist","ARCHAEOLOGIST_CRAZY"),
+    ARCHAEOLOGIST_DERANGED(Icons.ARCHAEOLOGIST_DERANGED, "boss","Deranged Archaeologist","ARCHAEOLOGIST_DERANGED"),
+    DAGANNOTH_PRIME(Icons.DAGANNOTH_PRIME,"boss","Dagannoth Prime","DAGANNOTH_PRIME"),
+    DAGANNOTH_REX(Icons.DAGANNOTH_REX,"boss","Dagannoth Rex","DAGANNOTH_REX"),
+    DAGANNOTH_SUPREME(Icons.DAGANNOTH_SUPREME,"boss","Dagannoth Supreme","DAGANNOTH_SUPREME"),
+    GENERAL_GRAARDOR(Icons.GENERAL_GRAARDOR, "boss","General Graardor","GENERAL_GRAARDOR"),
+    GIANT_MOLE(Icons.GIANT_MOLE,"boss","Giant Mole","GIANT_MOLE"),
+    KALPHITE_QUEEN(Icons.KALPHITE_QUEEN,"boss","Kalphite Queen","KALPHITE_QUEEN"),
+    KING_BLACK_DRAGON(Icons.KING_BLACK_DRAGON, "boss","King Black Dragon","KING_BLACK_DRAGON"),
+    KREEARRA(Icons.KREEARRA, "boss","Kreearra","KREEARRA"),
+    KRIL_TSUTSAROTH(Icons.KRIL_TSUTSAROTH,"boss","Kril Tsutsaroth","KRIL_TSUTSAROTH"),
+    NEX(Icons.NEX,"boss","Nex","NEX"),
+    NIGHTMARE(Icons.NIGHTMARE,"boss","Nightmare","NIGHTMARE"),
+    SARACHNIS(Icons.SARACHNIS, "boss","Sarachnis","SARACHNIS"),
+    SCORPIA(Icons.SCORPIA,"boss","Scorpia","SCORPIA"),
+    VENENATIS(Icons.VENENATIS,"boss","Venenatis","VENEATIS"),
+    VETION(Icons.VETION,"boss","Vet'ion","VETION"),
+    ZALCANO(Icons.ZALCANO,"boss","Zalcano","ZALCANO"),
+
+    // minigame
+    BARBARIAN_ASSAULT(Icons.BARBARIAN_ASSAULT,"minigame","Barbarian Assault","BARBARIAN_ASSAULT"),
+    BLAST_FURNACE(Icons.BLAST_FURNACE, "minigame","Blast Furnace","BLAST_FURNACE"),
+    BLAST_MINE(Icons.BLAST_MINE, "minigame","Blast Mine","BLAST_MINE"),
+    BRIMHAVEN_AGILITY_ARENA(Icons.BRIMHAVEN_AGILITY_ARENA, "minigame","Brimhaven Agility Arena","BRIMHAVEN_AGILITY_ARENA"),
+    BOUNTY_HUNTER_HUNTER(Icons.BOUNTY_HUNTER_HUNTER,"minigame","Bounty Hunter (Hunter)","BOUNTY_HUNTER_HUNTER"),
+    BOUNTY_HUNTER_ROGUE(Icons.BOUNTY_HUNTER_ROGUE,"minigame","Bounty Hunter (Rogue)","BOUNTY_HUNTER_ROGUE"),
+    CAMDOZAAL_VAULT(Icons.CAMDOZAAL_VAULT,"minigame","Camdozaal Vault","CAMDOZAAL_VAULT"),
+    CASTLE_WARS(Icons.CASTLE_WARS,"minigame","Castle Wars","CASTLE_WARS"),
+    CLAN_WARS(Icons.CLAN_WARS, "minigame","Clan Wars","CLAN_WARS"),
+    CREATURE_CREATION(Icons.CREATURE_CREATION,"minigame","Creature Creation","CREATURE_CREATION"),
+    DUEL_ARENA(Icons.DUEL_ARENA,"minigame","Duel Arena","DUEL_ARENA"),
+    FISHING_TRAWLER(Icons.FISHING_TRAWLER,"minigame","Fishing Trawler","FISHING_TRAWLER"),
+    GNOME_BALL(Icons.GNOME_BALL,"minigame","Gnome Ball","GNOME_BALL"),
+    GNOME_RESTAURANT(Icons.GNOME_RESTAURANT,"minigame","Gnome Restaurant","GNOME_RESTAURANT"),
+    GUARDIANS_OF_THE_RIFT(Icons.GUARDIANS_OF_THE_RIFT,"minigame","Guardians of the Rift","GUARDIANS_OF_THE_RIFT"),
+    HALLOWED_SEPULCHRE(Icons.HALLOWED_SEPULCHRE, "minigame","Hallowed Sepulchre","HALLOWED_SEPULCHRE"),
+    PURO_PURO(Icons.PURO_PURO,"minigame","Puro Puro","PURO_PURO"),
+    MAGE_ARENA(Icons.MAGE_ARENA,"minigame","Mage Arena","MAGE_ARENA"),
+    MAHOGANY_HOMES(Icons.MAHOGANY_HOMES,"minigame","Mahogany Homes","MAHOGANY_HOMES"),
+    MAGE_TRAINING_ARENA(Icons.MAGE_TRAINING_ARENA,"minigame","Mage Training Arena","MAGE_TRAINING_ARENA"),
+    NIGHTMARE_ZONE(Icons.NIGHTMARE_ZONE,"minigame","Nightmare Zone","NIGHTMARE_ZONE"),
+    ORGANIZED_CRIME(Icons.ORGANIZED_CRIME,"minigame","Organized Crime","ORGANIZED_CRIME"),
+    PEST_CONTROL(Icons.PEST_CONTROL, "minigame","Pest Control","PEST_CONTROL"),
+    PYRAMID_PLUNDER(Icons.PYRAMID_PLUNDER,"minigame","Pyramid Plunder","PYRAMID_PLUNDER"),
+    ROGUES_DEN(Icons.ROGUES_DEN,"minigame","Rogues Den","ROGUES_DEN"),
+    SHADES_OF_MORTON(Icons.SHADES_OF_MORTON,"minigame","Shades of Morton","SHADES_OF_MORTON"),
+    SORCERESS_GARDEN(Icons.SORCERESS_GARDEN,"minigame","Sorceress's Garden","SORCERESS_GARDEN"),
+    TAI_BWO_WANNAI(Icons.TAI_BWO_WANNAI,"minigame","Tai Bwo Wannai","TAI_BWO_WANNAI"),
+    TITHE_FARM(Icons.TITHE_FARM,"minigame","Tithe Farm","TITHE_FARM"),
+    TROUBLE_BREWING(Icons.TROUBLE_BREWING,"minigame","Trouble Brewing","TROUBLE_BREWING"),
+    UNDERWATER_AGILITY_AND_THIEVING(Icons.UNDERWATER_AGILITY_AND_THIEVING, "minigame","Underwater Agility and Thieving","UNDERWATER_AGILITY_AND_THIEVING"),
+    VOLCANIC_MINE(Icons.VOLCANIC_MINE,"minigame","Volcanic Mine","VOLCANIC_MINE"),
+    LAST_MAN_STANDING(Icons.LAST_MAN_STANDING,"minigame","Last Man Standing","LAST_MAN_STANDING"),
+    SOUL_WARS(Icons.SOUL_WARS,"minigame","Soul Wars","SOUL_WARS"),
+    TEMPOROSS(Icons.TEMPOROSS, "minigame","Tempoross","TEMPOROSS"),
+    WINTERTODT(Icons.WINTERTODT,"minigame","Wintertodt","WINTERTODT"),
+
+    // raid
+    COX(Icons.COX, "raid","Chambers of Xeric","COX"),
+    HARD_COX(Icons.HARD_COX,"raid","Chambers of Xeric Challenge Mode","HARD_COX"),
+    TOB(Icons.TOB,"raid","Theatre of Blood","TOB"),
+    HARD_TOB(Icons.HARD_TOB,"raid","Theatre of Blood Hard Mode","HARD_TOB"),
+
+    // misc
+    CLUES(Icons.CLUES,"misc","Clues","CLUES"),
+    FALADOR_PARTY_ROOM(Icons.FALADOR_PARTY_ROOM,"misc","Falador Party Room","FALADOR_PARTY_ROOM"),
+    PVP_GENERIC(Icons.PVP_GENERIC,"misc","PKing","PVP_GENERIC"),
+
+    ;
+    private final ImageIcon icon;
+    private final String activity;
+    private final String tooltip;
+    private final String label;
+}
