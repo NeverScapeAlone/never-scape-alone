@@ -1,7 +1,10 @@
 package com.neverscapealone.ui;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Objects;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,6 +15,7 @@ import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
@@ -20,6 +24,9 @@ import net.runelite.client.util.LinkBrowser;
 import com.neverscapealone.enums.ActivityReference;
 
 public class NeverScapeAlonePanel extends PluginPanel {
+
+    @Inject
+    ConfigManager configManager;
 
     // COLOR SELECTIONS
     private static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
@@ -44,7 +51,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // SWING OBJECTS
     private final JPanel linksPanel;
     private JPanel serverPanel;
-    private JPanel queuePanel;
     private JPanel skillPanel;
     private JPanel bossPanel;
     private JPanel raidPanel;
@@ -52,6 +58,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private JPanel minigamePanel;
     private JPanel miscPanel;
 
+    // VARS
+
+    private ArrayList activity_buttons = new ArrayList<JToggleButton>();
 
     // ENUMS
     private ActivityReference activityReference;
@@ -61,7 +70,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public enum WebLink
     {
         TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter!", "https://www.twitter.com/NeverScapeAlone"),
-        GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone");
+        GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
+        PATREON(Icons.PATREON_ICON, "Support us here!","https://www.patreon.com/bot_detector");
 
         private final ImageIcon image;
         private final String tooltip;
@@ -90,10 +100,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         minigamePanel = queuePanel(6,6);
         miscPanel = queuePanel(1,3);
 
-        // add panel checks
-        checkServer();
-        addQueueButtons();
-
         add(linksPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(serverPanel);
@@ -115,6 +121,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(title("Miscellaneous"));
         add(miscPanel);
+
+        // panel checks
+        checkServer();
+        addQueueButtons();
     }
 
 
@@ -176,9 +186,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
             JToggleButton button = new JToggleButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
-            button.setToolTipText(value.getName());
-            button.addItemListener(e -> System.out.println(value.getName()));
-            // button.putClientProperty("button_name:", String.valueOf(value.getName()));
+            button.setToolTipText(value.getTooltip());
+            button.setName(value.getLabel());
+            button.addItemListener(e -> button_setConfig(e));
+            button.setEnabled(false);
+            activity_buttons.add(button);
 
             switch(value.getActivity()){
                 case "skill":
@@ -199,9 +211,35 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 case "misc":
                     miscPanel.add(button);
             }
-
         }
+    }
 
+    private void buttonsOpenandLoadConfigs(ArrayList<JToggleButton> activity_buttons){
+        for (JToggleButton button : activity_buttons){
+            // allows buttons to be clicked
+            button.setEnabled(true);
+            // restores old button state
+            String label_lower = "config_"+button.getName().toLowerCase();
+            System.out.println(label_lower);
+            String state = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label_lower);
+            if (Objects.equals(state, "true")){
+                button.setSelected(true);
+            } else {
+                button.setSelected(false);
+            }
+        }
+    }
+    private void button_setConfig(ItemEvent itemEvent){
+        Object object = itemEvent.getItem();
+        if (object instanceof JToggleButton){
+            String label = "config_"+((JToggleButton) object).getName().toLowerCase();
+            if(((JToggleButton) object).isSelected()==true){
+                configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label, true);
+            } else {
+                configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label, false);
+            }
+            String string = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label);
+        }
     }
 
     private void checkServer()
@@ -230,6 +268,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
                             serverPanel.setBackground(SERVER_ONLINE);
                             label.setText("SERVER ONLINE");
                             serverPanel.setToolTipText("Server is Online. Authentication was successful.");
+                            // If connection is successful, load button config and unlock buttons
+                            buttonsOpenandLoadConfigs(activity_buttons);
                             break;
                         case MAINTENANCE:
                             serverPanel.setBackground(SERVER_MAINTENANCE);
