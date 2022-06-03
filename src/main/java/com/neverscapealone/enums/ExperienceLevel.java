@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum experienceLevel
+public enum ExperienceLevel
 {
     LEARNER("Learner",0),
     NOVICE("Novice", 1),

@@ -2,13 +2,11 @@ package com.neverscapealone;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
-import java.awt.Color;
-import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
-import com.neverscapealone.enums.experienceLevel;
+import com.neverscapealone.enums.ExperienceLevel;
 import com.neverscapealone.enums.worldTypeSelection;
 
 @ConfigGroup(NeverScapeAloneConfig.CONFIG_GROUP)
@@ -16,6 +14,7 @@ public interface NeverScapeAloneConfig extends Config
 {
 	String CONFIG_GROUP = "NeverScapeAlone";
 	String AUTH_TOKEN_KEY = "authToken";
+	String CONFIG_TRUE = "countConfigTrue";
 
 	// SECTIONS
 	@ConfigSection(
@@ -119,9 +118,9 @@ public interface NeverScapeAloneConfig extends Config
 			description = "Your general, self-determined, RuneScape experience level.",
 			section = matchSection
 	)
-	default experienceLevel userExperienceLevel()
+	default ExperienceLevel userExperienceLevel()
 	{
-		return experienceLevel.LEARNER;
+		return ExperienceLevel.LEARNER;
 	}
 	@ConfigItem(
 			position = 5,
@@ -130,9 +129,9 @@ public interface NeverScapeAloneConfig extends Config
 			description = "Your partner's minimum general, self-determined, RuneScape experience level.",
 			section = matchSection
 	)
-	default experienceLevel partnerExperienceLevel()
+	default ExperienceLevel partnerExperienceLevel()
 	{
-		return experienceLevel.LEARNER;
+		return ExperienceLevel.LEARNER;
 	}
 	@ConfigItem(
 			position = 6,
@@ -235,28 +234,6 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 1,
-			keyName = "showQueue",
-			name = "Show Queue",
-			description = "Show number of players in queue when finding a partner.",
-			section = otherSection
-	)
-	default boolean showQueue()
-	{
-		return true;
-	}
-	@ConfigItem(
-			position = 2,
-			keyName = "showPosition",
-			name = "Show Position",
-			description = "Show position in queue when finding a partner.",
-			section = otherSection
-	)
-	default boolean showPosition()
-	{
-		return true;
-	}
-	@ConfigItem(
-			position = 3,
 			keyName = "showElapsedTime",
 			name = "Elapsed Time",
 			description = "Show elapsed time in finding a partner.",
@@ -267,7 +244,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 4,
+			position = 2,
 			keyName = "showEstimatedTime",
 			name = "Estimated Time",
 			description = "Show estimated time in finding a partner.",
@@ -278,7 +255,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 5,
+			position = 3,
 			keyName = "playFireworks",
 			name = "Play Fireworks",
 			description = "When a queue has been finished, play fireworks on the player.",
@@ -289,7 +266,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 6,
+			position = 4,
 			keyName = "playSound",
 			name = "Play Sound",
 			description = "When a queue has been finished, play a sound byte.",
@@ -1174,5 +1151,13 @@ public interface NeverScapeAloneConfig extends Config
 			hidden = true
 	)
 	default boolean config_pvp_generic() {return false;}
+
+	@ConfigItem(
+			keyName = "countConfigTrue",
+			name = "True Configs",
+			description = "Number of Config Items which are True",
+			hidden = true
+	)
+	default int countConfigTrue() {return 0;}
 }
 
