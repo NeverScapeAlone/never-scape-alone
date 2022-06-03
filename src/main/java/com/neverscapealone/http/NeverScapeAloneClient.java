@@ -1,11 +1,9 @@
 package com.neverscapealone.http;
 
 import com.google.gson.*;
-import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ServerStatusCode;
 import com.neverscapealone.model.ServerStatus;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -15,15 +13,11 @@ import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import jogamp.common.util.locks.SingletonInstanceServerSocket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +46,7 @@ public class NeverScapeAloneClient {
     private enum ApiPath
     {
         SERVER_STATUS("server-status/"),
+        USER_REGISTRATION("user-token/register"),
         OPTIONS_SKILL("options-skill/"),
         OPTIONS_MISC("options-misc/"),
         OPTIONS_MINIGAME("options-minigame/"),
@@ -104,13 +99,6 @@ public class NeverScapeAloneClient {
                 .build();
     }
 
-    /*
-    * Checks the server status by sending a get request with the login and token information provided by the user.
-    * "status":"alive" is expected when the server's API is functioning as intended. -> green dot
-    * "status":"message" is expected when the server is under maintenance, and has a server message provided. -> yellow dot
-    * No response but alive ping indicates that the server is Offline. -> red dot
-    * No response and no ping indicate that the server is down and Unreachable. -> black dot
-    */
     public CompletableFuture<ServerStatus> requestServerStatus(String login, String token)
     {
         Request request = new Request.Builder()
@@ -159,6 +147,56 @@ public class NeverScapeAloneClient {
 
         return future;
     }
+
+    public CompletableFuture<ServerStatus> registerUser(String login, String token)
+    {
+        Gson bdGson = gson.newBuilder().create();
+
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.USER_REGISTRATION).newBuilder().build())
+                .post(RequestBody.create(JSON, bdGson.toJson(new UserRegistration(login, token))))
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
 
     /**
      * Processes the body of the given response and parses out the contained JSON object.
@@ -267,5 +305,13 @@ public class NeverScapeAloneClient {
         {
             return Instant.ofEpochSecond(json.getAsLong());
         }
+    }
+    @Value
+    private static class UserRegistration
+    {
+        @SerializedName("login")
+        String login;
+        @SerializedName("token")
+        String token;
     }
 }

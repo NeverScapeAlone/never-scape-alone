@@ -8,7 +8,7 @@ import lombok.Value;
 @Builder
 public class ServerStatus
 {
-    @SerializedName("status")
+    @SerializedName("detail")
     ServerStatusCode status;
 }
 

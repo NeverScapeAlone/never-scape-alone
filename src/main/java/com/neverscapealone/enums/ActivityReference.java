@@ -131,8 +131,8 @@ public enum ActivityReference
     CLUES(Icons.CLUES,"misc","Clues","CLUES"),
     FALADOR_PARTY_ROOM(Icons.FALADOR_PARTY_ROOM,"misc","Falador Party Room","FALADOR_PARTY_ROOM"),
     PVP_GENERIC(Icons.PVP_GENERIC,"misc","PKing","PVP_GENERIC"),
-
     ;
+
     private final ImageIcon icon;
     private final String activity;
     private final String tooltip;
