@@ -9,5 +9,17 @@ public enum ServerStatusCode {
     MAINTENANCE,
     UNREACHABLE,
     AUTH_FAILURE,
+    @SerializedName("registering")
+    REGISTERING,
+    @SerializedName("registration failure")
+    REGISTRATION_FAILURE,
+    @SerializedName("registered")
+    REGISTERED,
+    @SerializedName("bad token")
+    BAD_TOKEN,
+    @SerializedName("bad header")
+    BAD_HEADER,
+    @SerializedName("bad rsn")
+    BAD_RSN;
 }
 

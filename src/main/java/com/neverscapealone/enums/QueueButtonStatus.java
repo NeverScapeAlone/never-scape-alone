@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum QueueButtonStatus
 {
     OFFLINE("offline"),
+    ONLINE("online"),
     START_QUEUE("start_queue"),
     CANCEL_QUEUE("end_queue"),
     REQUEST("request"),
