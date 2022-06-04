@@ -70,11 +70,12 @@ public class NeverScapeAlonePlugin extends Plugin
 	// tick count
 	private int ticker = 0;
 
+	// server state
+	public ServerStatus serverStatusState;
+
 	// enums
 	private worldTypeSelection wts;
 	public QueueButtonStatus queueButtonStatus;
-
-	public ServerStatus serverStatus;
 
 
 	private static final SecureRandom secureRandom = new SecureRandom();
@@ -94,7 +95,6 @@ public class NeverScapeAlonePlugin extends Plugin
 		if(StringUtils.isBlank(config.authToken())){
 			String USER_GENERATED_TOKEN = generateNewToken();
 			configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.AUTH_TOKEN_KEY, USER_GENERATED_TOKEN);
-			System.out.println(config.authToken());
 		}
 
 		panel = injector.getInstance(NeverScapeAlonePanel.class);
@@ -135,7 +135,6 @@ public class NeverScapeAlonePlugin extends Plugin
 		}
 
 		panel.setServerPanel("SIGNING UP FOR QUEUE", "We're signing you up for queue! Please standby.", panel.CHECKING_SERVER);
-		panel.buttons_Deactivate(panel.activity_buttons);
 
 		String login = username;
 		String token = config.authToken();
@@ -145,16 +144,58 @@ public class NeverScapeAlonePlugin extends Plugin
 				{
 					{
 						if (status == null || ex != null) {
+							serverStatusState = status;
 							panel.setServerPanel("SERVER QUEUE FAILURE", "There was a server queue failure error. Please contact support.", panel.SERVER_ERROR);
 							panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
 							return;
 						}
 						switch (status.getStatus()) {
 							case QUEUE_STARTED:
+								serverStatusState = status;
 								panel.setServerPanel("IN QUEUE", "You are currently in queue. Please standby for a partner!", panel.CHECKING_SERVER);
 								panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
 								break;
-						}
+							case ALIVE:
+								serverStatusState = status;
+								panel.setServerPanel("SERVER ONLINE", "Server is Online. Authentication was successful.", panel.SERVER_ONLINE);
+								panel.matchButtonManager(QueueButtonStatus.ONLINE);
+								panel.buttons_LoadState(panel.activity_buttons);
+								break;
+							// if server is under maintenance shut down plugin panel
+							case MAINTENANCE:
+								serverStatusState = status;
+								panel.setServerPanel("SERVER MAINTENANCE", "Server is undergoing Maintenance. Authentication was successful.", panel.SERVER_MAINTENANCE);
+								panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+								break;
+							// if server is unreachable shut down plugin panel
+							case UNREACHABLE:
+								serverStatusState = status;
+								panel.setServerPanel("SERVER UNREACHABLE", "Server is Unreachable. No connection could be made.", panel.SERVER_UNREACHABLE);
+								panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+								break;
+							// if there is an auth failure, shut down panel (proceed with authing the user)
+							case AUTH_FAILURE:
+								serverStatusState = status;
+								panel.setServerPanel("AUTH FAILURE", "Authentication failed. Please set a new token in the Plugin config.", panel.AUTH_FAILURE);
+								panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+								break;
+							// badly formatted token
+							case BAD_TOKEN:
+								serverStatusState = status;
+								panel.setServerPanel("BAD TOKEN", "The token (auth token) you have entered in the config is malformed.<br> Please delete this token entirely, and turn the plugin on and off.<br>If you need further assistance, please contact Plugin Support.", panel.BAD_TOKEN);
+								panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+								break;
+							case BAD_HEADER:
+								serverStatusState = status;
+								panel.setServerPanel("BAD HEADER", "The incoming header value is incorrect. Please contact Plugin Support.", panel.BAD_HEADER);
+								panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+								break;
+							case BAD_RSN:
+								serverStatusState = status;
+								panel.setServerPanel("BAD RSN", "The incoming RSN does not match Jagex Standards. please contact Plugin Support.", panel.BAD_RSN);
+								panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+								break;
+							}
 					}
 				}));
 	}
