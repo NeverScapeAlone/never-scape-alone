@@ -3,6 +3,8 @@ package com.neverscapealone;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.QueueButtonStatus;
 import com.neverscapealone.enums.worldTypeSelection;
+import com.neverscapealone.http.NeverScapeAloneClient;
+import com.neverscapealone.model.ServerStatus;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -20,10 +22,12 @@ import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
+import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
@@ -46,6 +50,9 @@ public class NeverScapeAlonePlugin extends Plugin
 	@Inject
 	private NeverScapeAloneConfig config;
 
+	@Inject
+	private NeverScapeAloneClient clientConnection;
+
 	private NeverScapeAlonePanel panel;
 	private NavigationButton navButton;
 
@@ -64,8 +71,10 @@ public class NeverScapeAlonePlugin extends Plugin
 	private int ticker = 0;
 
 	// enums
-
 	private worldTypeSelection wts;
+	public QueueButtonStatus queueButtonStatus;
+
+	public ServerStatus serverStatus;
 
 
 	private static final SecureRandom secureRandom = new SecureRandom();
@@ -104,7 +113,80 @@ public class NeverScapeAlonePlugin extends Plugin
 			case LOGIN_SCREEN:
 				panel.checkServerStatus("");
 		}
+	}
 
+	public Map<String, Boolean> generateUserConfigurations(){
+		List<String> config_keys = configManager.getConfigurationKeys(NeverScapeAloneConfig.CONFIG_GROUP+".config_");
+		HashMap<String, Boolean> user_configurations = new HashMap<>();
+		for (String key : config_keys){
+			String true_key = key.substring(NeverScapeAloneConfig.CONFIG_GROUP.length()+1);
+			Boolean value = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, true_key, Boolean.class);
+			user_configurations.put(true_key.substring("config_".length()).toUpperCase(Locale.ROOT), value);
+		}
+		return user_configurations;
+	}
+
+	private void startQueueCaseHandler() {
+		Map<String, Boolean> user_configurations = generateUserConfigurations();
+
+		if (username == "") {
+			panel.checkServerStatus(username);
+			return;
+		}
+
+		panel.setServerPanel("SIGNING UP FOR QUEUE", "We're signing you up for queue! Please standby.", panel.CHECKING_SERVER);
+		panel.buttons_Deactivate(panel.activity_buttons);
+
+		String login = username;
+		String token = config.authToken();
+
+		clientConnection.startUserQueue(login, token, user_configurations).whenCompleteAsync((status, ex) ->
+				SwingUtilities.invokeLater(() ->
+				{
+					{
+						if (status == null || ex != null) {
+							panel.setServerPanel("SERVER QUEUE FAILURE", "There was a server queue failure error. Please contact support.", panel.SERVER_ERROR);
+							panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
+							return;
+						}
+						switch (status.getStatus()) {
+							case QUEUE_STARTED:
+								panel.setServerPanel("IN QUEUE", "You are currently in queue. Please standby for a partner!", panel.CHECKING_SERVER);
+								panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
+								break;
+						}
+					}
+				}));
+	}
+
+
+
+	private void cancelQueueCaseHandler(){
+		panel.checkServerStatus(username);
+	}
+	private void acceptQueueCaseHandler(){
+
+	}
+
+	private void endSessionCaseHandler(){
+
+	}
+
+	public void matchClickManager(ActionEvent e){
+		switch (e.getActionCommand()){
+			case "Start Queue":
+				startQueueCaseHandler();
+				break;
+			case "Cancel Queue":
+				cancelQueueCaseHandler();
+				break;
+			case "Accept Queue":
+				acceptQueueCaseHandler();
+				break;
+			case "End Session":
+				endSessionCaseHandler();
+				break;
+		}
 	}
 
 	@Override
@@ -120,7 +202,6 @@ public class NeverScapeAlonePlugin extends Plugin
 		switch (event.getGameState())
 		{
 			case LOGGED_IN:
-				// reset username for onPlayerSpawned method.
 				username = "";
 				break;
 			case LOGIN_SCREEN:
@@ -142,7 +223,7 @@ public class NeverScapeAlonePlugin extends Plugin
 		panel.checkServerStatus(username); //check server with player name
 	}
 
-	// update panel with necessary information, every 5 minutes.
+	// update panel with necessary information, every 5 seconds.
 	@Schedule(period = 5, unit = ChronoUnit.SECONDS, asynchronous = true)
 	private void updatePanel(){
 		if (username == "") {return;}

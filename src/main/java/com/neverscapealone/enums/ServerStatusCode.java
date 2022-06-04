@@ -20,6 +20,10 @@ public enum ServerStatusCode {
     @SerializedName("bad header")
     BAD_HEADER,
     @SerializedName("bad rsn")
-    BAD_RSN;
+    BAD_RSN,
+    @SerializedName("queue started")
+    QUEUE_STARTED,
+    @SerializedName("queue started failure")
+    QUEUE_STARTED_FAILURE;
 }
 
