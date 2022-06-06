@@ -50,7 +50,8 @@ public class NeverScapeAloneClient {
     {
         SERVER_STATUS("server-status/"),
         USER_REGISTRATION("user-token/register"),
-        USER_OPTIONS("user-options"),
+        USER_QUEUE_START("queue/start"),
+        USER_QUEUE_CANCEL("queue/cancel"),
         USER_POINTS("user-points/"),
         USER_RATING_HISTORY("user-rating-history/"),
         USERS("users/"),
@@ -202,7 +203,7 @@ public class NeverScapeAloneClient {
         Gson bdGson = gson.newBuilder().create();
 
         Request request = new Request.Builder()
-                .url(getUrl(ApiPath.USER_OPTIONS).newBuilder()
+                .url(getUrl(ApiPath.USER_QUEUE_START).newBuilder()
                         .addQueryParameter("login", login)
                         .addQueryParameter("token", token)
                         .build()
@@ -249,6 +250,57 @@ public class NeverScapeAloneClient {
 
         return future;
     }
+
+    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.USER_QUEUE_CANCEL).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
 
 
     /**
