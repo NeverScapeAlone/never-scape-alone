@@ -15,7 +15,6 @@ public interface NeverScapeAloneConfig extends Config
 	String CONFIG_GROUP = "NeverScapeAlone";
 	String AUTH_TOKEN_KEY = "authToken";
 	String CONFIG_TRUE = "countConfigTrue";
-
 	// SECTIONS
 	@ConfigSection(
 			position = 1,
@@ -66,7 +65,8 @@ public interface NeverScapeAloneConfig extends Config
 			position = 2,
 			keyName = AUTH_TOKEN_KEY,
 			name = "Authentication Token",
-			description = "Set a custom Authentication token to confirm your identity.<br>Disable if you'd like us to create a token for you.",
+			description = "Your authentication token for the plugin. Length 32 characters - automatically generated if cleared and the plugin is restarted.",
+			warning = "There are rare circumstances where you will need to change this field. If you are unsure about what you are doing, please click 'No'.",
 			secret = true,
 			section = authSection
 	)
@@ -89,52 +89,6 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 2,
-			keyName = "minUserRating",
-			name = "Minimum Partner Rating",
-			description = "[0-5 stars] The minimum partner rating that you will match with.",
-			section = matchSection
-	)
-	@Range(min = 0, max = 5)
-	default double minUserRating()
-	{
-		return 2.5;
-	}
-	@ConfigItem(
-			position = 3,
-			keyName = "minUserPoints",
-			name = "Partner Match-ups",
-			description = "[0-infinity] The minimum number of match-ups that your partner has had.",
-			section = matchSection
-	)
-	@Range(min = 0)
-	default int minUserPoints()
-	{
-		return 0;
-	}
-	@ConfigItem(
-			position = 4,
-			keyName = "userExperienceLevel",
-			name = "Your Experience",
-			description = "Your general, self-determined, RuneScape experience level.",
-			section = matchSection
-	)
-	default ExperienceLevel userExperienceLevel()
-	{
-		return ExperienceLevel.LEARNER;
-	}
-	@ConfigItem(
-			position = 5,
-			keyName = "partnerExperienceLevel",
-			name = "Partner Experience",
-			description = "Your partner's minimum general, self-determined, RuneScape experience level.",
-			section = matchSection
-	)
-	default ExperienceLevel partnerExperienceLevel()
-	{
-		return ExperienceLevel.LEARNER;
-	}
-	@ConfigItem(
-			position = 6,
 			keyName = "ignoreIgnores",
 			name = "Ignore Ignores",
 			description = "Ignore matchups with playes that are on your ignore list.",
@@ -145,7 +99,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 7,
+			position = 3,
 			keyName = "prioritizeFriends",
 			name = "Prioritize Friends",
 			description = "Prioritize added friends when matching with other players.",
@@ -156,7 +110,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 8,
+			position = 4,
 			keyName = "verifiedUsers",
 			name = "Verified Users",
 			description = "Allow strict matching with Verified users of the plugin.",
@@ -167,7 +121,7 @@ public interface NeverScapeAloneConfig extends Config
 		return false;
 	}
 	@ConfigItem(
-			position = 9,
+			position = 5,
 			keyName = "worldTypeSelection",
 			name = "World Type",
 			description = "Select if you would like to match on free-to-play, members or both",
@@ -234,28 +188,6 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 1,
-			keyName = "showElapsedTime",
-			name = "Elapsed Time",
-			description = "Show elapsed time in finding a partner.",
-			section = otherSection
-	)
-	default boolean showElapsedTime()
-	{
-		return true;
-	}
-	@ConfigItem(
-			position = 2,
-			keyName = "showEstimatedTime",
-			name = "Estimated Time",
-			description = "Show estimated time in finding a partner.",
-			section = otherSection
-	)
-	default boolean showEstimatedTime()
-	{
-		return true;
-	}
-	@ConfigItem(
-			position = 3,
 			keyName = "playFireworks",
 			name = "Play Fireworks",
 			description = "When a queue has been finished, play fireworks on the player.",
@@ -266,7 +198,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 4,
+			position = 2,
 			keyName = "playSound",
 			name = "Play Sound",
 			description = "When a queue has been finished, play a sound byte.",
@@ -276,6 +208,14 @@ public interface NeverScapeAloneConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			keyName = "countConfigTrue",
+			name = "True Configs",
+			description = "Number of Config Items which are True",
+			hidden = true
+	)
+	default int countConfigTrue() {return 0;}
 
 	//HIDDEN CONFIGS
 	//ITEMS PRESENT AFTER THIS POINT RELATE TO THE PLUGIN PANEL ACTIVITY OPTIONS
@@ -1152,12 +1092,6 @@ public interface NeverScapeAloneConfig extends Config
 	)
 	default boolean config_pvp_generic() {return false;}
 
-	@ConfigItem(
-			keyName = "countConfigTrue",
-			name = "True Configs",
-			description = "Number of Config Items which are True",
-			hidden = true
-	)
-	default int countConfigTrue() {return 0;}
+
 }
 

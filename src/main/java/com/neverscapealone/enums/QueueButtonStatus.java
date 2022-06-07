@@ -8,13 +8,20 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum QueueButtonStatus
 {
-    OFFLINE("offline"),
-    ONLINE("online"),
-    START_QUEUE("start_queue"),
-    CANCEL_QUEUE("end_queue"),
-    REQUEST("request"),
-    SELECT_ACTIVITY_MATCH("select_activity_match"),
-    END_SESSION("end_session");
+    @SerializedName("Offline")
+    OFFLINE("Offline"),
+    @SerializedName("Online")
+    ONLINE("Online"),
+    @SerializedName("Start Queue")
+    START_QUEUE("Start Queue"),
+    @SerializedName("Cancel Queue")
+    CANCEL_QUEUE("Cancel Queue"),
+    @SerializedName("Accept Queue")
+    ACCEPT("Accept Queue"),
+    @SerializedName("Select Activities")
+    SELECT_ACTIVITY_MATCH("Select Activities"),
+    @SerializedName("End Session")
+    END_SESSION("End Session");
 
     private String name;
 }

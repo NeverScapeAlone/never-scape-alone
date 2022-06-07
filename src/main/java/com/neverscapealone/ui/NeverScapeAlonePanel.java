@@ -3,7 +3,9 @@ package com.neverscapealone.ui;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ActivityReference;
+import com.neverscapealone.enums.ExperienceLevel;
 import com.neverscapealone.enums.QueueButtonStatus;
+import com.neverscapealone.enums.ServerStatusCode;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,11 +23,12 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NeverScapeAlonePanel extends PluginPanel {
 
@@ -33,35 +36,21 @@ public class NeverScapeAlonePanel extends PluginPanel {
     ConfigManager configManager;
 
     // COLOR SELECTIONS
-    private static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
-    private static final Color SERVER_UNREACHABLE = ColorScheme.DARKER_GRAY_COLOR;
-    private static final Color AUTH_FAILURE = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
-    private static final Color REGISTERING_ACCOUNT = Color.MAGENTA.darker().darker().darker();
-    private static final Color BAD_TOKEN = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
-    private static final Color BAD_HEADER = ColorScheme.GRAND_EXCHANGE_ALCH.darker().darker().darker();
-    private static final Color BAD_RSN = ColorScheme.GRAND_EXCHANGE_ALCH.darker().darker().darker();
-    private static final Color SERVER_ERROR = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
-    private static final Color LOGIN_REQUESTED = ColorScheme.GRAND_EXCHANGE_LIMIT.darker().darker();
-    private static final Color SERVER_MAINTENANCE = ColorScheme.PROGRESS_INPROGRESS_COLOR.darker().darker();
-    private static final Color CHECKING_SERVER = ColorScheme.GRAND_EXCHANGE_LIMIT;
-    private static final Color SERVER_ONLINE = ColorScheme.PROGRESS_COMPLETE_COLOR.darker().darker().darker();
 
-    /// button match colors
-
-    private static final Color START_QUEUE = ColorScheme.PROGRESS_COMPLETE_COLOR.darker().darker().darker();
-    private static final Color CANCEL_QUEUE = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
-
-    private static final Color ACCEPT_QUEUE = ColorScheme.PROGRESS_COMPLETE_COLOR.darker().darker().darker();
-    private static final Color DENY_QUEUE = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
-
-    private static final Color SELECT_ACTIVITY_MATCH = ColorScheme.PROGRESS_INPROGRESS_COLOR.darker().darker().darker();
-    private static final Color END_SESSION = ColorScheme.GRAND_EXCHANGE_LIMIT.darker().darker().darker();
+    public static final Color SERVER_SIDE_ERROR = ColorScheme.PROGRESS_ERROR_COLOR.darker().darker().darker();
+    public static final Color CLIENT_SIDE_ERROR = Color.MAGENTA.darker().darker().darker();
+    public static final Color COLOR_DISABLED = ColorScheme.DARKER_GRAY_COLOR;
+    public static final Color COLOR_INFO = ColorScheme.GRAND_EXCHANGE_LIMIT.darker().darker().darker();
+    public static final Color COLOR_WARNING = ColorScheme.GRAND_EXCHANGE_ALCH.darker().darker().darker();
+    public static final Color COLOR_COMPLETED = ColorScheme.PROGRESS_COMPLETE_COLOR.darker().darker().darker();
+    public static final Color COLOR_INPROGRESS = ColorScheme.PROGRESS_INPROGRESS_COLOR.darker().darker().darker();
 
     /// panel match statics
-    private static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
-    private static final Color LINK_HEADER_COLOR = ColorScheme.LIGHT_GRAY_COLOR;
-    private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
-    private static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
+    public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
+    public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
+    public static final Color LINK_HEADER_COLOR = ColorScheme.LIGHT_GRAY_COLOR;
+    public static final Font NORMAL_FONT = FontManager.getRunescapeFont();
+    public static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
 
     // CLASSES
     private final NeverScapeAlonePlugin plugin;
@@ -71,34 +60,50 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     // SWING OBJECTS
     private final JPanel linksPanel;
-    private JPanel serverPanel;
-    private JPanel matchPanel;
-    private JPanel skillPanel;
-    private JPanel bossPanel;
-    private JPanel raidPanel;
-    private JPanel soloPanel;
-    private JPanel minigamePanel;
-    private JPanel miscPanel;
+    public JPanel serverPanel;
+    private final JPanel matchPanel;
+    private final Component activityOptionPanelSeperator;
+    private final JPanel activityPanelTitle;
+    private final JPanel activityOptionPanel;
+    private final JPanel skillPanel;
+    private final JPanel bossPanel;
+    private final JPanel raidPanel;
+    private final JPanel soloPanel;
+    private final JPanel minigamePanel;
+    private final JPanel miscPanel;
 
-    private JPanel matchButton;
-    private JButton matchingButton = new JButton();
+    private final JPanel matchButton;
+    private final JButton matchingButton = new JButton();
 
     // VARS
 
-    private ArrayList activity_buttons = new ArrayList<JToggleButton>();
+    public ArrayList activity_buttons = new ArrayList<JToggleButton>();
+    private ItemEvent itemEventHx = null;
 
-    private JLabel username_label = new JLabel();
-    private JLabel queue_progress_label = new JLabel();
-    private JLabel queue_time_label = new JLabel();
-    private JLabel world_types_label = new JLabel();
-    private JLabel partner_usernames_label = new JLabel();
-    private JLabel activity_label = new JLabel();
-    private JLabel world_number_label = new JLabel();
-    private JLabel location_label = new JLabel();
+    private final JLabel username_label = new JLabel();
+    private final JLabel queue_progress_label = new JLabel();
+    private final JLabel queue_time_label = new JLabel();
+    private final JLabel world_types_label = new JLabel();
+    private final JLabel partner_usernames_label = new JLabel();
+    private final JLabel activity_label = new JLabel();
+    private final JLabel world_number_label = new JLabel();
+    private final JLabel location_label = new JLabel();
+
+    // SPINNERS
+
+    SpinnerNumberModel party_member_count_numbers = new SpinnerNumberModel(1, 1,100, 1);
+    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
+    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
+    private final JSpinner party_member_count = new JSpinner(party_member_count_numbers);
+    private final JSpinner self_experience_level = new JSpinner(self_experience_level_list);
+    private final JSpinner partner_experience_level = new JSpinner(partner_experience_level_list);
 
     // ENUMS
     private ActivityReference activityReference;
     private QueueButtonStatus queueButtonStatus;
+    private ExperienceLevel experienceLevel;
+
+    private ServerStatusCode serverStatusCode;
 
     @Getter
     @AllArgsConstructor
@@ -132,6 +137,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchPanel = matchPanel();
         matchButton = matchButton();
 
+        // activity panel
+        activityOptionPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
+        activityOptionPanelSeperator.setVisible(false);
+
+        activityPanelTitle = title("Customize Your Activity");
+        activityPanelTitle.setVisible(false);
+
+        activityOptionPanel = activityOptionPanelMaker();
+        activityOptionPanel.setVisible(false);
+
+        // icon panels
         skillPanel = queuePanel(4,6);
         bossPanel = queuePanel(4,6);
         soloPanel = queuePanel(3,6);
@@ -145,6 +161,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(matchPanel);
         add(matchButton);
+        add(activityOptionPanelSeperator);
+        add(activityPanelTitle);
+        add(activityOptionPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(title("Skills"));
         add(skillPanel);
@@ -164,11 +183,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(title("Miscellaneous"));
         add(miscPanel);
 
-        // panel checks
         checkServerStatus("");
         addQueueButtons();
     }
-
 
     private JPanel linksPanel()
     {
@@ -192,12 +209,119 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return linksPanel;
     }
 
+    public void checkServerStatus(String login) {
+        // if no login, for some reason, shut everything down.
+        if ((login.isEmpty())) {
+            setServerPanel("LOGIN TO RUNESCAPE", "To start the plugin, please login to Old School RuneScape.", COLOR_INFO);
+            matchButtonManager(QueueButtonStatus.OFFLINE);
+            return;
+        }
+
+        // if server is being checked, state in status bar and put queue button manager offline + deactivate buttons
+        setServerPanel("CHECKING SERVER", "Checking server for connectivity...", COLOR_INPROGRESS);
+        matchButtonManager(QueueButtonStatus.OFFLINE);
+
+        String token = config.authToken();
+        client.requestServerStatus(login, token).whenCompleteAsync((status, ex) ->
+                SwingUtilities.invokeLater(() ->
+                {
+                    // in the case of a server error - shut down plugin's systems.
+                    if (status == null || ex != null) {
+                        plugin.serverStatusState = status;
+                        setServerPanel("SERVER ERROR", "There was a server error. Please contact support.", SERVER_SIDE_ERROR);
+                        matchButtonManager(QueueButtonStatus.OFFLINE);
+                        return;
+                    }
+
+                    switch (status.getStatus()) {
+                        // if server is alive, start normally, load button state,
+                        case ALIVE:
+                            plugin.serverStatusState = status;
+                            setServerPanel("SERVER ONLINE", "Server is Online. Authentication was successful.", COLOR_COMPLETED);
+                            matchButtonManager(QueueButtonStatus.ONLINE);
+                            buttons_LoadState(activity_buttons);
+                            break;
+                        // if server is under maintenance shut down plugin panel
+                        case MAINTENANCE:
+                            plugin.serverStatusState = status;
+                            setServerPanel("SERVER MAINTENANCE", "Server is undergoing Maintenance. Authentication was successful.", COLOR_WARNING);
+                            matchButtonManager(QueueButtonStatus.OFFLINE);
+                            break;
+                        // if server is unreachable shut down plugin panel
+                        case UNREACHABLE:
+                            plugin.serverStatusState = status;
+                            setServerPanel("SERVER UNREACHABLE", "Server is Unreachable. No connection could be made.", COLOR_DISABLED);
+                            matchButtonManager(QueueButtonStatus.OFFLINE);
+                            break;
+                        // if there is an auth failure, shut down panel (proceed with authing the user)
+                        case AUTH_FAILURE:
+                            plugin.serverStatusState = status;
+                            setServerPanel("AUTH FAILURE", "Authentication failed. Please set a new token in the Plugin config.", CLIENT_SIDE_ERROR);
+                            matchButtonManager(QueueButtonStatus.OFFLINE);
+                            break;
+                        // badly formatted token
+                        case BAD_TOKEN:
+                            plugin.serverStatusState = status;
+                            setServerPanel("BAD TOKEN", "The token (auth token) you have entered in the config is malformed.<br> Please delete this token entirely, and turn the plugin on and off.<br>If you need further assistance, please contact Plugin Support.", CLIENT_SIDE_ERROR);
+                            matchButtonManager(QueueButtonStatus.OFFLINE);
+                            break;
+                        case BAD_HEADER:
+                            plugin.serverStatusState = status;
+                            setServerPanel("BAD HEADER", "The incoming header value is incorrect. Please contact Plugin Support.", CLIENT_SIDE_ERROR);
+                            matchButtonManager(QueueButtonStatus.OFFLINE);
+                            break;
+                        case BAD_RSN:
+                            plugin.serverStatusState = status;
+                            setServerPanel("BAD RSN", "The incoming RSN does not match Jagex Standards. please contact Plugin Support.", CLIENT_SIDE_ERROR);
+                            matchButtonManager(QueueButtonStatus.OFFLINE);
+                            break;
+                        // if user is unregistered, mark as being registered and complete registration steps.
+                        case REGISTERING:
+                            plugin.serverStatusState = status;
+                            setServerPanel("REGISTERING ACCOUNT", "Your account is being registered for the plugin.<br>If this process does not complete quickly, please visit Plugin Support.", COLOR_INFO);
+                            client.registerUser(login, token).whenCompleteAsync((status_2, ex_2) ->
+                                    SwingUtilities.invokeLater(() ->
+                                    {
+                                        {
+                                            if (status_2 == null || ex_2 != null) {
+                                                plugin.serverStatusState = status_2;
+                                                setServerPanel("SERVER REGISTRATION ERROR", "There was a server registration error. Please contact support.", SERVER_SIDE_ERROR);
+                                                matchButtonManager(QueueButtonStatus.OFFLINE);
+                                                return;
+                                            }
+                                            switch (status_2.getStatus()) {
+                                                case REGISTRATION_FAILURE:
+                                                    plugin.serverStatusState = status_2;
+                                                    setServerPanel("REGISTRATION ERROR", "There was a registration error. Please contact support.", SERVER_SIDE_ERROR);
+                                                    matchButtonManager(QueueButtonStatus.OFFLINE);
+                                                    break;
+                                                case REGISTERED:
+                                                    plugin.serverStatusState = status_2;
+                                                    setServerPanel("SUCCESSFULLY REGISTERED", "You were successfully registered for the plugin. Welcome to NeverScapeAlone!", COLOR_COMPLETED);
+                                                    matchButtonManager(QueueButtonStatus.ONLINE);
+                                                    buttons_LoadState(activity_buttons);
+                                                    break;
+                                            }
+                                        }
+                                    }));
+                    }
+                }));
+    }
+
     private JPanel serverPanel()
     {
         JPanel serverPanel = new JPanel();
         serverPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         serverPanel.add(new JLabel());
         return serverPanel;
+    }
+
+    public void setServerPanel(String display_text, String tool_tip, Color background){
+        JLabel label = (JLabel) (serverPanel.getComponent(0));
+        serverPanel.setBackground(background);
+        label.setText(display_text);
+        serverPanel.setToolTipText(tool_tip);
+        return;
     }
 
     public JPanel matchPanel(){
@@ -250,13 +374,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchPanel.add(subheaderText("location"), c);
 
         // middle panel
-
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = .25;
         c.gridx=1;
 
-        int i = 0;
-        for (i=0; i<=9; i++){
+        for (int i=0; i<=9; i++){
             c.gridy=i;
             matchPanel.add(subheaderText("|"), c);
         }
@@ -327,22 +449,163 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return queuePanel;
     }
 
+    private JPanel activityOptionPanelMaker(){
+        //init activity bar
+        JPanel activityOptionPanelMaker = new JPanel();
+
+        activityOptionPanelMaker.setBorder(new EmptyBorder(0, 0, 0, 0));
+        activityOptionPanelMaker.setBackground(SUB_BACKGROUND_COLOR);
+        activityOptionPanelMaker.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        // init buttons
+        JPanel buttonHolder = new JPanel();
+        buttonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
+        buttonHolder.setBackground(SUB_BACKGROUND_COLOR);
+        buttonHolder.setLayout(new GridLayout(1,2));
+
+        JButton button_exit = new JButton();
+        button_exit.setIcon(Icons.CANCEL_ICON);
+        button_exit.addActionListener(e -> activityPanelCancel(e));
+        buttonHolder.add(button_exit);
+
+        JButton button_accept = new JButton();
+        button_accept.setIcon(Icons.ACCEPT_ICON);
+        button_accept.addActionListener(e -> activityPanelAccept(e));
+        buttonHolder.add(button_accept);
+
+        // init sliders
+        JPanel spinnerHolder = new JPanel();
+        spinnerHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
+        spinnerHolder.setBackground(SUB_BACKGROUND_COLOR);
+        spinnerHolder.setLayout(new GridBagLayout());
+        GridBagConstraints c_spinner = new GridBagConstraints();
+
+        // add sliders
+        JLabel party_member_count_title = new JLabel("Party Members");
+        party_member_count_title.setFont(FontManager.getRunescapeSmallFont());
+        party_member_count_title.setHorizontalAlignment(SwingConstants.CENTER);
+        party_member_count.setToolTipText("The number of other players you would like to have in your party.");
+
+        JLabel self_experience_level_title = new JLabel("Your Experience");
+        self_experience_level_title.setFont(FontManager.getRunescapeSmallFont());
+        self_experience_level_title.setHorizontalAlignment(SwingConstants.CENTER);
+        self_experience_level.setToolTipText("Your estimated experience level.");
+
+        JLabel partner_experience_level_title = new JLabel("Party's Experience");
+        partner_experience_level_title.setFont(FontManager.getRunescapeSmallFont());
+        partner_experience_level_title.setHorizontalAlignment(SwingConstants.CENTER);
+        partner_experience_level.setToolTipText("The minimum experience levels of your partners.");
+
+        // construct spinner subsection
+        c_spinner.fill = GridBagConstraints.HORIZONTAL;
+        c_spinner.anchor = GridBagConstraints.CENTER;
+        c_spinner.weightx = 1;
+
+        c_spinner.gridx=0;
+        c_spinner.gridy=0;
+        spinnerHolder.add(party_member_count_title, c_spinner);
+
+        c_spinner.gridx=1;
+        c_spinner.gridy=0;
+        spinnerHolder.add(party_member_count, c_spinner);
+
+        c_spinner.gridx=0;
+        c_spinner.gridy=1;
+        spinnerHolder.add(self_experience_level_title, c_spinner);
+
+        c_spinner.gridx=1;
+        c_spinner.gridy=1;
+        spinnerHolder.add(self_experience_level,c_spinner);
+
+        c_spinner.gridx=0;
+        c_spinner.gridy=2;
+        spinnerHolder.add(partner_experience_level_title, c_spinner);
+
+        c_spinner.gridx=1;
+        c_spinner.gridy=2;
+        spinnerHolder.add(partner_experience_level, c_spinner);
+
+        // Add sections to activity panel option maker
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = .05;
+
+        c.gridx=0;
+        c.gridy=0;
+        activityOptionPanelMaker.add(spinnerHolder, c);
+
+        c.gridx=0;
+        c.gridy=1;
+        activityOptionPanelMaker.add(buttonHolder, c);
+
+        return activityOptionPanelMaker;
+    }
+
+    private void buttons_ActivityOptions(ItemEvent itemEvent){
+        Object object = itemEvent.getItem();
+        if (object instanceof JToggleButton){
+
+
+            if (itemEventHx != null){
+                if (itemEventHx != itemEvent){
+                    Object objectHx = itemEventHx.getItem();
+                    JToggleButton old_button = ((JToggleButton) objectHx);
+
+                    if (old_button.isSelected() && old_button.isEnabled()){
+                        old_button.setSelected(false);
+                    }
+
+                }
+            }
+
+            itemEventHx = itemEvent;
+            activityOptionPanel.setVisible(true);
+            activityOptionPanelSeperator.setVisible(true);
+            activityPanelTitle.setVisible(true);
+        }
+    }
+
+    private void activityPanelCancel(ActionEvent actionEvent){
+        Object objectHx = itemEventHx.getItem();
+        JToggleButton old_button = ((JToggleButton) objectHx);
+
+        old_button.setSelected(false);
+
+        activityOptionPanel.setVisible(false);
+        activityOptionPanelSeperator.setVisible(false);
+        activityPanelTitle.setVisible(false);
+    }
+
+    private void activityPanelAccept(ActionEvent actionEvent){
+        Object objectHx = itemEventHx.getItem();
+        JToggleButton old_button = ((JToggleButton) objectHx);
+        old_button.setSelected(true);
+        old_button.setEnabled(false);
+
+        // add image change when activity is selected
+        old_button.setIcon(Icons.ACCEPT_ICON);
+
+        activityOptionPanel.setVisible(false);
+        activityOptionPanelSeperator.setVisible(false);
+        activityPanelTitle.setVisible(false);
+    }
+
     private JPanel matchButton(){
         JPanel matchButton = new JPanel();
         matchButton.setBorder(new EmptyBorder(0, 0, 0, 0));
         matchButton.setBackground(SUB_BACKGROUND_COLOR);
         matchButton.setLayout(new GridLayout(1,1));
 
-        // placeholder button for matchButtonManager to deal with
         matchingButton.setText("Offline");
-        matchingButton.setBackground(SERVER_UNREACHABLE);
+        matchingButton.setBackground(COLOR_DISABLED);
+        matchingButton.addActionListener(plugin::matchClickManager);
         matchButton.add(matchingButton);
-
         return matchButton;
     }
 
     private void addQueueButtons(){
-        ActivityReference values[] = activityReference.values();
+        ActivityReference[] values = ActivityReference.values();
         for(ActivityReference value: values) {
             // button construction
             JToggleButton button = new JToggleButton();
@@ -350,8 +613,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getTooltip());
             button.setName(value.getLabel());
-            button.addItemListener(e -> buttons_StoreState(e));
-            button.setEnabled(false);
+            button.addItemListener(e -> buttons_ActivityOptions(e));
             activity_buttons.add(button);
 
             switch(value.getActivity()){
@@ -376,12 +638,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
     }
 
-    private void buttons_LoadState(ArrayList<JToggleButton> activity_buttons){
+    public void buttons_LoadState(ArrayList<JToggleButton> activity_buttons){
         configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.CONFIG_TRUE,0);
         int config_counter = 0;
 
         for (JToggleButton button : activity_buttons){
-            button.setEnabled(true);
             String label_lower = "config_"+button.getName().toLowerCase();
             String state = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label_lower);
             if (Objects.equals(state, "true")){
@@ -392,22 +653,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
         }
         configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.CONFIG_TRUE, config_counter);
-
-        if (config_counter == 0){
-            matchButtonManager(QueueButtonStatus.SELECT_ACTIVITY_MATCH);
-        } else if(config_counter > 0) {
-            matchButtonManager(QueueButtonStatus.START_QUEUE);
-        }
+        ButtonStateSwitcher(config_counter);
     }
+
 
     private void buttons_StoreState(ItemEvent itemEvent){
         int config_counter = 0;
-        boolean previous_config = (config.countConfigTrue() >= 1);
         Object object = itemEvent.getItem();
 
         if (object instanceof JToggleButton){
             String label = "config_"+((JToggleButton) object).getName().toLowerCase();
-            if(((JToggleButton) object).isSelected()==true){
+            if(((JToggleButton) object).isSelected()){
                 configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, label, true);
                 config_counter = Integer.parseInt(configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.CONFIG_TRUE));
                 config_counter++;
@@ -420,177 +676,61 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
         }
 
-        if ((config_counter == 0)){
-            // show select activity match for accounts that don't have a previous config but do have zero config counter.
-            matchButtonManager(QueueButtonStatus.SELECT_ACTIVITY_MATCH);
-        } else if(config_counter > 0) {
-            // allow players to queue if they have
-            matchButtonManager(QueueButtonStatus.START_QUEUE);
+        ButtonStateSwitcher(config_counter);
+    }
+
+    private void ButtonStateSwitcher(int config_counter){
+        switch(plugin.serverStatusState.getStatus()) {
+            case ALIVE:
+            case REGISTERED:
+            case QUEUE_CANCELED:
+                if ((config_counter == 0)) {
+                    matchButtonManager(QueueButtonStatus.SELECT_ACTIVITY_MATCH);
+                } else if (config_counter > 0) {
+                    matchButtonManager(QueueButtonStatus.START_QUEUE);
+                }
+                break;
+            case BAD_RSN:
+            case BAD_TOKEN:
+            case BAD_HEADER:
+            case MAINTENANCE:
+            case REGISTERING:
+            case UNREACHABLE:
+            case AUTH_FAILURE:
+            case REGISTRATION_FAILURE:
+            case QUEUE_STARTED_FAILURE:
+            case QUEUE_CANCELED_FAILURE:
+                matchButtonManager(QueueButtonStatus.OFFLINE);
+                break;
+            case QUEUE_STARTED:
+                matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
+                break;
         }
     }
 
-    private void buttons_Deactivate(ArrayList<JToggleButton> activity_buttons){
-        for (JToggleButton button : activity_buttons) {
-            button.setEnabled(false);
-        }
-    }
-
-    public void checkServerStatus(String login) {
-        JLabel label = (JLabel) (serverPanel.getComponent(0));
-        String token = config.authToken();
-
-        // if no login, for some reason, shut everything down.
-        if ((login.isEmpty())) {
-            serverPanel.setBackground(LOGIN_REQUESTED);
-            label.setText("LOGIN TO RUNESCAPE");
-            serverPanel.setToolTipText("To start the plugin, please login to Old School RuneScape.");
-            matchButtonManager(queueButtonStatus.OFFLINE);
-            buttons_Deactivate(activity_buttons);
-            return;
-        }
-
-        // if server is being checked, state in status bar and put queue button manager offline + deactivate buttons
-        serverPanel.setBackground(CHECKING_SERVER);
-        serverPanel.setToolTipText("Checking server for connectivity...");
-        label.setText("CHECKING SERVER");
-        matchButtonManager(queueButtonStatus.OFFLINE);
-        buttons_Deactivate(activity_buttons);
-
-        client.requestServerStatus(login, token).whenCompleteAsync((status, ex) ->
-                SwingUtilities.invokeLater(() ->
-                {
-                    // in the case of a server error - shut down plugin's systems.
-                    if (status == null || ex != null) {
-                        serverPanel.setBackground(SERVER_ERROR);
-                        label.setText("SERVER ERROR");
-                        serverPanel.setToolTipText("There was a server error. Please contact support.");
-                        matchButtonManager(queueButtonStatus.OFFLINE);
-                        buttons_Deactivate(activity_buttons);
-                        return;
-                    }
-
-                    switch (status.getStatus()) {
-                        // if server is alive, start normally, load button state,
-                        case ALIVE:
-                            serverPanel.setBackground(SERVER_ONLINE);
-                            label.setText("SERVER ONLINE");
-                            serverPanel.setToolTipText("Server is Online. Authentication was successful.");
-                            matchButtonManager(queueButtonStatus.ONLINE);
-                            buttons_LoadState(activity_buttons);
-                            break;
-                        // if server is under maintenance shut down plugin panel
-                        case MAINTENANCE:
-                            serverPanel.setBackground(SERVER_MAINTENANCE);
-                            label.setText("SERVER MAINTENANCE");
-                            serverPanel.setToolTipText("Server is undergoing Maintenance. Authentication was successful.");
-                            matchButtonManager(queueButtonStatus.OFFLINE);
-                            buttons_Deactivate(activity_buttons);
-                            break;
-                        // if server is unreachable shut down plugin panel
-                        case UNREACHABLE:
-                            serverPanel.setBackground(SERVER_UNREACHABLE);
-                            label.setText("SERVER UNREACHABLE");
-                            serverPanel.setToolTipText("Server is Unreachable. No connection could be made.");
-                            matchButtonManager(queueButtonStatus.OFFLINE);
-                            buttons_Deactivate(activity_buttons);
-                            break;
-                        // if there is an auth failure, shut down panel (proceed with authing the user)
-                        case AUTH_FAILURE:
-                            serverPanel.setBackground(AUTH_FAILURE);
-                            label.setText("AUTH FAILURE");
-                            serverPanel.setToolTipText("Authentication failed. Please set a new token in the Plugin config.");
-                            matchButtonManager(queueButtonStatus.OFFLINE);
-                            buttons_Deactivate(activity_buttons);
-                            break;
-                        // badly formatted token
-                        case BAD_TOKEN:
-                            serverPanel.setBackground(BAD_TOKEN);
-                            label.setText("BAD TOKEN");
-                            serverPanel.setToolTipText("The token (auth token) you have entered in the config is malformed.<br> Please delete this token entirely, and turn the plugin on and off.<br>If you need further assistance, please contact Plugin Support.");
-                            matchButtonManager(queueButtonStatus.OFFLINE);
-                            buttons_Deactivate(activity_buttons);
-                            break;
-                        case BAD_HEADER:
-                            serverPanel.setBackground(BAD_HEADER);
-                            label.setText("BAD HEADER");
-                            serverPanel.setToolTipText("The incoming header value is incorrect. Please contact Plugin Support.");
-                            matchButtonManager(queueButtonStatus.OFFLINE);
-                            buttons_Deactivate(activity_buttons);
-                            break;
-                        case BAD_RSN:
-                            serverPanel.setBackground(BAD_RSN);
-                            label.setText("BAD RSN");
-                            serverPanel.setToolTipText("The incoming RSN does not match Jagex Standards. please contact Plugin Support.");
-                            matchButtonManager(queueButtonStatus.OFFLINE);
-                            buttons_Deactivate(activity_buttons);
-                            break;
-                        // if user is unregistered, mark as being registered and complete registration steps.
-                        case REGISTERING:
-                            serverPanel.setBackground(REGISTERING_ACCOUNT);
-                            label.setText("REGISTERING ACCOUNT");
-                            serverPanel.setToolTipText("Your account is being registered for the plugin.<br>If this process does not complete quickly, please visit Plugin Support.");
-                            client.registerUser(login, token).whenCompleteAsync((status_2, ex_2) ->
-                                    SwingUtilities.invokeLater(() ->
-                                    {
-                                        {
-                                            if (status_2 == null || ex_2 != null) {
-                                                serverPanel.setBackground(SERVER_ERROR);
-                                                label.setText("SERVER REGISTRATION ERROR");
-                                                serverPanel.setToolTipText("There was a server registration error. Please contact support.");
-                                                matchButtonManager(queueButtonStatus.OFFLINE);
-                                                buttons_Deactivate(activity_buttons);
-                                                return;
-                                            }
-                                            switch (status_2.getStatus()) {
-                                                case REGISTRATION_FAILURE:
-                                                    serverPanel.setBackground(SERVER_ERROR);
-                                                    label.setText("REGISTRATION ERROR");
-                                                    serverPanel.setToolTipText("There was a registration error. Please contact support.");
-                                                    matchButtonManager(queueButtonStatus.OFFLINE);
-                                                    buttons_Deactivate(activity_buttons);
-                                                    break;
-                                                case REGISTERED:
-                                                    serverPanel.setBackground(SERVER_ONLINE);
-                                                    label.setText("SUCCESSFULLY REGISTERED");
-                                                    serverPanel.setToolTipText("You were successfully registered for the plugin. Welcome to NeverScapeAlone!");
-                                                    matchButtonManager(queueButtonStatus.ONLINE);
-                                                    buttons_LoadState(activity_buttons);
-                                                    break;
-                                            }
-                                        }
-                                    }));
-                    }
-                }));
-            }
     public void matchButtonManager(QueueButtonStatus state){
         switch (state) {
             case OFFLINE:
-                matchingButton.setText("Offline");
-                matchingButton.setBackground(SERVER_UNREACHABLE);
+                matchingButton.setText(state.getName());
+                matchingButton.setBackground(COLOR_DISABLED);
                 break;
             case ONLINE:
-                matchingButton.setText("Online");
-                matchingButton.setBackground(CHECKING_SERVER);
+            case END_SESSION:
+                matchingButton.setText(state.getName());
+                matchingButton.setBackground(COLOR_INFO);
                 break;
             case SELECT_ACTIVITY_MATCH:
-                matchingButton.setText("Select Activities");
-                matchingButton.setBackground(SELECT_ACTIVITY_MATCH);
+                matchingButton.setText(state.getName());
+                matchingButton.setBackground(COLOR_INPROGRESS);
                 break;
-            case REQUEST:
-                matchingButton.setText("Accept Queue");
-                matchingButton.setBackground(ACCEPT_QUEUE);
-                break;
+            case ACCEPT:
             case START_QUEUE:
-                matchingButton.setText("Start Queue");
-                matchingButton.setBackground(START_QUEUE);
+                matchingButton.setText(state.getName());
+                matchingButton.setBackground(COLOR_COMPLETED);
                 break;
             case CANCEL_QUEUE:
-                matchingButton.setText("Cancel Queue");
-                matchingButton.setBackground(CANCEL_QUEUE);
-                break;
-            case END_SESSION:
-                matchingButton.setText("End Session");
-                matchingButton.setBackground(END_SESSION);
+                matchingButton.setText(state.getName());
+                matchingButton.setBackground(COLOR_WARNING);
                 break;
         }
     }
@@ -618,11 +758,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     public void setUsername_label(String username){
         username_label.setText(username);
-        return;
     }
 
     public void setWorld_types_label(String world_types){
         world_types_label.setText(world_types);
-        return;
     }
 }

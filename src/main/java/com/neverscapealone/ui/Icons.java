@@ -9,6 +9,9 @@ public class Icons
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
 
     // web links and references
+
+    public static final ImageIcon ACCEPT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Checkmark.png"));
+    public static final ImageIcon CANCEL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Xmark.png"));
     public static final ImageIcon GITHUB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/github.png"));
     public static final ImageIcon DISCORD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/discord.png"));
     public static final ImageIcon WEB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/web.png"));
