@@ -3,10 +3,10 @@ package com.neverscapealone.ui;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ActivityReference;
+import com.neverscapealone.enums.ExperienceLevel;
 import com.neverscapealone.enums.QueueButtonStatus;
 import com.neverscapealone.enums.ServerStatusCode;
 import com.neverscapealone.http.NeverScapeAloneClient;
-import com.neverscapealone.model.ServerStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -23,11 +23,12 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NeverScapeAlonePanel extends PluginPanel {
 
@@ -61,6 +62,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final JPanel linksPanel;
     public JPanel serverPanel;
     private final JPanel matchPanel;
+    private final Component activityOptionPanelSeperator;
+    private final JPanel activityPanelTitle;
+    private final JPanel activityOptionPanel;
     private final JPanel skillPanel;
     private final JPanel bossPanel;
     private final JPanel raidPanel;
@@ -74,6 +78,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // VARS
 
     public ArrayList activity_buttons = new ArrayList<JToggleButton>();
+    private ItemEvent itemEventHx = null;
 
     private final JLabel username_label = new JLabel();
     private final JLabel queue_progress_label = new JLabel();
@@ -84,9 +89,19 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final JLabel world_number_label = new JLabel();
     private final JLabel location_label = new JLabel();
 
+    // SPINNERS
+
+    SpinnerNumberModel party_member_count_numbers = new SpinnerNumberModel(1, 1,100, 1);
+    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
+    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
+    private final JSpinner party_member_count = new JSpinner(party_member_count_numbers);
+    private final JSpinner self_experience_level = new JSpinner(self_experience_level_list);
+    private final JSpinner partner_experience_level = new JSpinner(partner_experience_level_list);
+
     // ENUMS
     private ActivityReference activityReference;
     private QueueButtonStatus queueButtonStatus;
+    private ExperienceLevel experienceLevel;
 
     private ServerStatusCode serverStatusCode;
 
@@ -122,6 +137,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchPanel = matchPanel();
         matchButton = matchButton();
 
+        // activity panel
+        activityOptionPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
+        activityOptionPanelSeperator.setVisible(false);
+
+        activityPanelTitle = title("Customize Your Activity");
+        activityPanelTitle.setVisible(false);
+
+        activityOptionPanel = activityOptionPanelMaker();
+        activityOptionPanel.setVisible(false);
+
+        // icon panels
         skillPanel = queuePanel(4,6);
         bossPanel = queuePanel(4,6);
         soloPanel = queuePanel(3,6);
@@ -135,6 +161,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(matchPanel);
         add(matchButton);
+        add(activityOptionPanelSeperator);
+        add(activityPanelTitle);
+        add(activityOptionPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(title("Skills"));
         add(skillPanel);
@@ -420,6 +449,148 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return queuePanel;
     }
 
+    private JPanel activityOptionPanelMaker(){
+        //init activity bar
+        JPanel activityOptionPanelMaker = new JPanel();
+
+        activityOptionPanelMaker.setBorder(new EmptyBorder(0, 0, 0, 0));
+        activityOptionPanelMaker.setBackground(SUB_BACKGROUND_COLOR);
+        activityOptionPanelMaker.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        // init buttons
+        JPanel buttonHolder = new JPanel();
+        buttonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
+        buttonHolder.setBackground(SUB_BACKGROUND_COLOR);
+        buttonHolder.setLayout(new GridLayout(1,2));
+
+        JButton button_exit = new JButton();
+        button_exit.setIcon(Icons.CANCEL_ICON);
+        button_exit.addActionListener(e -> activityPanelCancel(e));
+        buttonHolder.add(button_exit);
+
+        JButton button_accept = new JButton();
+        button_accept.setIcon(Icons.ACCEPT_ICON);
+        button_accept.addActionListener(e -> activityPanelAccept(e));
+        buttonHolder.add(button_accept);
+
+        // init sliders
+        JPanel spinnerHolder = new JPanel();
+        spinnerHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
+        spinnerHolder.setBackground(SUB_BACKGROUND_COLOR);
+        spinnerHolder.setLayout(new GridBagLayout());
+        GridBagConstraints c_spinner = new GridBagConstraints();
+
+        // add sliders
+        JLabel party_member_count_title = new JLabel("Party Members");
+        party_member_count_title.setFont(FontManager.getRunescapeSmallFont());
+        party_member_count_title.setHorizontalAlignment(SwingConstants.CENTER);
+        party_member_count.setToolTipText("The number of other players you would like to have in your party.");
+
+        JLabel self_experience_level_title = new JLabel("Your Experience");
+        self_experience_level_title.setFont(FontManager.getRunescapeSmallFont());
+        self_experience_level_title.setHorizontalAlignment(SwingConstants.CENTER);
+        self_experience_level.setToolTipText("Your estimated experience level.");
+
+        JLabel partner_experience_level_title = new JLabel("Party's Experience");
+        partner_experience_level_title.setFont(FontManager.getRunescapeSmallFont());
+        partner_experience_level_title.setHorizontalAlignment(SwingConstants.CENTER);
+        partner_experience_level.setToolTipText("The minimum experience levels of your partners.");
+
+        // construct spinner subsection
+        c_spinner.fill = GridBagConstraints.HORIZONTAL;
+        c_spinner.anchor = GridBagConstraints.CENTER;
+        c_spinner.weightx = 1;
+
+        c_spinner.gridx=0;
+        c_spinner.gridy=0;
+        spinnerHolder.add(party_member_count_title, c_spinner);
+
+        c_spinner.gridx=1;
+        c_spinner.gridy=0;
+        spinnerHolder.add(party_member_count, c_spinner);
+
+        c_spinner.gridx=0;
+        c_spinner.gridy=1;
+        spinnerHolder.add(self_experience_level_title, c_spinner);
+
+        c_spinner.gridx=1;
+        c_spinner.gridy=1;
+        spinnerHolder.add(self_experience_level,c_spinner);
+
+        c_spinner.gridx=0;
+        c_spinner.gridy=2;
+        spinnerHolder.add(partner_experience_level_title, c_spinner);
+
+        c_spinner.gridx=1;
+        c_spinner.gridy=2;
+        spinnerHolder.add(partner_experience_level, c_spinner);
+
+        // Add sections to activity panel option maker
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = .05;
+
+        c.gridx=0;
+        c.gridy=0;
+        activityOptionPanelMaker.add(spinnerHolder, c);
+
+        c.gridx=0;
+        c.gridy=1;
+        activityOptionPanelMaker.add(buttonHolder, c);
+
+        return activityOptionPanelMaker;
+    }
+
+    private void buttons_ActivityOptions(ItemEvent itemEvent){
+        Object object = itemEvent.getItem();
+        if (object instanceof JToggleButton){
+
+
+            if (itemEventHx != null){
+                if (itemEventHx != itemEvent){
+                    Object objectHx = itemEventHx.getItem();
+                    JToggleButton old_button = ((JToggleButton) objectHx);
+
+                    if (old_button.isSelected() && old_button.isEnabled()){
+                        old_button.setSelected(false);
+                    }
+
+                }
+            }
+
+            itemEventHx = itemEvent;
+            activityOptionPanel.setVisible(true);
+            activityOptionPanelSeperator.setVisible(true);
+            activityPanelTitle.setVisible(true);
+        }
+    }
+
+    private void activityPanelCancel(ActionEvent actionEvent){
+        Object objectHx = itemEventHx.getItem();
+        JToggleButton old_button = ((JToggleButton) objectHx);
+
+        old_button.setSelected(false);
+
+        activityOptionPanel.setVisible(false);
+        activityOptionPanelSeperator.setVisible(false);
+        activityPanelTitle.setVisible(false);
+    }
+
+    private void activityPanelAccept(ActionEvent actionEvent){
+        Object objectHx = itemEventHx.getItem();
+        JToggleButton old_button = ((JToggleButton) objectHx);
+        old_button.setSelected(true);
+        old_button.setEnabled(false);
+
+        // add image change when activity is selected
+        old_button.setIcon(Icons.ACCEPT_ICON);
+
+        activityOptionPanel.setVisible(false);
+        activityOptionPanelSeperator.setVisible(false);
+        activityPanelTitle.setVisible(false);
+    }
+
     private JPanel matchButton(){
         JPanel matchButton = new JPanel();
         matchButton.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -442,7 +613,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getTooltip());
             button.setName(value.getLabel());
-            button.addItemListener(e -> buttons_StoreState(e));
+            button.addItemListener(e -> buttons_ActivityOptions(e));
             activity_buttons.add(button);
 
             switch(value.getActivity()){
@@ -484,6 +655,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.CONFIG_TRUE, config_counter);
         ButtonStateSwitcher(config_counter);
     }
+
 
     private void buttons_StoreState(ItemEvent itemEvent){
         int config_counter = 0;

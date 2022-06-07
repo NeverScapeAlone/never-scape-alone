@@ -15,117 +15,6 @@ public interface NeverScapeAloneConfig extends Config
 	String CONFIG_GROUP = "NeverScapeAlone";
 	String AUTH_TOKEN_KEY = "authToken";
 	String CONFIG_TRUE = "countConfigTrue";
-
-	String ATTACK = "config_attack";
-	String STRENGTH = "config_strength";
-	String DEFENCE = "config_defence";
-	String HITPOINTS = "config_hitpoints";
-	String RANGED = "config_ranged";
-	String PRAYER = "config_prayer";
-	String MAGIC = "config_magic";
-	String COOKING = "config_cooking";
-	String WOODCUTTING = "config_woodcutting";
-	String FLETCHING = "config_fletching";
-	String FISHING = "config_fishing";
-	String FIREMAKING = "config_firemaking";
-	String CRAFTING = "config_crafting";
-	String SMITHING = "config_smithing";
-	String MINING = "config_mining";
-	String HERBLORE = "config_herblore";
-	String AGILITY = "config_agility";
-	String THIEVING = "config_thieving";
-	String SLAYER = "config_slayer";
-	String FARMING = "config_farming";
-	String RUNECRAFT = "config_runecraft";
-	String HUNTER = "config_hunter";
-	String CONSTRUCTION = "config_construction";
-	String ALL_SKILLS = "config_all_skills";
-	String ABYSSAL_SIRE = "config_abyssal_sire";
-	String ALCHEMICAL_HYDRA = "config_alchemical_hydra";
-	String BRYOPHYTA = "config_bryophyta";
-	String CERBERUS = "config_cerberus";
-	String GROTESQUE_GUARDIANS = "config_grotesque_guardians";
-	String HESPORI = "config_hespori";
-	String KRAKEN = "config_kraken";
-	String MIMIC = "config_mimic";
-	String OBOR = "config_obor";
-	String PHOSANIS_NIGHTMARE = "config_phosanis_nightmare";
-	String SKOTIZO = "config_skotizo";
-	String GAUNTLET = "config_gauntlet";
-	String GAUNTLET_CORRUPTED = "config_gauntlet_corrupted";
-	String THERMONUCLEARSMOKEDEVIL = "config_thermonuclearsmokedevil";
-	String TZ_KAL_ZUK = "config_tz_kal_zuk";
-	String TZ_TOK_JAD = "config_tz_tok_jad";
-	String VORKATH = "config_vorkath";
-	String ZULRAH = "config_zulrah";
-	String BARROWS = "config_barrows";
-	String CALLISTO = "config_callisto";
-	String CHAOS_ELEMENTAL = "config_chaos_elemental";
-	String CHAOS_FANATIC = "config_chaos_fanatic";
-	String COMMANDER_ZILYANA = "config_commander_zilyana";
-	String CORPOREAL_BEAST = "config_corporeal_beast";
-	String ARCHAEOLOGIST_CRAZY = "config_archaeologist_crazy";
-	String ARCHAEOLOGIST_DERANGED = "config_archaeologist_deranged";
-	String DAGANNOTH_PRIME = "config_dagannoth_prime";
-	String DAGANNOTH_REX = "config_dagannoth_rex";
-	String DAGANNOTH_SUPREME = "config_dagannoth_supreme";
-	String GENERAL_GRAARDOR = "config_general_graardor";
-	String GIANT_MOLE = "config_giant_mole";
-	String KALPHITE_QUEEN = "config_kalphite_queen";
-	String KING_BLACK_DRAGON = "config_king_black_dragon";
-	String KREEARRA = "config_kreearra";
-	String KRIL_TSUTSAROTH = "config_kril_tsutsaroth";
-	String NEX = "config_nex";
-	String NIGHTMARE = "config_nightmare";
-	String SARACHNIS = "config_sarachnis";
-	String SCORPIA = "config_scorpia";
-	String VENENATIS = "config_venenatis";
-	String VETION = "config_vetion";
-	String ZALCANO = "config_zalcano";
-	String BARBARIAN_ASSAULT = "config_barbarian_assault";
-	String BLAST_FURNACE = "config_blast_furnace";
-	String BLAST_MINE = "config_blast_mine";
-	String BRIMHAVEN_AGILITY_ARENA = "config_brimhaven_agility_arena";
-	String BOUNTY_HUNTER_HUNTER = "config_bounty_hunter_hunter";
-	String BOUNTY_HUNTER_ROGUE = "config_bounty_hunter_rogue";
-	String CAMDOZAAL_VAULT = "config_camdozaal_vault";
-	String CASTLE_WARS = "config_castle_wars";
-	String CLAN_WARS = "config_clan_wars";
-	String CREATURE_CREATION = "config_creature_creation";
-	String DUEL_ARENA = "config_duel_arena";
-	String FISHING_TRAWLER = "config_fishing_trawler";
-	String GNOME_BALL = "config_gnome_ball";
-	String GNOME_RESTAURANT = "config_gnome_restaurant";
-	String GUARDIANS_OF_THE_RIFT = "config_guardians_of_the_rift";
-	String HALLOWED_SEPULCHRE = "config_hallowed_sepulchre";
-	String PURO_PURO = "config_puro_puro";
-	String MAGE_ARENA = "config_mage_arena";
-	String MAHOGANY_HOMES = "config_mahogany_homes";
-	String MAGE_TRAINING_ARENA = "config_mage_training_arena";
-	String NIGHTMARE_ZONE = "config_nightmare_zone";
-	String ORGANIZED_CRIME = "config_organized_crime";
-	String PEST_CONTROL = "config_pest_control";
-	String PYRAMID_PLUNDER = "config_pyramid_plunder";
-	String ROGUES_DEN = "config_rogues_den";
-	String SHADES_OF_MORTON = "config_shades_of_morton";
-	String SORCERESS_GARDEN = "config_sorceress_garden";
-	String TAI_BWO_WANNAI = "config_tai_bwo_wannai";
-	String TITHE_FARM = "config_tithe_farm";
-	String TROUBLE_BREWING = "config_trouble_brewing";
-	String UNDERWATER_AGILITY_AND_THIEVING = "config_underwater_agility_and_thieving";
-	String VOLCANIC_MINE = "config_volcanic_mine";
-	String LAST_MAN_STANDING = "config_last_man_standing";
-	String SOUL_WARS = "config_soul_wars";
-	String TEMPOROSS = "config_tempoross";
-	String WINTERTODT = "config_wintertodt";
-	String COX = "config_cox";
-	String HARD_COX = "config_hard_cox";
-	String TOB = "config_tob";
-	String HARD_TOB = "config_hard_tob";
-	String CLUES = "config_clues";
-	String FALADOR_PARTY_ROOM = "config_falador_party_room";
-	String PVP_GENERIC = "config_pvp_generic";
-
 	// SECTIONS
 	@ConfigSection(
 			position = 1,
@@ -200,40 +89,6 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 2,
-			keyName = "minUserRating",
-			name = "Minimum Partner Rating",
-			description = "[0-5 stars] The minimum partner rating that you will match with.",
-			section = matchSection
-	)
-	@Range(min = 0, max = 5)
-	default double minUserRating()
-	{
-		return 2.5;
-	}
-	@ConfigItem(
-			position = 3,
-			keyName = "userExperienceLevel",
-			name = "Your Experience",
-			description = "Your general, self-determined, RuneScape experience level.",
-			section = matchSection
-	)
-	default ExperienceLevel userExperienceLevel()
-	{
-		return ExperienceLevel.LEARNER;
-	}
-	@ConfigItem(
-			position = 4,
-			keyName = "partnerExperienceLevel",
-			name = "Partner Experience",
-			description = "Your partner's minimum general, self-determined, RuneScape experience level.",
-			section = matchSection
-	)
-	default ExperienceLevel partnerExperienceLevel()
-	{
-		return ExperienceLevel.LEARNER;
-	}
-	@ConfigItem(
-			position = 5,
 			keyName = "ignoreIgnores",
 			name = "Ignore Ignores",
 			description = "Ignore matchups with playes that are on your ignore list.",
@@ -244,7 +99,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 6,
+			position = 3,
 			keyName = "prioritizeFriends",
 			name = "Prioritize Friends",
 			description = "Prioritize added friends when matching with other players.",
@@ -255,7 +110,7 @@ public interface NeverScapeAloneConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			position = 7,
+			position = 4,
 			keyName = "verifiedUsers",
 			name = "Verified Users",
 			description = "Allow strict matching with Verified users of the plugin.",
@@ -266,7 +121,7 @@ public interface NeverScapeAloneConfig extends Config
 		return false;
 	}
 	@ConfigItem(
-			position = 8,
+			position = 5,
 			keyName = "worldTypeSelection",
 			name = "World Type",
 			description = "Select if you would like to match on free-to-play, members or both",
@@ -353,6 +208,14 @@ public interface NeverScapeAloneConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			keyName = "countConfigTrue",
+			name = "True Configs",
+			description = "Number of Config Items which are True",
+			hidden = true
+	)
+	default int countConfigTrue() {return 0;}
 
 	//HIDDEN CONFIGS
 	//ITEMS PRESENT AFTER THIS POINT RELATE TO THE PLUGIN PANEL ACTIVITY OPTIONS
@@ -1229,12 +1092,6 @@ public interface NeverScapeAloneConfig extends Config
 	)
 	default boolean config_pvp_generic() {return false;}
 
-	@ConfigItem(
-			keyName = "countConfigTrue",
-			name = "True Configs",
-			description = "Number of Config Items which are True",
-			hidden = true
-	)
-	default int countConfigTrue() {return 0;}
+
 }
 
