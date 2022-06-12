@@ -1,5 +1,6 @@
 package com.neverscapealone;
 
+import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.QueueButtonStatus;
 import com.neverscapealone.enums.worldTypeSelection;
@@ -114,17 +115,6 @@ public class NeverScapeAlonePlugin extends Plugin
 		}
 	}
 
-	public Map<String, Boolean> generateUserConfigurations(){
-		List<String> config_keys = configManager.getConfigurationKeys(NeverScapeAloneConfig.CONFIG_GROUP+".config_");
-		HashMap<String, Boolean> user_configurations = new HashMap<>();
-		for (String key : config_keys){
-			String true_key = key.substring(NeverScapeAloneConfig.CONFIG_GROUP.length()+1);
-			Boolean value = configManager.getConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, true_key, Boolean.class);
-			user_configurations.put(true_key.substring("config_".length()).toUpperCase(Locale.ROOT), value);
-		}
-		return user_configurations;
-	}
-
 	public void parser(ServerStatus status, String login, String token) {
 		switch (status.getStatus()) {
 			// if server is alive
@@ -132,7 +122,6 @@ public class NeverScapeAlonePlugin extends Plugin
 				serverStatusState = status;
 				panel.setServerPanel("SERVER ONLINE", "Server is Online. Authentication was successful.", panel.COLOR_COMPLETED);
 				panel.matchButtonManager(QueueButtonStatus.ONLINE);
-				panel.buttons_LoadState(panel.activity_buttons);
 				break;
 			// if server is under maintenance shut down plugin panel
 			case MAINTENANCE:
@@ -182,6 +171,16 @@ public class NeverScapeAlonePlugin extends Plugin
 				panel.setServerPanel("QUEUE CANCELED","Your queue has been canceled.",panel.COLOR_INFO);
 				panel.matchButtonManager(queueButtonStatus.START_QUEUE);
 				break;
+			// if the active matches were scanned, and there are currently no active matches
+			case NO_ACTIVE_MATCHES:
+				serverStatusState = status;
+				panel.setServerPanel("Looking for Partners","There are currently no active matches, please standby while we find you a match.", panel.COLOR_INFO);
+				panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
+			// if the match was accepted
+			case MATCH_ACCEPTED:
+				serverStatusState = status;
+				panel.setServerPanel("Match Accepted","You have accepted the match. We are now sending your match information to you.", panel.COLOR_COMPLETED);
+				panel.matchButtonManager(QueueButtonStatus.END_SESSION);
 			case REGISTERING:
 				serverStatusState = status;
 				panel.setServerPanel("REGISTERING ACCOUNT", "Your account is being registered for the plugin.<br>If this process does not complete quickly, please visit Plugin Support.", panel.COLOR_INFO);
@@ -205,7 +204,6 @@ public class NeverScapeAlonePlugin extends Plugin
 										serverStatusState = status_2;
 										panel.setServerPanel("SUCCESSFULLY REGISTERED", "You were successfully registered for the plugin. Welcome to NeverScapeAlone!", panel.COLOR_COMPLETED);
 										panel.matchButtonManager(QueueButtonStatus.ONLINE);
-										panel.buttons_LoadState(panel.activity_buttons);
 										break;
 								}
 							}
@@ -214,7 +212,6 @@ public class NeverScapeAlonePlugin extends Plugin
 	}
 
 	private void startQueueCaseHandler() {
-		Map<String, Boolean> user_configurations = generateUserConfigurations();
 
 		if (username == "") {
 			panel.checkServerStatus(username);
@@ -226,7 +223,10 @@ public class NeverScapeAlonePlugin extends Plugin
 		String login = username;
 		String token = config.authToken();
 
-		clientConnection.startUserQueue(login, token, user_configurations).whenCompleteAsync((status, ex) ->
+		JsonObject wrapper = new JsonObject();
+		wrapper.add("Payload", panel.player_selections);
+
+		clientConnection.startUserQueue(login, token, wrapper).whenCompleteAsync((status, ex) ->
 				SwingUtilities.invokeLater(() ->
 				{
 					{
@@ -267,7 +267,11 @@ public class NeverScapeAlonePlugin extends Plugin
 					}
 				}));
 	}
-	private void acceptQueueCaseHandler(){
+	private void acceptMatchCaseHandler(){
+
+	}
+
+	private void denyMatchCaseHandler(){
 
 	}
 
@@ -283,8 +287,11 @@ public class NeverScapeAlonePlugin extends Plugin
 			case "Cancel Queue":
 				cancelQueueCaseHandler();
 				break;
-			case "Accept Queue":
-				acceptQueueCaseHandler();
+			case "Accept Match":
+				acceptMatchCaseHandler();
+				break;
+			case "Deny Match":
+				denyMatchCaseHandler();
 				break;
 			case "End Session":
 				endSessionCaseHandler();

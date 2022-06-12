@@ -198,7 +198,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> startUserQueue(String login, String token, Map<String, Boolean> user_configuration)
+    public CompletableFuture<ServerStatus> startUserQueue(String login, String token, JsonObject wrapper)
     {
         Gson bdGson = gson.newBuilder().create();
 
@@ -208,7 +208,7 @@ public class NeverScapeAloneClient {
                         .addQueryParameter("token", token)
                         .build()
                     )
-                .post(RequestBody.create(JSON, bdGson.toJson(user_configuration)))
+                .post(RequestBody.create(JSON, bdGson.toJson(wrapper)))
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();

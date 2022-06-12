@@ -16,8 +16,11 @@ public enum QueueButtonStatus
     START_QUEUE("Start Queue"),
     @SerializedName("Cancel Queue")
     CANCEL_QUEUE("Cancel Queue"),
-    @SerializedName("Accept Queue")
-    ACCEPT("Accept Queue"),
+    @SerializedName("Accept Match")
+    ACCEPT("Accept Match"),
+
+    @SerializedName("Deny Match")
+    DENY("Deny Match"),
     @SerializedName("Select Activities")
     SELECT_ACTIVITY_MATCH("Select Activities"),
     @SerializedName("End Session")
