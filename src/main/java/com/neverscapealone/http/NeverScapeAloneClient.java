@@ -3,6 +3,7 @@ package com.neverscapealone.http;
 import com.google.gson.*;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.model.MatchPayload;
 import com.neverscapealone.model.ServerStatus;
 import com.google.common.base.Strings;
 import com.google.gson.annotations.SerializedName;
@@ -53,9 +54,8 @@ public class NeverScapeAloneClient {
         USER_QUEUE_START("queue/start"),
         USER_QUEUE_CANCEL("queue/cancel"),
         USER_POINTS("user-points/"),
-        USER_RATING_HISTORY("user-rating-history/"),
         USERS("users/"),
-        REQUEST_HISTORY("request-history/")
+        CHECK_MATCH_STATUS("matchmaking/check-status")
         ;
 
         final String path;
@@ -301,6 +301,56 @@ public class NeverScapeAloneClient {
         return future;
     }
 
+    public CompletableFuture<ServerStatus> checkMatchStatus(String login, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.CHECK_MATCH_STATUS).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
 
 
     /**
@@ -370,15 +420,6 @@ public class NeverScapeAloneClient {
         }
 
         return new IOException("Error " + code + " from API");
-    }
-
-    @Value
-    private static class ServerStatusLoad
-    {
-        @SerializedName("login")
-        String login;
-        @SerializedName("token")
-        String token;
     }
 
     /**

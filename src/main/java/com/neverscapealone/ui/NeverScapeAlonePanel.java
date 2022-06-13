@@ -9,6 +9,7 @@ import com.neverscapealone.enums.ExperienceLevel;
 import com.neverscapealone.enums.QueueButtonStatus;
 import com.neverscapealone.enums.ServerStatusCode;
 import com.neverscapealone.http.NeverScapeAloneClient;
+import com.neverscapealone.http.ServerResponseParser;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,20 +60,20 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final NeverScapeAlonePlugin plugin;
     private final NeverScapeAloneConfig config;
     private final NeverScapeAloneClient client;
+    private static final ServerResponseParser serverResponseParser = new ServerResponseParser();
     private final Client user;
 
     // SWING OBJECTS
     private final JPanel linksPanel;
     public JPanel serverPanel;
-    private final JPanel matchPanel;
+    public final JPanel matchPanel;
     private final Component activityOptionPanelSeperator;
-    private final Component matchPanelSeperator;
+    public final Component matchPanelSeperator;
     private final JPanel activityPanelTitle;
     private final JPanel activityOptionPanel;
     private final JPanel skillPanel;
     private final JPanel bossPanel;
     private final JPanel raidPanel;
-    private final JPanel soloPanel;
     private final JPanel minigamePanel;
     private final JPanel miscPanel;
 
@@ -115,9 +116,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
     @AllArgsConstructor
     public enum WebLink
     {
+        DISCORD(Icons.DISCORD_ICON, "Join our Discord!","https://discord.gg/rs2AH3vnmf"),
         TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter!", "https://www.twitter.com/NeverScapeAlone"),
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-        PATREON(Icons.PATREON_ICON, "Support us here!","https://www.patreon.com/bot_detector");
+        PATREON(Icons.PATREON_ICON, "Support us through Patreon!","https://www.patreon.com/bot_detector"),
+        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal!","paypal.me/osrsbotdetector"),
+        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github.", "https://github.com/NeverScapeAlone"),
+        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github.","https://github.com/NeverScapeAlone");
 
         private final ImageIcon image;
         private final String tooltip;
@@ -142,9 +147,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         // match panel
         matchPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-        matchPanelSeperator.setVisible(true);
+        matchPanelSeperator.setVisible(false);
         matchPanel = matchPanel();
-        matchPanel.setVisible(true);
+        matchPanel.setVisible(false);
         matchButton = matchButton();
 
         // activity panel
@@ -157,8 +162,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         // icon panels
         skillPanel = queuePanel(4,6);
-        bossPanel = queuePanel(4,6);
-        soloPanel = queuePanel(3,6);
+        bossPanel = queuePanel(7,6);
         raidPanel = queuePanel(2,2);
         minigamePanel = queuePanel(6,6);
         miscPanel = queuePanel(1,3);
@@ -183,11 +187,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(title("Skills"));
         add(skillPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
-        add(title("Multi-Bosses"));
+        add(title("Bosses"));
         add(bossPanel);
-        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
-        add(title("Solo-Bosses"));
-        add(soloPanel);
         add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
         add(title("Raids"));
         add(raidPanel);
@@ -198,7 +199,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(title("Miscellaneous"));
         add(miscPanel);
 
-        checkServerStatus("");
+        setServerPanel("Plugin Starting", "The plugin is currently starting.", COLOR_INPROGRESS);
+        matchButtonManager(QueueButtonStatus.OFFLINE);
+
         addQueueButtons();
     }
 
@@ -222,111 +225,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             linksPanel.add(link);
         }
         return linksPanel;
-    }
-
-    public void checkServerStatus(String login) {
-        // if no login, for some reason, shut everything down.
-        if ((login.isEmpty())) {
-            setServerPanel("LOGIN TO RUNESCAPE", "To start the plugin, please login to Old School RuneScape.", COLOR_INFO);
-            matchButtonManager(QueueButtonStatus.OFFLINE);
-            return;
-        }
-
-        // if server is being checked, state in status bar and put queue button manager offline + deactivate buttons
-        setServerPanel("CHECKING SERVER", "Checking server for connectivity...", COLOR_INPROGRESS);
-        matchButtonManager(QueueButtonStatus.OFFLINE);
-
-        String token = config.authToken();
-        client.requestServerStatus(login, token).whenCompleteAsync((status, ex) ->
-                SwingUtilities.invokeLater(() ->
-                {
-                    // in the case of a server error - shut down plugin's systems.
-                    if (status == null || ex != null) {
-                        plugin.serverStatusState = status;
-                        setServerPanel("SERVER ERROR", "There was a server error. Please contact support.", SERVER_SIDE_ERROR);
-                        matchButtonManager(QueueButtonStatus.OFFLINE);
-                        return;
-                    }
-
-                    switch (status.getStatus()) {
-                        // if server is alive, start normally, load button state,
-                        case ALIVE:
-                            plugin.serverStatusState = status;
-                            setServerPanel("SERVER ONLINE", "Server is Online. Authentication was successful.", COLOR_COMPLETED);
-                            matchButtonManager(QueueButtonStatus.ONLINE);
-                            break;
-                        // if server is under maintenance shut down plugin panel
-                        case MAINTENANCE:
-                            plugin.serverStatusState = status;
-                            setServerPanel("SERVER MAINTENANCE", "Server is undergoing Maintenance. Authentication was successful.", COLOR_WARNING);
-                            matchButtonManager(QueueButtonStatus.OFFLINE);
-                            break;
-                        // if server is unreachable shut down plugin panel
-                        case UNREACHABLE:
-                            plugin.serverStatusState = status;
-                            setServerPanel("SERVER UNREACHABLE", "Server is Unreachable. No connection could be made.", COLOR_DISABLED);
-                            matchButtonManager(QueueButtonStatus.OFFLINE);
-                            break;
-                        // if there is an auth failure, shut down panel (proceed with authing the user)
-                        case AUTH_FAILURE:
-                            plugin.serverStatusState = status;
-                            setServerPanel("AUTH FAILURE", "Authentication failed. Please set a new token in the Plugin config.", CLIENT_SIDE_ERROR);
-                            matchButtonManager(QueueButtonStatus.OFFLINE);
-                            break;
-                        // badly formatted token
-                        case BAD_TOKEN:
-                            plugin.serverStatusState = status;
-                            setServerPanel("BAD TOKEN", "The token (auth token) you have entered in the config is malformed.<br> Please delete this token entirely, and turn the plugin on and off.<br>If you need further assistance, please contact Plugin Support.", CLIENT_SIDE_ERROR);
-                            matchButtonManager(QueueButtonStatus.OFFLINE);
-                            break;
-                        case BAD_HEADER:
-                            plugin.serverStatusState = status;
-                            setServerPanel("BAD HEADER", "The incoming header value is incorrect. Please contact Plugin Support.", CLIENT_SIDE_ERROR);
-                            matchButtonManager(QueueButtonStatus.OFFLINE);
-                            break;
-                        case BAD_RSN:
-                            plugin.serverStatusState = status;
-                            setServerPanel("BAD RSN", "The incoming RSN does not match Jagex Standards. please contact Plugin Support.", CLIENT_SIDE_ERROR);
-                            matchButtonManager(QueueButtonStatus.OFFLINE);
-                            break;
-                        case NO_ACTIVE_MATCHES:
-                            plugin.serverStatusState = status;
-                            setServerPanel("Looking for Partners","There are currently no active matches, please standby while we find you a match.", COLOR_INFO);
-                            matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
-                        case MATCH_ACCEPTED:
-                            plugin.serverStatusState = status;
-                            setServerPanel("Match Accepted","You have accepted the match. We are now sending your match information to you.", COLOR_COMPLETED);
-                            matchButtonManager(QueueButtonStatus.END_SESSION);
-                        // if user is unregistered, mark as being registered and complete registration steps.
-                        case REGISTERING:
-                            plugin.serverStatusState = status;
-                            setServerPanel("REGISTERING ACCOUNT", "Your account is being registered for the plugin.<br>If this process does not complete quickly, please visit Plugin Support.", COLOR_INFO);
-                            client.registerUser(login, token).whenCompleteAsync((status_2, ex_2) ->
-                                    SwingUtilities.invokeLater(() ->
-                                    {
-                                        {
-                                            if (status_2 == null || ex_2 != null) {
-                                                plugin.serverStatusState = status_2;
-                                                setServerPanel("SERVER REGISTRATION ERROR", "There was a server registration error. Please contact support.", SERVER_SIDE_ERROR);
-                                                matchButtonManager(QueueButtonStatus.OFFLINE);
-                                                return;
-                                            }
-                                            switch (status_2.getStatus()) {
-                                                case REGISTRATION_FAILURE:
-                                                    plugin.serverStatusState = status_2;
-                                                    setServerPanel("REGISTRATION ERROR", "There was a registration error. Please contact support.", SERVER_SIDE_ERROR);
-                                                    matchButtonManager(QueueButtonStatus.OFFLINE);
-                                                    break;
-                                                case REGISTERED:
-                                                    plugin.serverStatusState = status_2;
-                                                    setServerPanel("SUCCESSFULLY REGISTERED", "You were successfully registered for the plugin. Welcome to NeverScapeAlone!", COLOR_COMPLETED);
-                                                    matchButtonManager(QueueButtonStatus.ONLINE);
-                                                    break;
-                                            }
-                                        }
-                                    }));
-                    }
-                }));
     }
 
     private JPanel serverPanel()
@@ -365,18 +263,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx=0;
         c.gridy=0;
-        matchPanel.add(headerText("Position:"), c);
-
-        c.gridx=0;
-        c.gridy=1;
         matchPanel.add(headerText("Elapsed Time:"), c);
 
         c.gridx=0;
-        c.gridy=2;
+        c.gridy=1;
         matchPanel.add(headerText("Estimated Time:"), c);
 
         c.gridx=0;
-        c.gridy=3;
+        c.gridy=2;
         queue_progress.setValue(0);
         matchPanel.add(queue_progress, c);
 
@@ -541,6 +435,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         activityPanelTitle.setVisible(false);
 
         // check button status
+        System.out.println(player_selections.size());
         matchButtonStateSwitcher(player_selections.size());
     }
 
@@ -624,9 +519,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 case "skill":
                     skillPanel.add(button);
                     break;
-                case "solo":
-                    soloPanel.add(button);
-                    break;
                 case "boss":
                     bossPanel.add(button);
                     break;
@@ -644,7 +536,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     private void matchButtonStateSwitcher(int config_counter){
         // switches match button state
-        switch(plugin.serverStatusState.getStatus()) {
+        switch(NeverScapeAlonePlugin.serverStatusState.getStatus()) {
             case ALIVE:
             case REGISTERED:
             case QUEUE_CANCELED:
@@ -712,19 +604,5 @@ public class NeverScapeAlonePanel extends PluginPanel {
         header.setText("<HTML>"+text+"</HTML>");
         header.setFont(FontManager.getRunescapeFont());
         return header;
-    }
-    private JLabel subheaderText(String text){
-        JLabel subheader = new JLabel();
-        subheader.setText(text);
-        subheader.setFont(FontManager.getRunescapeSmallFont());
-        return subheader;
-    }
-
-    public void setUsername_label(String username){
-        username_label.setText(username);
-    }
-
-    public void setWorld_types_label(String world_types){
-        world_types_label.setText(world_types);
     }
 }

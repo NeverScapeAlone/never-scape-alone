@@ -3,14 +3,13 @@ package com.neverscapealone;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.QueueButtonStatus;
-import com.neverscapealone.enums.worldTypeSelection;
 import com.neverscapealone.http.NeverScapeAloneClient;
+import com.neverscapealone.http.ServerResponseParser;
 import com.neverscapealone.model.ServerStatus;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -28,7 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Base64;
 
 @Slf4j
 @PluginDescriptor(
@@ -52,31 +51,20 @@ public class NeverScapeAlonePlugin extends Plugin
 	private NeverScapeAloneConfig config;
 
 	@Inject
-	private NeverScapeAloneClient clientConnection;
+	public NeverScapeAloneClient clientConnection;
 
-	private NeverScapeAlonePanel panel;
+	public static NeverScapeAlonePanel panel;
 	private NavigationButton navButton;
 
 	// basic user information for panel
 	private String username = "";
-	private String queue_progress = "---";
-	private String queue_time = "---";
-	private String world_types = "---";
-	private String regions = "---";
-	private String partner_usernames = "---";
-	private String activity = "---";
-	private String world_number = "---";
-	private String location = "---";
 
 	// tick count
 	private int ticker = 0;
 
 	// server state
-	public ServerStatus serverStatusState;
-
-	public QueueButtonStatus queueButtonStatus;
-
-
+	public static ServerStatus serverStatusState;
+	private static final ServerResponseParser serverResponseParser = new ServerResponseParser();
 	private static final SecureRandom secureRandom = new SecureRandom();
 	private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 	public static String generateNewToken() {
@@ -109,112 +97,43 @@ public class NeverScapeAlonePlugin extends Plugin
 
 		switch (client.getGameState()){
 			case LOGGED_IN:
-				panel.checkServerStatus(username);
+				checkServerStatus(username);
 			case LOGIN_SCREEN:
-				panel.checkServerStatus("");
+				checkServerStatus("");
 		}
 	}
 
-	public void parser(ServerStatus status, String login, String token) {
-		switch (status.getStatus()) {
-			// if server is alive
-			case ALIVE:
-				serverStatusState = status;
-				panel.setServerPanel("SERVER ONLINE", "Server is Online. Authentication was successful.", panel.COLOR_COMPLETED);
-				panel.matchButtonManager(QueueButtonStatus.ONLINE);
-				break;
-			// if server is under maintenance shut down plugin panel
-			case MAINTENANCE:
-				serverStatusState = status;
-				panel.setServerPanel("SERVER MAINTENANCE", "Server is undergoing Maintenance. Authentication was successful.", panel.COLOR_WARNING);
-				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				break;
-			// if server is unreachable shut down plugin panel
-			case UNREACHABLE:
-				serverStatusState = status;
-				panel.setServerPanel("SERVER UNREACHABLE", "Server is Unreachable. No connection could be made.", panel.COLOR_DISABLED);
-				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				break;
-			// if there is an auth failure, shut down panel (proceed with authing the user)
-			case AUTH_FAILURE:
-				serverStatusState = status;
-				panel.setServerPanel("AUTH FAILURE", "Authentication failed. Please set a new token in the Plugin config.", panel.CLIENT_SIDE_ERROR);
-				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				break;
-			// badly formatted token
-			case BAD_TOKEN:
-				serverStatusState = status;
-				panel.setServerPanel("BAD TOKEN", "The token (auth token) you have entered in the config is malformed.<br> Please delete this token entirely, and turn the plugin on and off.<br>If you need further assistance, please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
-				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				break;
-			// bad header
-			case BAD_HEADER:
-				serverStatusState = status;
-				panel.setServerPanel("BAD HEADER", "The incoming header value is incorrect. Please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
-				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				break;
-			// bad rsn
-			case BAD_RSN:
-				serverStatusState = status;
-				panel.setServerPanel("BAD RSN", "The incoming RSN does not match Jagex Standards. please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
-				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				break;
-			// if queue was started
-			case QUEUE_STARTED:
-				serverStatusState = status;
-				panel.setServerPanel("IN QUEUE", "You are currently in queue. Please standby for a partner!", panel.CLIENT_SIDE_ERROR);
-				panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
-				break;
-			// if queue was canceled
-			case QUEUE_CANCELED:
-				serverStatusState = status;
-				panel.setServerPanel("QUEUE CANCELED","Your queue has been canceled.",panel.COLOR_INFO);
-				panel.matchButtonManager(queueButtonStatus.START_QUEUE);
-				break;
-			// if the active matches were scanned, and there are currently no active matches
-			case NO_ACTIVE_MATCHES:
-				serverStatusState = status;
-				panel.setServerPanel("Looking for Partners","There are currently no active matches, please standby while we find you a match.", panel.COLOR_INFO);
-				panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
-			// if the match was accepted
-			case MATCH_ACCEPTED:
-				serverStatusState = status;
-				panel.setServerPanel("Match Accepted","You have accepted the match. We are now sending your match information to you.", panel.COLOR_COMPLETED);
-				panel.matchButtonManager(QueueButtonStatus.END_SESSION);
-			case REGISTERING:
-				serverStatusState = status;
-				panel.setServerPanel("REGISTERING ACCOUNT", "Your account is being registered for the plugin.<br>If this process does not complete quickly, please visit Plugin Support.", panel.COLOR_INFO);
-				clientConnection.registerUser(login, token).whenCompleteAsync((status_2, ex_2) ->
-						SwingUtilities.invokeLater(() ->
-						{
-							{
-								if (status_2 == null || ex_2 != null) {
-									serverStatusState = status_2;
-									panel.setServerPanel("SERVER REGISTRATION ERROR", "There was a server registration error. Please contact support.", panel.SERVER_SIDE_ERROR);
-									panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-									return;
-								}
-								switch (status_2.getStatus()) {
-									case REGISTRATION_FAILURE:
-										serverStatusState = status_2;
-										panel.setServerPanel("REGISTRATION ERROR", "There was a registration error. Please contact support.", panel.SERVER_SIDE_ERROR);
-										panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-										break;
-									case REGISTERED:
-										serverStatusState = status_2;
-										panel.setServerPanel("SUCCESSFULLY REGISTERED", "You were successfully registered for the plugin. Welcome to NeverScapeAlone!", panel.COLOR_COMPLETED);
-										panel.matchButtonManager(QueueButtonStatus.ONLINE);
-										break;
-								}
-							}
-						}));
+	public void checkServerStatus(String login) {
+		// if no login, for some reason, shut everything down.
+		if ((login.isEmpty())) {
+			panel.setServerPanel("LOGIN TO RUNESCAPE", "To start the plugin, please login to Old School RuneScape.", panel.COLOR_INFO);
+			panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+			return;
 		}
+
+		// if server is being checked, state in status bar and put queue button manager offline + deactivate buttons
+		panel.setServerPanel("CHECKING SERVER", "Checking server for connectivity...", panel.COLOR_INPROGRESS);
+		panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+
+		String token = config.authToken();
+		clientConnection.requestServerStatus(login, token).whenCompleteAsync((status, ex) ->
+				SwingUtilities.invokeLater(() ->
+				{
+					// in the case of a server error - shut down plugin's systems.
+					if (status == null || ex != null) {
+						NeverScapeAlonePlugin.serverStatusState = status;
+						panel.setServerPanel("SERVER ERROR", "There was a server error. Please contact support.", panel.SERVER_SIDE_ERROR);
+						panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+						return;
+					}
+					serverResponseParser.parser(status, login, token);
+				}));
 	}
 
 	private void startQueueCaseHandler() {
 
 		if (username == "") {
-			panel.checkServerStatus(username);
+			checkServerStatus(username);
 			return;
 		}
 
@@ -233,10 +152,10 @@ public class NeverScapeAlonePlugin extends Plugin
 						if (status == null || ex != null) {
 							serverStatusState = status;
 							panel.setServerPanel("SERVER QUEUE FAILURE", "There was a server queue failure error. Please contact support.", panel.SERVER_SIDE_ERROR);
-							panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
+							panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
 							return;
 						}
-						parser(status, login, token);
+						serverResponseParser.parser(status, login, token);
 					}
 				}));
 	}
@@ -244,7 +163,7 @@ public class NeverScapeAlonePlugin extends Plugin
 	private void cancelQueueCaseHandler(){
 
 		if (username == "") {
-			panel.checkServerStatus(username);
+			checkServerStatus(username);
 			return;
 		}
 
@@ -260,10 +179,10 @@ public class NeverScapeAlonePlugin extends Plugin
 						if (status == null || ex != null) {
 							serverStatusState = status;
 							panel.setServerPanel("SERVER QUEUE FAILURE", "There was a server queue failure error. Please contact support.", panel.SERVER_SIDE_ERROR);
-							panel.matchButtonManager(queueButtonStatus.CANCEL_QUEUE);
+							panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
 							return;
 						}
-						parser(status, login, token);
+						serverResponseParser.parser(status, login, token);
 					}
 				}));
 	}
@@ -317,7 +236,51 @@ public class NeverScapeAlonePlugin extends Plugin
 	{
 		if (player == null) {return;} // if there are no players in the field, return
 		if (player == client.getLocalPlayer()) {username = player.getName();} //loads the player name into the plugin
-		panel.checkServerStatus(username); //check server with player name
+		checkServerStatus(username); //check server with player name
+	}
+
+	@Schedule(period=5, unit=ChronoUnit.SECONDS, asynchronous=true)
+	public void matchStatusScheduler()
+	{
+		if ((username == null) || (username == "")){
+			return;
+		}
+		switch(serverStatusState.getStatus()){
+			case QUEUE_CANCELED_FAILURE:
+			case QUEUE_STARTED_FAILURE:
+			case REGISTRATION_FAILURE:
+			case UNREACHABLE:
+			case REGISTERING:
+			case MAINTENANCE:
+			case AUTH_FAILURE:
+			case BAD_HEADER:
+			case BAD_TOKEN:
+			case ALIVE:
+			case BAD_RSN:
+			case REGISTERED:
+			case MATCH_ACCEPTED:
+			case QUEUE_CANCELED:
+				break;
+
+			case QUEUE_STARTED:
+			case NO_ACTIVE_MATCHES:
+				String login = username;
+				String token = config.authToken();
+				clientConnection.checkMatchStatus(login, token).whenCompleteAsync((status, ex) ->
+				SwingUtilities.invokeLater(() ->
+				{
+//					{
+//						if (status == null || ex != null) {
+//							serverStatusState = status;
+//							panel.setServerPanel("SERVER MATCH CHECK FAILURE", "There was a server match check failure error. Please contact support.", panel.SERVER_SIDE_ERROR);
+//							panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
+//							return;
+//						}
+//						serverResponseParser.parser(status, login, token);
+//					}
+				}));
+				break;
+		}
 	}
 
 	@Provides
