@@ -31,7 +31,11 @@ public enum ServerStatusCode {
     QUEUE_CANCELED_FAILURE,
     @SerializedName("no active matches")
     NO_ACTIVE_MATCHES,
+    @SerializedName("pending matches")
+    PENDING_MATCHES,
     @SerializedName("match accepted")
-    MATCH_ACCEPTED;
+    MATCH_ACCEPTED,
+    @SerializedName("match ended")
+    MATCH_ENDED;
 }
 

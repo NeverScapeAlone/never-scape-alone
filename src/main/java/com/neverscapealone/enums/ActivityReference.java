@@ -9,7 +9,7 @@ import javax.swing.*;
 @Getter
 @RequiredArgsConstructor
 public enum ActivityReference
-// "skill", "boss", "minigame", "misc", "solo", "raid"
+// "skill", "boss", "minigame", "misc", "raid"
 {
     // skill
     ATTACK(Icons.ATTACK, "skill","Attack","ATTACK"),
