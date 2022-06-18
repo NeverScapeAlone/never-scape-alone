@@ -63,6 +63,7 @@ public class NeverScapeAlonePlugin extends Plugin
 
 	// tick count
 	public int queueTime = 0;
+	public int offlineCheckSecondsCounter = 0;
 
 	// server state
 	public static ServerStatus serverStatusState;
@@ -314,7 +315,7 @@ public class NeverScapeAlonePlugin extends Plugin
 			case QUEUE_CANCELED_FAILURE:
 			case QUEUE_STARTED_FAILURE:
 			case REGISTRATION_FAILURE:
-			case UNREACHABLE:
+
 			case REGISTERING:
 			case MAINTENANCE:
 			case AUTH_FAILURE:
@@ -327,6 +328,13 @@ public class NeverScapeAlonePlugin extends Plugin
 			case MATCH_ACCEPTED:
 			case QUEUE_CANCELED:
 				queueTime = 0;
+				break;
+			// Rechecks status if failed
+			case UNREACHABLE:
+				if (offlineCheckSecondsCounter % 5 == 0) {
+					offlineCheckSecondsCounter = 0;
+					checkServerStatus(username);
+				}
 				break;
 			// Only consider cases where the queue state should be checked, when you start queue, when you're currently in a pending match, and when you have no active matches.
 			case QUEUE_STARTED:

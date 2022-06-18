@@ -444,8 +444,6 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-
-
     /**
      * Processes the body of the given response and parses out the contained JSON object.
      * @param gson The {@link Gson} instance to use for parsing the JSON object in the {@code response}.

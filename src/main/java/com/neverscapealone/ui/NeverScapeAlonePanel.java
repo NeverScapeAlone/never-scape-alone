@@ -116,13 +116,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
     @AllArgsConstructor
     public enum WebLink
     {
-        DISCORD(Icons.DISCORD_ICON, "Join our Discord!","https://discord.gg/rs2AH3vnmf"),
-        TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter!", "https://www.twitter.com/NeverScapeAlone"),
+        DISCORD(Icons.DISCORD_ICON, "Join our Discord","https://discord.gg/rs2AH3vnmf"),
+        TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter", "https://www.twitter.com/NeverScapeAlone"),
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-        PATREON(Icons.PATREON_ICON, "Support us through Patreon!","https://www.patreon.com/bot_detector"),
-        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal!","paypal.me/osrsbotdetector"),
-        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github.", "https://github.com/NeverScapeAlone"),
-        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github.","https://github.com/NeverScapeAlone");
+        PATREON(Icons.PATREON_ICON, "Support us through Patreon","https://www.patreon.com/bot_detector"),
+        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal","https://www.paypal.com/paypalme/osrsbotdetector"),
+        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
+        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github","https://github.com/NeverScapeAlone"),
+        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here","https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
         private final ImageIcon image;
         private final String tooltip;
