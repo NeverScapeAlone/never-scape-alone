@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum worldTypeSelection {
+public enum WorldTypeSelection {
     F2P("Free-to-Play", 0),
     P2P("Members", 1),
     BOTH("Both", 2);

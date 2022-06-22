@@ -2,13 +2,17 @@ package com.neverscapealone.http;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.MatchInformation;
 import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.model.MatchInformationList;
 import com.neverscapealone.model.ServerStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +26,9 @@ import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.RandomAccess;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -36,9 +42,10 @@ public class NeverScapeAloneClient {
             System.getProperty("NeverScapeAloneAPIPath", "http://touchgrass.online:5000/V1"));
     private static final Supplier<String> CURRENT_EPOCH_SUPPLIER = () -> String.valueOf(Instant.now().getEpochSecond());
 
+    private NeverScapeAlonePlugin plugin;
     @Getter
     @AllArgsConstructor
-    private enum ApiPath
+    public enum ApiPath
     {
         SERVER_STATUS("server-status/"),
         USER_REGISTRATION("user-token/register"),
@@ -47,6 +54,7 @@ public class NeverScapeAloneClient {
         USER_POINTS("user-points/"),
         USERS("users/"),
         CHECK_MATCH_STATUS("matchmaking/check-status"),
+        GET_MATCH_INFORMATION("matchmaking/get-match-information"),
         ACCEPT_MATCH("matchmaking/accept"),
         END_MATCH("matchmaking/end-session")
         ;
@@ -91,6 +99,55 @@ public class NeverScapeAloneClient {
                     return chain.proceed(headerRequest);
                 })
                 .build();
+    }
+
+    public CompletableFuture<ServerStatus> hitRoute(String login, String token, ApiPath apiPath)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(apiPath).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("token", token)
+                        .build())
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
     }
 
     public CompletableFuture<ServerStatus> requestServerStatus(String login, String token)
@@ -328,6 +385,60 @@ public class NeverScapeAloneClient {
                 catch (UnauthorizedTokenException ute)
                 {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ArrayList<MatchInformation>> getMatchInformation(String login, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.GET_MATCH_INFORMATION).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
+
+        CompletableFuture<ArrayList<MatchInformation>> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.completeExceptionally(e);
+                    return;
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+
+                try
+                {
+                    assert response.body() != null;
+                    String response_string = response.body().string();
+                    System.out.println(response_string);
+                    ArrayList<MatchInformation> matchData = gson.fromJson(response_string, new TypeToken<ArrayList<MatchInformation>>() {}.getType());
+                    future.complete(matchData);
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    plugin.processServerResponse(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build(), login, token);
                 }
                 catch (IOException e)
                 {

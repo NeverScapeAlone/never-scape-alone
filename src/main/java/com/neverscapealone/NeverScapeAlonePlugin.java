@@ -1,11 +1,12 @@
 package com.neverscapealone;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.neverscapealone.enums.MatchInformation;
+import com.neverscapealone.model.MatchInformationList;
+import net.runelite.client.plugins.PluginManager;
+import net.runelite.client.plugins.party.PartyPlugin;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.QueueButtonStatus;
-import com.neverscapealone.enums.ServerStatusCode;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.model.ServerStatus;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
@@ -29,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Base64;
 
 @Slf4j
@@ -58,12 +60,19 @@ public class NeverScapeAlonePlugin extends Plugin
 	public static NeverScapeAlonePanel panel;
 	private NavigationButton navButton;
 
+	// Party
+
+	public static PartyPlugin partyPlugin;
+	public static PluginManager pluginManager;
+
 	// basic user information for panel
 	private String username = "Ferrariic";
 
 	// tick count
 	public int queueTime = 0;
 	public int offlineCheckSecondsCounter = 0;
+	public int matchInformationTicker = 0;
+	private ArrayList<MatchInformation> oldMatchInformation;
 
 	// server state
 	public static ServerStatus serverStatusState;
@@ -171,6 +180,10 @@ public class NeverScapeAlonePlugin extends Plugin
 			return;
 		}
 
+		panel.setPartnerPanelVisible(false);
+		panel.setMatchPanelVisible(false);
+		panel.setActivityPanelVisible(true);
+		panel.setButtonPanelVisible(true);
 		panel.setServerPanel("CANCELING YOUR QUEUE", "We're canceling your queue.", panel.COLOR_INPROGRESS);
 
 		String login = username;
@@ -222,7 +235,10 @@ public class NeverScapeAlonePlugin extends Plugin
 			checkServerStatus(username);
 			return;
 		}
-
+		panel.setPartnerPanelVisible(false);
+		panel.setMatchPanelVisible(false);
+		panel.setActivityPanelVisible(true);
+		panel.setButtonPanelVisible(true);
 		panel.setServerPanel("ENDING MATCH", "We're in the process of ending your match.", panel.COLOR_INPROGRESS);
 
 		String login = username;
@@ -315,7 +331,6 @@ public class NeverScapeAlonePlugin extends Plugin
 			case QUEUE_CANCELED_FAILURE:
 			case QUEUE_STARTED_FAILURE:
 			case REGISTRATION_FAILURE:
-
 			case REGISTERING:
 			case MAINTENANCE:
 			case AUTH_FAILURE:
@@ -325,9 +340,41 @@ public class NeverScapeAlonePlugin extends Plugin
 			case BAD_RSN:
 			case MATCH_ENDED:
 			case REGISTERED:
-			case MATCH_ACCEPTED:
 			case QUEUE_CANCELED:
 				queueTime = 0;
+				break;
+			case MATCH_ACCEPTED:
+				matchInformationTicker += 1;
+				if (matchInformationTicker % 5 == 0){
+					String login = username;
+					String token = config.authToken();
+
+					clientConnection.getMatchInformation(login, token).whenCompleteAsync((matchInformationList, ex) ->
+							SwingUtilities.invokeLater(() ->
+							{
+								{
+									if (matchInformationList == null || ex != null) {
+										panel.setServerPanel("SERVER MATCH INFORMATION FAILURE", "There was a server match information failure error. Please contact support.", panel.SERVER_SIDE_ERROR);
+										panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
+										return;
+									}
+									panel.setServerPanel("MATCH STARTED", "We've paired you with some other players. Enjoy!", panel.COLOR_COMPLETED);
+
+									if (oldMatchInformation != matchInformationList){
+										// reduce panel draws
+										panel.setPartnerPanel(matchInformationList);
+										oldMatchInformation = matchInformationList;
+										panel.setPartnerPanelVisible(true);
+										panel.setMatchPanelVisible(false);
+										panel.setActivityPanelVisible(false);
+										panel.setButtonPanelVisible(false);
+									}
+
+								}
+							}));
+
+					matchInformationTicker = 0;
+				}
 				break;
 			// Rechecks status if failed
 			case UNREACHABLE:
@@ -340,9 +387,18 @@ public class NeverScapeAlonePlugin extends Plugin
 			case QUEUE_STARTED:
 			case PENDING_MATCHES:
 			case NO_ACTIVE_MATCHES:
+				panel.setPartnerPanelVisible(false);
+				panel.setButtonPanelVisible(false);
+
 				String string = "Queue Time: "+formatSeconds(queueTime);
 				panel.setMatchPanelQueueTime(string);
 				queueTime += 1;
+
+				if (queueTime >= 3600){
+					cancelQueueCaseHandler();
+					break;
+				}
+
 				if (queueTime % 5 == 0){
 				String login = username;
 				String token = config.authToken();
@@ -365,6 +421,7 @@ public class NeverScapeAlonePlugin extends Plugin
 	}
 
 	public void processServerResponse(ServerStatus status, String login, String token) {
+
 		switch (status.getStatus()) {
 			// if server is alive
 			case ALIVE:
@@ -377,95 +434,112 @@ public class NeverScapeAlonePlugin extends Plugin
 				serverStatusState = status;
 				panel.setServerPanel("SERVER MAINTENANCE", "Server is undergoing Maintenance. Authentication was successful.", panel.COLOR_WARNING);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// if server is unreachable shut down plugin panel
 			case UNREACHABLE:
 				serverStatusState = status;
 				panel.setServerPanel("SERVER UNREACHABLE", "Server is Unreachable. No connection could be made.", panel.COLOR_DISABLED);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// if there is an auth failure, shut down panel (proceed with authing the user)
 			case AUTH_FAILURE:
 				serverStatusState = status;
 				panel.setServerPanel("AUTH FAILURE", "Authentication failed. Please set a new token in the Plugin config.", panel.CLIENT_SIDE_ERROR);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// badly formatted token
 			case BAD_TOKEN:
 				serverStatusState = status;
 				panel.setServerPanel("BAD TOKEN", "The token (auth token) you have entered in the config is malformed.<br> Please delete this token entirely, and turn the plugin on and off.<br>If you need further assistance, please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// bad header
 			case BAD_HEADER:
 				serverStatusState = status;
 				panel.setServerPanel("BAD HEADER", "The incoming header value is incorrect. Please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// bad rsn
 			case BAD_RSN:
 				serverStatusState = status;
 				panel.setServerPanel("BAD RSN", "The incoming RSN does not match Jagex Standards. please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// if queue was started
 			case QUEUE_STARTED:
 				serverStatusState = status;
 				panel.setServerPanel("IN QUEUE", "You are currently in queue. Please standby for a partner!", panel.CLIENT_SIDE_ERROR);
 				panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
-				panel.matchPanelSeperator.setVisible(true);
-				panel.matchPanel.setVisible(true);
+				panel.setMatchPanelVisible(true);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
 				break;
 			// if queue was canceled
 			case QUEUE_CANCELED:
 				serverStatusState = status;
 				panel.setServerPanel("QUEUE CANCELED","Your queue has been canceled.",panel.COLOR_INFO);
 				panel.matchButtonManager(QueueButtonStatus.START_QUEUE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(true);
+				panel.setButtonPanelVisible(true);
 				break;
 			// if the active matches were scanned, and there are currently no active matches
 			case NO_ACTIVE_MATCHES:
 				serverStatusState = status;
 				panel.setServerPanel("LOOKING FOR PARTNERS","There are currently no active matches, please standby while we find you a match.", panel.COLOR_INFO);
 				panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
-				panel.matchPanelSeperator.setVisible(true);
-				panel.matchPanel.setVisible(true);
+				panel.setMatchPanelVisible(true);
+				panel.setButtonPanelVisible(false);
 				break;
 			case PENDING_MATCHES:
 				serverStatusState = status;
 				panel.setServerPanel("MATCH FOUND","We have found you a match!", panel.COLOR_INPROGRESS);
 				panel.matchButtonManager(QueueButtonStatus.ACCEPT_OR_DECLINE);
-				panel.matchPanelSeperator.setVisible(true);
-				panel.matchPanel.setVisible(true);
+				panel.setMatchPanelVisible(true);
 				break;
 			// if the match was accepted
 			case MATCH_ACCEPTED:
 				serverStatusState = status;
 				panel.setServerPanel("MATCH ACCEPTED","You have accepted the match. We are now waiting for other players to accept the match invite.", panel.COLOR_COMPLETED);
 				panel.matchButtonManager(QueueButtonStatus.END_SESSION);
-				panel.matchPanelSeperator.setVisible(true);
-				panel.matchPanel.setVisible(true);
+				panel.setMatchPanelVisible(true);
+				panel.setButtonPanelVisible(false);
 				break;
 			// if the match was ended
 			case MATCH_ENDED:
 				serverStatusState = status;
 				panel.setServerPanel("MATCH ENDED","You have ended your match. You will be sent a form to complete on the players you have played with!", panel.COLOR_INFO);
 				panel.matchButtonManager(QueueButtonStatus.START_QUEUE);
-				panel.matchPanelSeperator.setVisible(false);
-				panel.matchPanel.setVisible(false);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(true);
+				panel.setButtonPanelVisible(true);
 				break;
 			case REGISTERING:
 				serverStatusState = status;
@@ -478,8 +552,8 @@ public class NeverScapeAlonePlugin extends Plugin
 									serverStatusState = status_2;
 									panel.setServerPanel("SERVER REGISTRATION ERROR", "There was a server registration error. Please contact support.", panel.SERVER_SIDE_ERROR);
 									panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-									panel.matchPanelSeperator.setVisible(false);
-									panel.matchPanel.setVisible(false);
+									panel.setMatchPanelVisible(false);
+									panel.setButtonPanelVisible(false);
 									return;
 								}
 								switch (status_2.getStatus()) {
@@ -487,8 +561,8 @@ public class NeverScapeAlonePlugin extends Plugin
 										serverStatusState = status_2;
 										panel.setServerPanel("REGISTRATION ERROR", "There was a registration error. Please contact support.", panel.SERVER_SIDE_ERROR);
 										panel.matchButtonManager(QueueButtonStatus.OFFLINE);
-										panel.matchPanelSeperator.setVisible(false);
-										panel.matchPanel.setVisible(false);
+										panel.setMatchPanelVisible(false);
+										panel.setButtonPanelVisible(false);
 										break;
 									case REGISTERED:
 										serverStatusState = status_2;

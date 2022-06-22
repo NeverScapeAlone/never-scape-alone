@@ -1,12 +1,12 @@
 package com.neverscapealone;
 
+import com.neverscapealone.enums.WorldTypeSelection;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
-import com.neverscapealone.enums.worldTypeSelection;
 
 @ConfigGroup(NeverScapeAloneConfig.CONFIG_GROUP)
 public interface NeverScapeAloneConfig extends Config
@@ -57,7 +57,7 @@ public interface NeverScapeAloneConfig extends Config
 	)
 	default String discordUsername()
 	{
-		return "@UserName#1337";
+		return "@UserName#0000";
 	}
 
 	@ConfigItem(
@@ -80,7 +80,7 @@ public interface NeverScapeAloneConfig extends Config
 			description = "The maximum partner search time before the request is aborted.",
 			section = matchSection
 	)
-	@Range(min = 1, max = 360)
+	@Range(min = 1, max = 60)
 	@Units(Units.MINUTES)
 	default int searchTime()
 	{
@@ -121,14 +121,14 @@ public interface NeverScapeAloneConfig extends Config
 	}
 	@ConfigItem(
 			position = 5,
-			keyName = "worldTypeSelection",
+			keyName = "WorldTypeSelection",
 			name = "World Type",
 			description = "Select if you would like to match on free-to-play, members or both",
 			section = matchSection
 	)
-	default worldTypeSelection worldTypeSelection()
+	default WorldTypeSelection worldTypeSelection()
 	{
-		return worldTypeSelection.BOTH;
+		return WorldTypeSelection.BOTH;
 	}
 	@ConfigItem(
 			position = 1,
