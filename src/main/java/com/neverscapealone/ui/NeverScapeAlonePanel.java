@@ -11,11 +11,15 @@ import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.game.WorldService;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.LinkBrowser;
+import net.runelite.http.api.worlds.World;
+import net.runelite.http.api.worlds.WorldResult;
 import org.apache.commons.text.WordUtils;
+import net.runelite.client.game.WorldService;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -25,6 +29,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class NeverScapeAlonePanel extends PluginPanel {
 
@@ -51,6 +56,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final NeverScapeAloneConfig config;
     private final NeverScapeAloneClient client;
     private final Client user;
+
+    private final WorldService worldService;
 
     // SWING OBJECTS
     JButton button_exit = new JButton();
@@ -128,12 +135,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public NeverScapeAlonePanel(
             NeverScapeAlonePlugin plugin,
             NeverScapeAloneConfig config,
-            EventBus eventBus, NeverScapeAloneClient client, Client user)
+            EventBus eventBus, NeverScapeAloneClient client, Client user, WorldService worldService)
     {
         this.config = config;
         this.plugin = plugin;
         this.client = client;
         this.user = user;
+        this.worldService = worldService;
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(BACKGROUND_COLOR);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -249,6 +257,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         TitledBorder titledBorder = BorderFactory.createTitledBorder(border,header,TitledBorder.CENTER, TitledBorder.TOP);
         usersPanel.setBorder(titledBorder);
 
+        String world_number = matchInformationArrayList.get(0).party_identifier.split("(&world=)")[1];
+
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.WEST;
@@ -256,19 +266,58 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx=0;
         c.gridy=0;
 
+        World world = worldService.getWorlds().findWorld(Integer.parseInt(world_number));
+        ImageIcon worldIcon = Icons.WARNING_ICON;
+        switch(world.getLocation()){
+            case 0:
+                worldIcon = Icons.US_ICON;
+                break;
+            case 1:
+                worldIcon = Icons.EU_WEST_ICON;
+                break;
+            case 7:
+                worldIcon = Icons.EU_CENTRAL_ICON;
+                break;
+            case 3:
+                worldIcon = Icons.OCEANIA_ICON;
+                break;
+        }
+
+        JLabel worldLabel = new JLabel("World: "+world_number);
+        worldLabel.setIcon(worldIcon);
+        usersPanel.add(worldLabel, c);
+
+        c.gridy+=1;
+
+        JLabel playerLabel = new JLabel("Players: "+String.valueOf(world.getPlayers()));
+        playerLabel.setIcon(Icons.PLAYERS_ICON);
+        usersPanel.add(playerLabel, c);
+
+        c.gridy+=1;
+
         for (MatchInformation partner : matchInformationArrayList){
             JPanel userPanel = new JPanel();
-            userPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+            Border userBorder = BorderFactory.createBevelBorder(1);
+            userPanel.setBorder(userBorder);
             userPanel.setBackground(BACKGROUND_COLOR);
             userPanel.setLayout(new GridBagLayout());
+
             GridBagConstraints userC = new GridBagConstraints();
             userC.weightx = 1;
             userC.fill = GridBagConstraints.HORIZONTAL;
-            userC.anchor = GridBagConstraints.WEST;
+            userC.anchor = GridBagConstraints.CENTER;
 
             userC.gridx = 0;
             userC.gridy = 0;
             userPanel.add(new JLabel(partner.login), userC);
+
+            userC.anchor = GridBagConstraints.WEST;
+            if (!partner.discord.equals("NONE")){
+                userC.gridy += 1;
+                JLabel discord = new JLabel(partner.discord);
+                discord.setIcon(Icons.DISCORD_ICON);
+                userPanel.add(discord, userC);
+            }
 
             if (partner.has_accepted) {
                 userPanel.setBackground(Color.GREEN.darker().darker().darker());
@@ -276,11 +325,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 userPanel.setBackground(Color.YELLOW.darker().darker().darker());
             }
 
-            userC.gridx = 0;
-            userC.gridy = 1;
-
             // add UserPanel to UsersPanel
-
             usersPanel.add(Box.createVerticalStrut(2), c);
             c.gridy+=1;
             usersPanel.add(userPanel, c);
@@ -587,8 +632,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         sub_payload.addProperty("party_member_count", party_member_count_payload);
         sub_payload.addProperty("self_experience_level", self_experience_payload);
         sub_payload.addProperty("partner_experience_level", partner_experience_payload);
-        sub_payload.addProperty("us_east", config.usEast());
-        sub_payload.addProperty("us_west", config.usWest());
+        sub_payload.addProperty("us", config.us());
         sub_payload.addProperty("eu_west", config.euWest());
         sub_payload.addProperty("eu_central", config.euCentral());
         sub_payload.addProperty("oceania", config.oceania());
@@ -689,6 +733,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 }
                 break;
             case BAD_RSN:
+            case BAD_DISCORD:
             case BAD_TOKEN:
             case BAD_HEADER:
             case MAINTENANCE:

@@ -21,6 +21,8 @@ public enum ServerStatusCode {
     BAD_HEADER,
     @SerializedName("bad rsn")
     BAD_RSN,
+    @SerializedName("bad discord")
+    BAD_DISCORD,
     @SerializedName("queue started")
     QUEUE_STARTED,
     @SerializedName("queue started failure")

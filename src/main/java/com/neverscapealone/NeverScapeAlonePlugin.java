@@ -1,11 +1,8 @@
 package com.neverscapealone;
 
-import com.neverscapealone.enums.MatchInformation;
-import com.neverscapealone.model.MatchInformationList;
-import net.runelite.client.plugins.PluginManager;
-import net.runelite.client.plugins.party.PartyPlugin;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
+import com.neverscapealone.enums.MatchInformation;
 import com.neverscapealone.enums.QueueButtonStatus;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import com.neverscapealone.model.ServerStatus;
@@ -18,6 +15,8 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
+import net.runelite.client.plugins.party.PartyPlugin;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -37,7 +36,7 @@ import java.util.Base64;
 @PluginDescriptor(
 	name = "NeverScapeAlone",
 	description="This plugin lets you partner up with other players to complete bosses, minigames, skills, and other miscellaneous activities.",
-	tags={"Matchmaking", "Skill", "PVP", "Boss", "Minigame"},
+	tags={"Matchmaking", "Party","Skill", "PVP", "Boss", "Minigame"},
 	enabledByDefault = true
 )
 public class NeverScapeAlonePlugin extends Plugin
@@ -127,7 +126,11 @@ public class NeverScapeAlonePlugin extends Plugin
 		panel.matchButtonManager(QueueButtonStatus.OFFLINE);
 
 		String token = config.authToken();
-		clientConnection.requestServerStatus(login, token).whenCompleteAsync((status, ex) ->
+		String discord = config.discordUsername();
+		if (discord == null|| discord==""){
+			discord = "NULL";
+		}
+		clientConnection.requestServerStatus(login, discord, token).whenCompleteAsync((status, ex) ->
 				SwingUtilities.invokeLater(() ->
 				{
 					// in the case of a server error - shut down plugin's systems.
@@ -152,11 +155,15 @@ public class NeverScapeAlonePlugin extends Plugin
 
 		String login = username;
 		String token = config.authToken();
+		String discord = config.discordUsername();
+		if (discord == null|| discord.equals("")){
+			discord = "NULL";
+		}
 
 		JsonObject wrapper = new JsonObject();
 		wrapper.add("Payload", panel.player_selections);
 
-		clientConnection.startUserQueue(login, token, wrapper).whenCompleteAsync((status, ex) ->
+		clientConnection.startUserQueue(login, discord, token, wrapper).whenCompleteAsync((status, ex) ->
 				SwingUtilities.invokeLater(() ->
 				{
 					{
@@ -188,8 +195,12 @@ public class NeverScapeAlonePlugin extends Plugin
 
 		String login = username;
 		String token = config.authToken();
+		String discord = config.discordUsername();
+		if (discord == null || discord==""){
+			discord = "NULL";
+		}
 
-		clientConnection.cancelUserQueue(login, token).whenCompleteAsync((status, ex) ->
+		clientConnection.cancelUserQueue(login, discord, token).whenCompleteAsync((status, ex) ->
 				SwingUtilities.invokeLater(() ->
 				{
 					{
@@ -213,8 +224,12 @@ public class NeverScapeAlonePlugin extends Plugin
 
 		String login = username;
 		String token = config.authToken();
+		String discord = config.discordUsername();
+		if (discord == null || discord==""){
+			discord = "NULL";
+		}
 
-		clientConnection.acceptMatch(login, token).whenCompleteAsync((status, ex) ->
+		clientConnection.acceptMatch(login, discord, token).whenCompleteAsync((status, ex) ->
 				SwingUtilities.invokeLater(() ->
 				{
 					{
@@ -243,8 +258,12 @@ public class NeverScapeAlonePlugin extends Plugin
 
 		String login = username;
 		String token = config.authToken();
+		String discord = config.discordUsername();
+		if (discord == null){
+			discord = "NULL";
+		}
 
-		clientConnection.endMatch(login, token).whenCompleteAsync((status, ex) ->
+		clientConnection.endMatch(login, discord, token).whenCompleteAsync((status, ex) ->
 				SwingUtilities.invokeLater(() ->
 				{
 					{
@@ -338,6 +357,7 @@ public class NeverScapeAlonePlugin extends Plugin
 			case BAD_TOKEN:
 			case ALIVE:
 			case BAD_RSN:
+			case BAD_DISCORD:
 			case MATCH_ENDED:
 			case REGISTERED:
 			case QUEUE_CANCELED:
@@ -348,8 +368,12 @@ public class NeverScapeAlonePlugin extends Plugin
 				if (matchInformationTicker % 5 == 0){
 					String login = username;
 					String token = config.authToken();
+					String discord = config.discordUsername();
+					if (discord == null){
+						discord = "NULL";
+					}
 
-					clientConnection.getMatchInformation(login, token).whenCompleteAsync((matchInformationList, ex) ->
+					clientConnection.getMatchInformation(login, discord, token).whenCompleteAsync((matchInformationList, ex) ->
 							SwingUtilities.invokeLater(() ->
 							{
 								{
@@ -402,7 +426,11 @@ public class NeverScapeAlonePlugin extends Plugin
 				if (queueTime % 5 == 0){
 				String login = username;
 				String token = config.authToken();
-				clientConnection.checkMatchStatus(login, token).whenCompleteAsync((status, ex) ->
+				String discord = config.discordUsername();
+				if (discord == null){
+					discord = "NULL";
+				}
+				clientConnection.checkMatchStatus(login, discord, token).whenCompleteAsync((status, ex) ->
 						SwingUtilities.invokeLater(() ->
 						{
 							{
@@ -489,6 +517,15 @@ public class NeverScapeAlonePlugin extends Plugin
 				panel.setActivityPanelVisible(false);
 				panel.setButtonPanelVisible(false);
 				break;
+			case BAD_DISCORD:
+				serverStatusState = status;
+				panel.setServerPanel("BAD DISCORD", "The incoming Discord Username does not match Pattern: ^@[A-Za-z]{1,32}#[0-9]{4}. please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
+				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
+				panel.setMatchPanelVisible(false);
+				panel.setPartnerPanelVisible(false);
+				panel.setActivityPanelVisible(false);
+				panel.setButtonPanelVisible(false);
+				break;
 			// if queue was started
 			case QUEUE_STARTED:
 				serverStatusState = status;
@@ -544,7 +581,11 @@ public class NeverScapeAlonePlugin extends Plugin
 			case REGISTERING:
 				serverStatusState = status;
 				panel.setServerPanel("REGISTERING ACCOUNT", "Your account is being registered for the plugin.<br>If this process does not complete quickly, please visit Plugin Support.", panel.COLOR_INFO);
-				clientConnection.registerUser(login, token).whenCompleteAsync((status_2, ex_2) ->
+				String discord = config.discordUsername();
+				if (discord == null || discord==""){
+					discord = "NULL";
+				}
+				clientConnection.registerUser(login, discord, token).whenCompleteAsync((status_2, ex_2) ->
 						SwingUtilities.invokeLater(() ->
 						{
 							{

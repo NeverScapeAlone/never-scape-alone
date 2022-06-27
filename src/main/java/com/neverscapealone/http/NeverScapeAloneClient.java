@@ -101,11 +101,12 @@ public class NeverScapeAloneClient {
                 .build();
     }
 
-    public CompletableFuture<ServerStatus> hitRoute(String login, String token, ApiPath apiPath)
+    public CompletableFuture<ServerStatus> hitRoute(String login, String discord, String token, ApiPath apiPath)
     {
         Request request = new Request.Builder()
                 .url(getUrl(apiPath).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build())
                 .build();
@@ -150,11 +151,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> requestServerStatus(String login, String token)
+    public CompletableFuture<ServerStatus> requestServerStatus(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.SERVER_STATUS).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build())
                 .build();
@@ -199,13 +201,14 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> registerUser(String login, String token)
+    public CompletableFuture<ServerStatus> registerUser(String login, String discord, String token)
     {
+
         Gson bdGson = gson.newBuilder().create();
 
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.USER_REGISTRATION).newBuilder().build())
-                .post(RequestBody.create(JSON, bdGson.toJson(new UserRegistration(login, token))))
+                .post(RequestBody.create(JSON, bdGson.toJson(new UserRegistration(login, discord, token))))
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
@@ -248,13 +251,14 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> startUserQueue(String login, String token, JsonObject wrapper)
+    public CompletableFuture<ServerStatus> startUserQueue(String login, String discord, String token, JsonObject wrapper)
     {
         Gson bdGson = gson.newBuilder().create();
 
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.USER_QUEUE_START).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                     )
@@ -301,11 +305,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String token)
+    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.USER_QUEUE_CANCEL).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                 )
@@ -351,11 +356,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> endMatch(String login, String token)
+    public CompletableFuture<ServerStatus> endMatch(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.END_MATCH).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                 )
@@ -401,11 +407,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ArrayList<MatchInformation>> getMatchInformation(String login, String token)
+    public CompletableFuture<ArrayList<MatchInformation>> getMatchInformation(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.GET_MATCH_INFORMATION).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                 )
@@ -432,7 +439,6 @@ public class NeverScapeAloneClient {
                 {
                     assert response.body() != null;
                     String response_string = response.body().string();
-                    System.out.println(response_string);
                     ArrayList<MatchInformation> matchData = gson.fromJson(response_string, new TypeToken<ArrayList<MatchInformation>>() {}.getType());
                     future.complete(matchData);
                 }
@@ -455,11 +461,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> checkMatchStatus(String login, String token)
+    public CompletableFuture<ServerStatus> checkMatchStatus(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.CHECK_MATCH_STATUS).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                 )
@@ -505,11 +512,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> acceptMatch(String login, String token)
+    public CompletableFuture<ServerStatus> acceptMatch(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.ACCEPT_MATCH).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                 )
@@ -630,6 +638,8 @@ public class NeverScapeAloneClient {
     {
         @SerializedName("login")
         String login;
+        @SerializedName("discord")
+        String discord;
         @SerializedName("token")
         String token;
     }
