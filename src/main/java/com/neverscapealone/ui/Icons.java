@@ -4,6 +4,8 @@ import com.neverscapealone.NeverScapeAlonePlugin;
 import javax.swing.ImageIcon;
 import net.runelite.client.util.ImageUtil;
 
+import java.util.Objects;
+
 public class Icons
 {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
@@ -34,7 +36,8 @@ public class Icons
     // status icons
     public static final ImageIcon WARNING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/warning.png"));
     public static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/error.png"));
-    public static final ImageIcon SPINNER_GIF = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/loading_spinner_darker.gif"));
+    public static final ImageIcon SPINNER_GIF = new ImageIcon("/loading_spinner_darker.gif");
+    public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
 
     // "skill", "boss", "minigame", "misc", "solo", "raids"
     // SKILLS

@@ -297,8 +297,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         for (MatchInformation partner : matchInformationArrayList){
             JPanel userPanel = new JPanel();
-            Border userBorder = BorderFactory.createBevelBorder(1);
-            userPanel.setBorder(userBorder);
+            userPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
             userPanel.setBackground(BACKGROUND_COLOR);
             userPanel.setLayout(new GridBagLayout());
 
@@ -309,12 +308,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
             userC.gridx = 0;
             userC.gridy = 0;
-            userPanel.add(new JLabel(partner.login), userC);
+
+            JLabel partner_name = new JLabel(partner.login);
+            partner_name.setFont(FontManager.getRunescapeBoldFont());
+
+            userPanel.add(partner_name, userC);
 
             userC.anchor = GridBagConstraints.WEST;
             if (!partner.discord.equals("NONE")){
                 userC.gridy += 1;
                 JLabel discord = new JLabel(partner.discord);
+                discord.setFont(FontManager.getRunescapeFont());
                 discord.setIcon(Icons.DISCORD_ICON);
                 userPanel.add(discord, userC);
             }
