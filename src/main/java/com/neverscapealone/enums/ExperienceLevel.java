@@ -7,12 +7,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExperienceLevel
 {
-    LEARNER("Learner",0),
-    NOVICE("Novice", 1),
-    APPRENTICE("Apprentice", 2),
-    ADEPT("Adept", 3),
-    EXPERT("Expert", 4),
-    MASTER("Master", 5);
+    Learner("Learner",0),
+    Novice("Novice", 1),
+    Apprentice("Apprentice", 2),
+    Adept("Adept", 3),
+    Expert("Expert", 4),
+    Master("Master", 5);
 
     private final String name;
     private final int experienceRating;

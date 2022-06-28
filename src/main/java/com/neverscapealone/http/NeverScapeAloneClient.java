@@ -1,39 +1,37 @@
 package com.neverscapealone.http;
 
-import com.google.gson.*;
-import com.neverscapealone.NeverScapeAloneConfig;
-import com.neverscapealone.enums.ServerStatusCode;
-import com.neverscapealone.model.ServerStatus;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-
+import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.MatchInformation;
+import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.model.MatchInformationList;
+import com.neverscapealone.model.ServerStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigManager;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.RandomAccess;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 @Slf4j
 @Singleton
@@ -44,18 +42,21 @@ public class NeverScapeAloneClient {
             System.getProperty("NeverScapeAloneAPIPath", "http://touchgrass.online:5000/V1"));
     private static final Supplier<String> CURRENT_EPOCH_SUPPLIER = () -> String.valueOf(Instant.now().getEpochSecond());
 
+    private NeverScapeAlonePlugin plugin;
     @Getter
     @AllArgsConstructor
-    private enum ApiPath
+    public enum ApiPath
     {
         SERVER_STATUS("server-status/"),
         USER_REGISTRATION("user-token/register"),
         USER_QUEUE_START("queue/start"),
         USER_QUEUE_CANCEL("queue/cancel"),
         USER_POINTS("user-points/"),
-        USER_RATING_HISTORY("user-rating-history/"),
         USERS("users/"),
-        REQUEST_HISTORY("request-history/")
+        CHECK_MATCH_STATUS("matchmaking/check-status"),
+        GET_MATCH_INFORMATION("matchmaking/get-match-information"),
+        ACCEPT_MATCH("matchmaking/accept"),
+        END_MATCH("matchmaking/end-session")
         ;
 
         final String path;
@@ -100,11 +101,12 @@ public class NeverScapeAloneClient {
                 .build();
     }
 
-    public CompletableFuture<ServerStatus> requestServerStatus(String login, String token)
+    public CompletableFuture<ServerStatus> hitRoute(String login, String discord, String token, ApiPath apiPath)
     {
         Request request = new Request.Builder()
-                .url(getUrl(ApiPath.SERVER_STATUS).newBuilder()
+                .url(getUrl(apiPath).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build())
                 .build();
@@ -149,13 +151,14 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> registerUser(String login, String token)
+    public CompletableFuture<ServerStatus> requestServerStatus(String login, String discord, String token)
     {
-        Gson bdGson = gson.newBuilder().create();
-
         Request request = new Request.Builder()
-                .url(getUrl(ApiPath.USER_REGISTRATION).newBuilder().build())
-                .post(RequestBody.create(JSON, bdGson.toJson(new UserRegistration(login, token))))
+                .url(getUrl(ApiPath.SERVER_STATUS).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
+                        .addQueryParameter("token", token)
+                        .build())
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
@@ -198,17 +201,68 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> startUserQueue(String login, String token, Map<String, Boolean> user_configuration)
+    public CompletableFuture<ServerStatus> registerUser(String login, String discord, String token)
+    {
+
+        Gson bdGson = gson.newBuilder().create();
+
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.USER_REGISTRATION).newBuilder().build())
+                .post(RequestBody.create(JSON, bdGson.toJson(new UserRegistration(login, discord, token))))
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ServerStatus> startUserQueue(String login, String discord, String token, JsonObject wrapper)
     {
         Gson bdGson = gson.newBuilder().create();
 
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.USER_QUEUE_START).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                     )
-                .post(RequestBody.create(JSON, bdGson.toJson(user_configuration)))
+                .post(RequestBody.create(JSON, bdGson.toJson(wrapper)))
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
@@ -251,11 +305,12 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String token)
+    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String discord, String token)
     {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.USER_QUEUE_CANCEL).newBuilder()
                         .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
                 )
@@ -301,7 +356,212 @@ public class NeverScapeAloneClient {
         return future;
     }
 
+    public CompletableFuture<ServerStatus> endMatch(String login, String discord, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.END_MATCH).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
 
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ArrayList<MatchInformation>> getMatchInformation(String login, String discord, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.GET_MATCH_INFORMATION).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
+
+        CompletableFuture<ArrayList<MatchInformation>> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.completeExceptionally(e);
+                    return;
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+
+                try
+                {
+                    assert response.body() != null;
+                    String response_string = response.body().string();
+                    ArrayList<MatchInformation> matchData = gson.fromJson(response_string, new TypeToken<ArrayList<MatchInformation>>() {}.getType());
+                    future.complete(matchData);
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    plugin.processServerResponse(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build(), login, token);
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ServerStatus> checkMatchStatus(String login, String discord, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.CHECK_MATCH_STATUS).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ServerStatus> acceptMatch(String login, String discord, String token)
+    {
+        Request request = new Request.Builder()
+                .url(getUrl(ApiPath.ACCEPT_MATCH).newBuilder()
+                        .addQueryParameter("login", login)
+                        .addQueryParameter("discord", discord)
+                        .addQueryParameter("token", token)
+                        .build()
+                )
+                .build();
+
+        CompletableFuture<ServerStatus> future = new CompletableFuture<>();
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.warn("Error obtaining Server Status data", e);
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
+                    return;
+                }
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try
+                {
+                    future.complete(processResponse(gson, response, ServerStatus.class));
+                }
+                catch (UnauthorizedTokenException ute)
+                {
+                    future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
+                }
+                catch (IOException e)
+                {
+                    log.warn("Error obtaining Server Status response", e);
+                    future.completeExceptionally(e);
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+        });
+
+        return future;
+    }
 
     /**
      * Processes the body of the given response and parses out the contained JSON object.
@@ -330,7 +590,8 @@ public class NeverScapeAloneClient {
 
         try
         {
-            return gson.fromJson(response.body().string(), type);
+            String response_string = response.body().string();
+            return gson.fromJson(response_string, type);
         }
         catch (IOException | JsonSyntaxException ex)
         {
@@ -373,49 +634,12 @@ public class NeverScapeAloneClient {
     }
 
     @Value
-    private static class ServerStatusLoad
-    {
-        @SerializedName("login")
-        String login;
-        @SerializedName("token")
-        String token;
-    }
-
-    /**
-     * Serializes a {@link Boolean} as the integers {@code 0} or {@code 1}.
-     */
-    private static class BooleanToZeroOneSerializer implements JsonSerializer<Boolean>
-    {
-        @Override
-        public JsonElement serialize(Boolean src, Type typeOfSrc, JsonSerializationContext context)
-        {
-            return context.serialize(src ? 1 : 0);
-        }
-    }
-
-    /**
-     * Serializes/Unserializes {@link Instant} using {@link Instant#getEpochSecond()}/{@link Instant#ofEpochSecond(long)}
-     */
-    private static class InstantSecondsConverter implements JsonSerializer<Instant>, JsonDeserializer<Instant>
-    {
-        @Override
-        public JsonElement serialize(Instant src, Type srcType, JsonSerializationContext context)
-        {
-            return new JsonPrimitive(src.getEpochSecond());
-        }
-
-        @Override
-        public Instant deserialize(JsonElement json, Type type, JsonDeserializationContext context)
-                throws JsonParseException
-        {
-            return Instant.ofEpochSecond(json.getAsLong());
-        }
-    }
-    @Value
     private static class UserRegistration
     {
         @SerializedName("login")
         String login;
+        @SerializedName("discord")
+        String discord;
         @SerializedName("token")
         String token;
     }

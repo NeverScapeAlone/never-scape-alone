@@ -21,6 +21,8 @@ public enum ServerStatusCode {
     BAD_HEADER,
     @SerializedName("bad rsn")
     BAD_RSN,
+    @SerializedName("bad discord")
+    BAD_DISCORD,
     @SerializedName("queue started")
     QUEUE_STARTED,
     @SerializedName("queue started failure")
@@ -28,6 +30,14 @@ public enum ServerStatusCode {
     @SerializedName("queue canceled")
     QUEUE_CANCELED,
     @SerializedName("queue canceled failure")
-    QUEUE_CANCELED_FAILURE;
+    QUEUE_CANCELED_FAILURE,
+    @SerializedName("no active matches")
+    NO_ACTIVE_MATCHES,
+    @SerializedName("pending matches")
+    PENDING_MATCHES,
+    @SerializedName("match accepted")
+    MATCH_ACCEPTED,
+    @SerializedName("match ended")
+    MATCH_ENDED;
 }
 

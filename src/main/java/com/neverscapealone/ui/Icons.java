@@ -4,6 +4,8 @@ import com.neverscapealone.NeverScapeAlonePlugin;
 import javax.swing.ImageIcon;
 import net.runelite.client.util.ImageUtil;
 
+import java.util.Objects;
+
 public class Icons
 {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
@@ -17,11 +19,25 @@ public class Icons
     public static final ImageIcon WEB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/web.png"));
     public static final ImageIcon PATREON_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/patreon.png"));
     public static final ImageIcon TWITTER_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/twitter.png"));
+    public static final ImageIcon ETH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/eth.png"));
+    public static final ImageIcon BTC_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/btc.png"));
+    public static final ImageIcon PAYPAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/paypal.png"));
+
+    public static final ImageIcon BUG_REPORT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bug_report.png"));
+
+    // region flags
+
+    public static final ImageIcon US_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/us.png"));
+    public static final ImageIcon OCEANIA_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/oceania.png"));
+    public static final ImageIcon EU_WEST_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/eu_west.png"));
+    public static final ImageIcon EU_CENTRAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/eu_central.png"));
+    public static final ImageIcon PLAYERS_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/players.png"));
 
     // status icons
     public static final ImageIcon WARNING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/warning.png"));
     public static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/error.png"));
-    public static final ImageIcon SPINNER_GIF = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/loading_spinner_darker.gif"));
+    public static final ImageIcon SPINNER_GIF = new ImageIcon("/loading_spinner_darker.gif");
+    public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
 
     // "skill", "boss", "minigame", "misc", "solo", "raids"
     // SKILLS
