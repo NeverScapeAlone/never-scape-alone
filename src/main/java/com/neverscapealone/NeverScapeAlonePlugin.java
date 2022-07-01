@@ -382,8 +382,16 @@ public class NeverScapeAlonePlugin extends Plugin
 										panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
 										return;
 									}
-									panel.setServerPanel("MATCH STARTED", "We've paired you with some other players. Enjoy!", panel.COLOR_COMPLETED);
+									if (matchInformationList.get(0).party_identifier.equals("NO PARTY")){
+										panel.setServerPanel("PARTY DISBANDED", "Your party has disbanded. Please exit queue and try again!", panel.COLOR_INFO);
+										panel.setPartnerPanelVisible(false);
+										panel.setMatchPanelVisible(false);
+										panel.setActivityPanelVisible(false);
+										panel.setButtonPanelVisible(false);
+										return;
+									}
 
+									panel.setServerPanel("MATCH STARTED", "We've paired you with some other players. Enjoy!", panel.COLOR_COMPLETED);
 									if (oldMatchInformation != matchInformationList){
 										// reduce panel draws
 										panel.setPartnerPanel(matchInformationList);
