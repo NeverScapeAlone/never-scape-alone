@@ -1,6 +1,7 @@
 package com.neverscapealone.ui;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
@@ -8,6 +9,7 @@ import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.jbosslog.JBossLog;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -62,6 +64,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // SWING OBJECTS
     JButton button_exit = new JButton();
     JButton button_accept = new JButton();
+    JButton button_reset = new JButton();
+    JButton button_undo = new JButton();
     private final JPanel linksPanel;
     public JPanel serverPanel;
     public final JPanel matchPanel;
@@ -266,6 +270,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx=0;
         c.gridy=0;
 
+        JLabel pluginVersion = new JLabel("Plugin Version: "+matchInformationArrayList.get(0).version);
+        pluginVersion.setIcon(Icons.NSA_ICON);
+        usersPanel.add(pluginVersion, c);
+        c.gridy +=1;
+
         World world = worldService.getWorlds().findWorld(Integer.parseInt(world_number));
         ImageIcon worldIcon = Icons.WARNING_ICON;
         switch(world.getLocation()){
@@ -286,13 +295,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         JLabel worldLabel = new JLabel("World: "+world_number);
         worldLabel.setIcon(worldIcon);
         usersPanel.add(worldLabel, c);
-
         c.gridy+=1;
 
         JLabel playerLabel = new JLabel("Players: "+String.valueOf(world.getPlayers()));
         playerLabel.setIcon(Icons.PLAYERS_ICON);
         usersPanel.add(playerLabel, c);
-
         c.gridy+=1;
 
         for (MatchInformation partner : matchInformationArrayList){
@@ -311,22 +318,47 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
             JLabel partner_name = new JLabel(partner.login);
             partner_name.setFont(FontManager.getRunescapeBoldFont());
-
+            partner_name.setIcon(Icons.GENERIC_PLAYER_ICON);
             userPanel.add(partner_name, userC);
 
             userC.anchor = GridBagConstraints.WEST;
+
+            // RuneWatch
+            if (!partner.runewatch.equals("NONE")){
+                userC.gridy += 1;
+                JLabel runeWatch = new JLabel(partner.runewatch);
+                runeWatch.setFont(FontManager.getRunescapeBoldFont());
+                runeWatch.setForeground(Color.red.darker());
+                runeWatch.setIcon(Icons.RUNEWATCH_ICON);
+                runeWatch.setToolTipText("RuneWatch alerts!");
+                userPanel.add(runeWatch, userC);
+            }
+
+            // WDR
+            if (!partner.wdr.equals("NONE")){
+                userC.gridy += 1;
+                JLabel weDoRaids = new JLabel(partner.wdr);
+                weDoRaids.setFont(FontManager.getRunescapeBoldFont());
+                weDoRaids.setForeground(Color.red.darker());
+                weDoRaids.setIcon(Icons.WDR_ICON);
+                weDoRaids.setToolTipText("WeDoRaids alerts!");
+                userPanel.add(weDoRaids, userC);
+            }
+
+            // Discord
             if (!partner.discord.equals("NONE")){
                 userC.gridy += 1;
                 JLabel discord = new JLabel(partner.discord);
                 discord.setFont(FontManager.getRunescapeFont());
                 discord.setIcon(Icons.DISCORD_ICON);
+                discord.setToolTipText("Player's discord");
                 userPanel.add(discord, userC);
             }
 
             if (partner.has_accepted) {
                 userPanel.setBackground(Color.GREEN.darker().darker().darker());
             } else {
-                userPanel.setBackground(Color.YELLOW.darker().darker().darker());
+                userPanel.setBackground(Color.ORANGE.darker().darker());
             }
 
             // add UserPanel to UsersPanel
@@ -465,14 +497,16 @@ public class NeverScapeAlonePanel extends PluginPanel {
         activityOptionPanelMaker.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        // init buttons
+        // init accept/exit  buttons
         JPanel buttonHolder = new JPanel();
         buttonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
         buttonHolder.setBackground(SUB_BACKGROUND_COLOR);
         buttonHolder.setLayout(new GridLayout(1,2));
 
         button_accept.setEnabled(false);
+        button_accept.setToolTipText("Accept current choice");
         button_exit.setEnabled(false);
+        button_exit.setToolTipText("Cancel current choice");
 
         button_exit.setIcon(Icons.CANCEL_ICON);
         button_exit.addActionListener(e -> activityPanelCancel(e));
@@ -481,6 +515,25 @@ public class NeverScapeAlonePanel extends PluginPanel {
         button_accept.setIcon(Icons.ACCEPT_ICON);
         button_accept.addActionListener(e -> activityPanelAccept(e));
         buttonHolder.add(button_accept);
+
+        // init
+        JPanel reverseButtonHolder = new JPanel();
+        reverseButtonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
+        reverseButtonHolder.setBackground(SUB_BACKGROUND_COLOR);
+        reverseButtonHolder.setLayout(new GridLayout(1,2));
+
+        button_reset.setEnabled(false);
+        button_reset.setToolTipText("Reset all choices");
+        button_undo.setEnabled(false);
+        button_undo.setToolTipText("Undo last choice");
+
+        button_reset.setIcon(Icons.RESET_ICON);
+        button_reset.addActionListener(e -> activityPanelReset(e));
+        reverseButtonHolder.add(button_reset);
+
+        button_undo.setIcon(Icons.UNDO_ICON);
+        button_undo.addActionListener(e -> activityPanelUndo(e));
+        reverseButtonHolder.add(button_undo);
 
         // init sliders
         JPanel spinnerHolder = new JPanel();
@@ -547,6 +600,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridy=1;
         activityOptionPanelMaker.add(buttonHolder, c);
 
+        c.gridx=0;
+        c.gridy=2;
+        activityOptionPanelMaker.add(reverseButtonHolder, c);
+
         return activityOptionPanelMaker;
     }
 
@@ -577,6 +634,18 @@ public class NeverScapeAlonePanel extends PluginPanel {
             // disable button status
             button_accept.setEnabled(true);
             button_exit.setEnabled(true);
+
+            enableDisableResetUndo();
+        }
+    }
+
+    private void enableDisableResetUndo(){
+        if (player_selections.size() == 0){
+            button_reset.setEnabled(false);
+            button_undo.setEnabled(false);
+        } else{
+            button_reset.setEnabled(true);
+            button_undo.setEnabled(true);
         }
     }
 
@@ -597,7 +666,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         JToggleButton old_button = ((JToggleButton) objectHx);
         old_button.setSelected(true);
         old_button.setEnabled(false);
-        old_button.setIcon(Icons.ACCEPT_ICON);
 
         // load payloads
         String activity_name = old_button.getName();
@@ -607,7 +675,54 @@ public class NeverScapeAlonePanel extends PluginPanel {
         button_accept.setEnabled(false);
         button_exit.setEnabled(false);
 
+        // change state of reset/undo buttons depending on player selections status
+        enableDisableResetUndo();
+
         // check button status
+        matchButtonStateSwitcher(player_selections.size());
+    }
+
+    private void activityPanelReset(ActionEvent actionEvent){
+        // resets all player selections & buttons
+        while (player_selections.size()>=1){
+            int last_index = player_selections.size()-1;
+            String activity = String.valueOf(player_selections.get(last_index).getAsJsonObject().get("activity"));
+            activity = activity.replace("\"", "");
+            for (Object button : activity_buttons){
+                JToggleButton jbutton = (JToggleButton) button;
+                if (jbutton.getName().equals(activity)){
+                    jbutton.setEnabled(true);
+                    jbutton.setSelected(false);
+                }
+            }
+            player_selections.remove(last_index);
+        }
+        button_reset.setEnabled(false);
+        button_undo.setEnabled(false);
+        matchButtonStateSwitcher(player_selections.size());
+    }
+
+    private void activityPanelUndo(ActionEvent actionEvent){
+        // removes most recently added player selection
+        if (player_selections.size()>=1){
+
+            int last_index = player_selections.size()-1;
+            String activity = String.valueOf(player_selections.get(last_index).getAsJsonObject().get("activity"));
+            activity = activity.replace("\"", "");
+            for (Object button : activity_buttons){
+                JToggleButton jbutton = (JToggleButton) button;
+                if (jbutton.getName().equals(activity)){
+                    jbutton.setEnabled(true);
+                    jbutton.setSelected(false);
+                }
+            }
+            player_selections.remove(last_index);
+        }
+
+        if (player_selections.size()==0){
+            button_reset.setEnabled(false);
+            button_undo.setEnabled(false);
+        }
         matchButtonStateSwitcher(player_selections.size());
     }
 
