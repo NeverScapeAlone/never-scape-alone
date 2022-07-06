@@ -1,7 +1,6 @@
 package com.neverscapealone.ui;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
@@ -9,7 +8,6 @@ import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneClient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.jbosslog.JBossLog;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -19,9 +17,7 @@ import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.LinkBrowser;
 import net.runelite.http.api.worlds.World;
-import net.runelite.http.api.worlds.WorldResult;
 import org.apache.commons.text.WordUtils;
-import net.runelite.client.game.WorldService;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -29,9 +25,11 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class NeverScapeAlonePanel extends PluginPanel {
 
@@ -270,10 +268,19 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx=0;
         c.gridy=0;
 
-        JLabel pluginVersion = new JLabel("Plugin Version: "+matchInformationArrayList.get(0).version);
-        pluginVersion.setIcon(Icons.NSA_ICON);
+        JLabel pluginVersion = new JLabel(matchInformationArrayList.get(0).version);
+        pluginVersion.setIcon(Icons.GITHUB_ICON);
+        pluginVersion.setToolTipText("The current plugin version.");
         usersPanel.add(pluginVersion, c);
         c.gridy +=1;
+
+        String party_identifier = matchInformationArrayList.get(0).party_identifier;
+        JLabel partyLabel = new JLabel("Hover for Party ID");
+        partyLabel.setToolTipText(party_identifier);
+        partyLabel.setIcon(Icons.NSA_ICON);
+
+        usersPanel.add(partyLabel, c);
+        c.gridy+=1;
 
         World world = worldService.getWorlds().findWorld(Integer.parseInt(world_number));
         ImageIcon worldIcon = Icons.WARNING_ICON;
@@ -302,6 +309,25 @@ public class NeverScapeAlonePanel extends PluginPanel {
         usersPanel.add(playerLabel, c);
         c.gridy+=1;
 
+        if (!matchInformationArrayList.get(0).discord_invite.equals("NONE")){
+            JButton discordInviteButton = new JButton();
+            String invite = matchInformationArrayList.get(0).discord_invite;
+            discordInviteButton.setText("Join Party");
+            discordInviteButton.setIcon(Icons.DISCORD_ICON);
+            discordInviteButton.setBackground(Color.blue.darker().darker());
+            discordInviteButton.addMouseListener(new MouseAdapter()
+            {
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    LinkBrowser.browse(invite);
+                }
+            });
+
+            usersPanel.add(discordInviteButton, c);
+            c.gridy+=1;
+        }
+
         for (MatchInformation partner : matchInformationArrayList){
             JPanel userPanel = new JPanel();
             userPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -318,7 +344,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
             JLabel partner_name = new JLabel(partner.login);
             partner_name.setFont(FontManager.getRunescapeBoldFont());
-            partner_name.setIcon(Icons.GENERIC_PLAYER_ICON);
+            if (partner.verified){
+                partner_name.setIcon(Icons.VERIFIED_ICON);
+                partner_name.setToolTipText("Player is verified.");
+            } else {
+                partner_name.setIcon(Icons.UNVERIFIED_ICON);
+                partner_name.setToolTipText("Player is unverified.");
+            }
+
             userPanel.add(partner_name, userC);
 
             userC.anchor = GridBagConstraints.WEST;

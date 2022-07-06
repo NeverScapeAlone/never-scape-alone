@@ -8,10 +8,8 @@ public enum WorldTypeSelection {
     F2P("Free-to-Play", 0),
     P2P("Members", 1),
     BOTH("Both", 2);
-
     private final String name;
     private final int world_type;
-
     @Override
     public String toString()
     {

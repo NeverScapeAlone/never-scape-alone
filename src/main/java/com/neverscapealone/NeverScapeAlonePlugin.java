@@ -352,6 +352,7 @@ public class NeverScapeAlonePlugin extends Plugin
 			case REGISTRATION_FAILURE:
 			case REGISTERING:
 			case MAINTENANCE:
+			case RATE_LIMIT:
 			case AUTH_FAILURE:
 			case BAD_HEADER:
 			case BAD_TOKEN:
@@ -382,6 +383,7 @@ public class NeverScapeAlonePlugin extends Plugin
 										panel.matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
 										return;
 									}
+
 									if (matchInformationList.get(0).party_identifier.equals("NO PARTY")){
 										panel.setServerPanel("PARTY DISBANDED", "Your party has disbanded. Please exit queue and try again!", panel.COLOR_INFO);
 										panel.setPartnerPanelVisible(false);
@@ -585,6 +587,10 @@ public class NeverScapeAlonePlugin extends Plugin
 				panel.setPartnerPanelVisible(false);
 				panel.setActivityPanelVisible(true);
 				panel.setButtonPanelVisible(true);
+				break;
+			case RATE_LIMIT:
+				serverStatusState = status;
+				panel.setServerPanel("RATE LIMIT","You've sent too many requests too quickly. Slow down!", panel.CLIENT_SIDE_ERROR);
 				break;
 			case REGISTERING:
 				serverStatusState = status;
