@@ -24,6 +24,8 @@ public class Icons
     public static final ImageIcon ETH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/eth.png"));
     public static final ImageIcon BTC_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/btc.png"));
     public static final ImageIcon PAYPAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/paypal.png"));
+    public static final ImageIcon UNVERIFIED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/unverified.png"));
+    public static final ImageIcon VERIFIED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/generic_player.png"));
     public static final ImageIcon NSA_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/NeverScapeAloneVersion.png"));
     public static final ImageIcon BUG_REPORT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bug_report.png"));
     public static final ImageIcon RUNEWATCH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runewatch.png"));
@@ -36,7 +38,6 @@ public class Icons
     public static final ImageIcon EU_WEST_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/eu_west.png"));
     public static final ImageIcon EU_CENTRAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/eu_central.png"));
     public static final ImageIcon PLAYERS_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/players.png"));
-    public static final ImageIcon GENERIC_PLAYER_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/generic_player.png"));
 
     // status icons
     public static final ImageIcon WARNING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/warning.png"));

@@ -38,6 +38,9 @@ public enum ServerStatusCode {
     @SerializedName("match accepted")
     MATCH_ACCEPTED,
     @SerializedName("match ended")
-    MATCH_ENDED;
+    MATCH_ENDED,
+    @SerializedName("rate limit")
+    RATE_LIMIT;
+
 }
 
