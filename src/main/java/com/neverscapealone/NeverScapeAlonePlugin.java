@@ -65,7 +65,7 @@ public class NeverScapeAlonePlugin extends Plugin
 	public static PluginManager pluginManager;
 
 	// basic user information for panel
-	private String username = "Ferrariic";
+	private String username = "";
 
 	// tick count
 	public int queueTime = 0;
