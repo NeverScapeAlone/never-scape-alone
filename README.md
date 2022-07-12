@@ -1,4 +1,4 @@
-# Never Scape Alone
+# NeverScapeAlone
 ![GitHub](https://img.shields.io/github/license/NeverScapeAlone/never-scape-alone)
 [![](https://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/rank/plugin/neverscapealone)](https://runelite.net/plugin-hub) [![](https://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/neverscapealone)](https://runelite.net/plugin-hub) 
 ![Twitter Follow](https://img.shields.io/twitter/follow/NeverScapeAlone?style=social)
