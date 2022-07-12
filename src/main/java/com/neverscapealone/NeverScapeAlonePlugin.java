@@ -529,7 +529,7 @@ public class NeverScapeAlonePlugin extends Plugin
 				break;
 			case BAD_DISCORD:
 				serverStatusState = status;
-				panel.setServerPanel("BAD DISCORD", "The incoming Discord Username does not match Pattern: ^@[A-Za-z]{1,32}#[0-9]{4}. please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
+				panel.setServerPanel("BAD DISCORD", "The incoming Discord Username does not match known patterns, or ^@[A-Za-z]{1,32}#[0-9]{4}. please contact Plugin Support.", panel.CLIENT_SIDE_ERROR);
 				panel.matchButtonManager(QueueButtonStatus.OFFLINE);
 				panel.setMatchPanelVisible(false);
 				panel.setPartnerPanelVisible(false);
