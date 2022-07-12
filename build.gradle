@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'com.neverscapealone'
-version = '1.0.0'
+version = 'v1.0.2-alpha'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
