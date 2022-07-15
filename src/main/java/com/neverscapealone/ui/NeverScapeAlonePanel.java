@@ -96,9 +96,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public ArrayList activity_buttons = new ArrayList<JToggleButton>();
     private ItemEvent itemEventHx = null;
     // SPINNERS
-    SpinnerNumberModel party_member_count_numbers = new SpinnerNumberModel(2, 2,100, 1);
-    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
-    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
+    SpinnerNumberModel party_member_count_numbers = new SpinnerNumberModel(2, 2, 100, 1);
+    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[]{"Flexible", "Beginner", "Intermediate", "Advanced"});
+    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[]{"Flexible", "Beginner", "Intermediate", "Advanced"});
     private final JSpinner party_member_count = new JSpinner(party_member_count_numbers);
     private final JSpinner self_experience_level = new JSpinner(self_experience_level_list);
     private final JSpinner partner_experience_level = new JSpinner(partner_experience_level_list);
@@ -117,16 +117,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     @Getter
     @AllArgsConstructor
-    public enum WebLink
-    {
-        DISCORD(Icons.DISCORD_ICON, "Join our Discord","https://discord.gg/rs2AH3vnmf"),
+    public enum WebLink {
+        DISCORD(Icons.DISCORD_ICON, "Join our Discord", "https://discord.gg/rs2AH3vnmf"),
         TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter", "https://www.twitter.com/NeverScapeAlone"),
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-        PATREON(Icons.PATREON_ICON, "Support us through Patreon","https://www.patreon.com/bot_detector"),
-        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal","https://www.paypal.com/paypalme/osrsbotdetector"),
+        PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
+        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
         ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
-        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github","https://github.com/NeverScapeAlone"),
-        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here","https://github.com/NeverScapeAlone/never-scape-alone/issues");
+        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github", "https://github.com/NeverScapeAlone"),
+        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
         private final ImageIcon image;
         private final String tooltip;
@@ -137,8 +136,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public NeverScapeAlonePanel(
             NeverScapeAlonePlugin plugin,
             NeverScapeAloneConfig config,
-            EventBus eventBus, NeverScapeAloneClient client, Client user, WorldService worldService)
-    {
+            EventBus eventBus, NeverScapeAloneClient client, Client user, WorldService worldService) {
         this.config = config;
         this.plugin = plugin;
         this.client = client;
@@ -177,11 +175,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         activityOptionPanel = activityOptionPanelMaker();
 
         // icon panels
-        skillPanel = queuePanel(4,6);
-        bossPanel = queuePanel(7,6);
-        raidPanel = queuePanel(2,2);
-        minigamePanel = queuePanel(6,6);
-        miscPanel = queuePanel(1,3);
+        skillPanel = queuePanel(4, 6);
+        bossPanel = queuePanel(7, 6);
+        raidPanel = queuePanel(2, 2);
+        minigamePanel = queuePanel(6, 6);
+        miscPanel = queuePanel(1, 3);
 
         // TOOLBAR CONSTRUCTION
 
@@ -245,7 +243,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return partnerPanel;
     }
 
-    public void setPartnerPanel(ArrayList<MatchInformation> matchInformationArrayList){
+    public void setPartnerPanel(ArrayList<MatchInformation> matchInformationArrayList) {
         JPanel usersPanel = (JPanel) partnerPanel.getComponent(0);
         usersPanel.removeAll();
 
@@ -255,8 +253,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         GridBagConstraints c = new GridBagConstraints();
 
         Border border = BorderFactory.createBevelBorder(1);
-        String header = WordUtils.capitalizeFully(matchInformationArrayList.get(0).party_identifier.split("[$]")[0].replace('_',' '));
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(border,header,TitledBorder.CENTER, TitledBorder.TOP);
+        String header = WordUtils.capitalizeFully(matchInformationArrayList.get(0).party_identifier.split("[$]")[0].replace('_', ' '));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(border, header, TitledBorder.CENTER, TitledBorder.TOP);
         usersPanel.setBorder(titledBorder);
 
         String world_number = matchInformationArrayList.get(0).party_identifier.split("(&world=)")[1];
@@ -265,14 +263,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.WEST;
 
-        c.gridx=0;
-        c.gridy=0;
+        c.gridx = 0;
+        c.gridy = 0;
 
         JLabel pluginVersion = new JLabel(matchInformationArrayList.get(0).version);
         pluginVersion.setIcon(Icons.GITHUB_ICON);
         pluginVersion.setToolTipText("The current plugin version.");
         usersPanel.add(pluginVersion, c);
-        c.gridy +=1;
+        c.gridy += 1;
 
         String party_identifier = matchInformationArrayList.get(0).party_identifier;
         JLabel partyLabel = new JLabel("Hover for Party ID");
@@ -280,11 +278,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         partyLabel.setIcon(Icons.NSA_ICON);
 
         usersPanel.add(partyLabel, c);
-        c.gridy+=1;
+        c.gridy += 1;
 
         World world = worldService.getWorlds().findWorld(Integer.parseInt(world_number));
         ImageIcon worldIcon = Icons.WARNING_ICON;
-        switch(world.getLocation()){
+        switch (world.getLocation()) {
             case 0:
                 worldIcon = Icons.US_ICON;
                 break;
@@ -299,36 +297,34 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 break;
         }
 
-        JLabel worldLabel = new JLabel("World: "+world_number);
+        JLabel worldLabel = new JLabel("World: " + world_number);
         worldLabel.setIcon(worldIcon);
         usersPanel.add(worldLabel, c);
-        c.gridy+=1;
+        c.gridy += 1;
 
-        JLabel playerLabel = new JLabel("Players: "+String.valueOf(world.getPlayers()));
+        JLabel playerLabel = new JLabel("Players: " + String.valueOf(world.getPlayers()));
         playerLabel.setIcon(Icons.PLAYERS_ICON);
         usersPanel.add(playerLabel, c);
-        c.gridy+=1;
+        c.gridy += 1;
 
-        if (!matchInformationArrayList.get(0).discord_invite.equals("NONE")){
+        if (!matchInformationArrayList.get(0).discord_invite.equals("NONE")) {
             JButton discordInviteButton = new JButton();
             String invite = matchInformationArrayList.get(0).discord_invite;
             discordInviteButton.setText("Join Party");
             discordInviteButton.setIcon(Icons.DISCORD_ICON);
             discordInviteButton.setBackground(Color.blue.darker().darker());
-            discordInviteButton.addMouseListener(new MouseAdapter()
-            {
+            discordInviteButton.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e)
-                {
+                public void mousePressed(MouseEvent e) {
                     LinkBrowser.browse(invite);
                 }
             });
 
             usersPanel.add(discordInviteButton, c);
-            c.gridy+=1;
+            c.gridy += 1;
         }
 
-        for (MatchInformation partner : matchInformationArrayList){
+        for (MatchInformation partner : matchInformationArrayList) {
             JPanel userPanel = new JPanel();
             userPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
             userPanel.setBackground(BACKGROUND_COLOR);
@@ -344,7 +340,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
             JLabel partner_name = new JLabel(partner.login);
             partner_name.setFont(FontManager.getRunescapeBoldFont());
-            if (partner.verified){
+            if (partner.verified) {
                 partner_name.setIcon(Icons.VERIFIED_ICON);
                 partner_name.setToolTipText("Player is verified.");
             } else {
@@ -357,7 +353,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             userC.anchor = GridBagConstraints.WEST;
 
             // RuneWatch
-            if (!partner.runewatch.equals("NONE")){
+            if (!partner.runewatch.equals("NONE")) {
                 userC.gridy += 1;
                 JLabel runeWatch = new JLabel(partner.runewatch);
                 runeWatch.setFont(FontManager.getRunescapeBoldFont());
@@ -368,7 +364,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
 
             // WDR
-            if (!partner.wdr.equals("NONE")){
+            if (!partner.wdr.equals("NONE")) {
                 userC.gridy += 1;
                 JLabel weDoRaids = new JLabel(partner.wdr);
                 weDoRaids.setFont(FontManager.getRunescapeBoldFont());
@@ -379,7 +375,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
 
             // Discord
-            if (!partner.discord.equals("NONE")){
+            if (!partner.discord.equals("NONE")) {
                 userC.gridy += 1;
                 JLabel discord = new JLabel(partner.discord);
                 discord.setFont(FontManager.getRunescapeFont());
@@ -396,9 +392,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
             // add UserPanel to UsersPanel
             usersPanel.add(Box.createVerticalStrut(2), c);
-            c.gridy+=1;
+            c.gridy += 1;
             usersPanel.add(userPanel, c);
-            c.gridy+=1;
+            c.gridy += 1;
         }
 
         usersPanel.revalidate();
@@ -411,17 +407,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
         partnerPanel.add(usersPanel, c_panel);
     }
 
-    public void setPartnerPanelVisible(Boolean tf){
+    public void setPartnerPanelVisible(Boolean tf) {
         partnerPanelSeperator.setVisible(tf);
         partnerPanel.setVisible(tf);
     }
 
-    public void setMatchPanelVisible(Boolean tf){
+    public void setMatchPanelVisible(Boolean tf) {
         matchPanelSeperator.setVisible(tf);
         matchPanel.setVisible(tf);
     }
 
-    public void setButtonPanelVisible(Boolean tf){
+    public void setButtonPanelVisible(Boolean tf) {
         skillPanelSeperator.setVisible(tf);
         skillPanelTitle.setVisible(tf);
         skillPanel.setVisible(tf);
@@ -443,20 +439,16 @@ public class NeverScapeAlonePanel extends PluginPanel {
         miscPanel.setVisible(tf);
     }
 
-    private JPanel linksPanel()
-    {
+    private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         linksPanel.setBackground(SUB_BACKGROUND_COLOR);
-        for (WebLink w : WebLink.values())
-        {
+        for (WebLink w : WebLink.values()) {
             JLabel link = new JLabel(w.getImage());
             link.setToolTipText(w.getTooltip());
-            link.addMouseListener(new MouseAdapter()
-            {
+            link.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e)
-                {
+                public void mousePressed(MouseEvent e) {
                     LinkBrowser.browse(w.getLink());
                 }
             });
@@ -465,22 +457,21 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return linksPanel;
     }
 
-    private JPanel serverPanel()
-    {
+    private JPanel serverPanel() {
         JPanel serverPanel = new JPanel();
         serverPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         serverPanel.add(new JLabel());
         return serverPanel;
     }
 
-    public void setServerPanel(String display_text, String tool_tip, Color background){
+    public void setServerPanel(String display_text, String tool_tip, Color background) {
         JLabel label = (JLabel) (serverPanel.getComponent(0));
         serverPanel.setBackground(background);
         label.setText(display_text);
         serverPanel.setToolTipText(tool_tip);
     }
 
-    public JPanel matchPanel(){
+    public JPanel matchPanel() {
         JPanel matchPanel = new JPanel();
         matchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         matchPanel.setBackground(SUB_BACKGROUND_COLOR);
@@ -488,7 +479,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         // border for Match Panel
         Border border = BorderFactory.createBevelBorder(1);
         String header = "Queue Progress";
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(border,header,TitledBorder.CENTER, TitledBorder.TOP);
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(border, header, TitledBorder.CENTER, TitledBorder.TOP);
         matchPanel.setBorder(titledBorder);
         matchPanel.setLayout(new GridBagLayout());
 
@@ -498,21 +489,21 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.anchor = GridBagConstraints.WEST;
         c.weightx = 1;
 
-        c.gridx=0;
-        c.gridy=0;
+        c.gridx = 0;
+        c.gridy = 0;
         matchPanel.add(new JLabel("Queue Time: 00:00:00"), c);
         return matchPanel;
     }
 
-    public void setMatchPanelQueueTime(String display_text){
+    public void setMatchPanelQueueTime(String display_text) {
         JLabel label = (JLabel) (matchPanel.getComponent(0));
         label.setText(display_text);
     }
 
-    private JPanel queuePanel(int row, int column){
-        if (row==0 || column==0){
-            row=5;
-            column=5;
+    private JPanel queuePanel(int row, int column) {
+        if (row == 0 || column == 0) {
+            row = 5;
+            column = 5;
         }
         JPanel queuePanel = new JPanel();
         queuePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -521,7 +512,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return queuePanel;
     }
 
-    private JPanel activityOptionPanelMaker(){
+    private JPanel activityOptionPanelMaker() {
         //init activity bar
         JPanel activityOptionPanelMaker = new JPanel();
 
@@ -534,7 +525,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         JPanel buttonHolder = new JPanel();
         buttonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
         buttonHolder.setBackground(SUB_BACKGROUND_COLOR);
-        buttonHolder.setLayout(new GridLayout(1,2));
+        buttonHolder.setLayout(new GridLayout(1, 2));
 
         button_accept.setEnabled(false);
         button_accept.setToolTipText("Accept current choice");
@@ -553,7 +544,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         JPanel reverseButtonHolder = new JPanel();
         reverseButtonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
         reverseButtonHolder.setBackground(SUB_BACKGROUND_COLOR);
-        reverseButtonHolder.setLayout(new GridLayout(1,2));
+        reverseButtonHolder.setLayout(new GridLayout(1, 2));
 
         button_reset.setEnabled(false);
         button_reset.setToolTipText("Reset all choices");
@@ -596,28 +587,28 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c_spinner.anchor = GridBagConstraints.CENTER;
         c_spinner.weightx = 1;
 
-        c_spinner.gridx=0;
-        c_spinner.gridy=0;
+        c_spinner.gridx = 0;
+        c_spinner.gridy = 0;
         spinnerHolder.add(party_member_count_title, c_spinner);
 
-        c_spinner.gridx=1;
-        c_spinner.gridy=0;
+        c_spinner.gridx = 1;
+        c_spinner.gridy = 0;
         spinnerHolder.add(party_member_count, c_spinner);
 
-        c_spinner.gridx=0;
-        c_spinner.gridy=1;
+        c_spinner.gridx = 0;
+        c_spinner.gridy = 1;
         spinnerHolder.add(self_experience_level_title, c_spinner);
 
-        c_spinner.gridx=1;
-        c_spinner.gridy=1;
-        spinnerHolder.add(self_experience_level,c_spinner);
+        c_spinner.gridx = 1;
+        c_spinner.gridy = 1;
+        spinnerHolder.add(self_experience_level, c_spinner);
 
-        c_spinner.gridx=0;
-        c_spinner.gridy=2;
+        c_spinner.gridx = 0;
+        c_spinner.gridy = 2;
         spinnerHolder.add(partner_experience_level_title, c_spinner);
 
-        c_spinner.gridx=1;
-        c_spinner.gridy=2;
+        c_spinner.gridx = 1;
+        c_spinner.gridy = 2;
         spinnerHolder.add(partner_experience_level, c_spinner);
 
         // Add sections to activity panel option maker
@@ -625,38 +616,38 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = .05;
 
-        c.gridx=0;
-        c.gridy=0;
+        c.gridx = 0;
+        c.gridy = 0;
         activityOptionPanelMaker.add(spinnerHolder, c);
 
-        c.gridx=0;
-        c.gridy=1;
+        c.gridx = 0;
+        c.gridy = 1;
         activityOptionPanelMaker.add(buttonHolder, c);
 
-        c.gridx=0;
-        c.gridy=2;
+        c.gridx = 0;
+        c.gridy = 2;
         activityOptionPanelMaker.add(reverseButtonHolder, c);
 
         return activityOptionPanelMaker;
     }
 
-    public void setActivityPanelVisible(Boolean tf){
+    public void setActivityPanelVisible(Boolean tf) {
         activityOptionPanelSeperator.setVisible(tf);
         activityPanelTitle.setVisible(tf);
         activityOptionPanel.setVisible(tf);
     }
 
-    private void buttons_ActivityOptions(ItemEvent itemEvent){
+    private void buttons_ActivityOptions(ItemEvent itemEvent) {
         Object object = itemEvent.getItem();
-        if (object instanceof JToggleButton){
+        if (object instanceof JToggleButton) {
 
             // opens selection choices
-            if (itemEventHx != null){
-                if (itemEventHx != itemEvent){
+            if (itemEventHx != null) {
+                if (itemEventHx != itemEvent) {
                     Object objectHx = itemEventHx.getItem();
                     JToggleButton old_button = ((JToggleButton) objectHx);
 
-                    if (old_button.isSelected() && old_button.isEnabled()){
+                    if (old_button.isSelected() && old_button.isEnabled()) {
                         old_button.setSelected(false);
                     }
 
@@ -672,17 +663,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
     }
 
-    private void enableDisableResetUndo(){
-        if (player_selections.size() == 0){
+    private void enableDisableResetUndo() {
+        if (player_selections.size() == 0) {
             button_reset.setEnabled(false);
             button_undo.setEnabled(false);
-        } else{
+        } else {
             button_reset.setEnabled(true);
             button_undo.setEnabled(true);
         }
     }
 
-    private void activityPanelCancel(ActionEvent actionEvent){
+    private void activityPanelCancel(ActionEvent actionEvent) {
         // cancels active item
         Object objectHx = itemEventHx.getItem();
         JToggleButton old_button = ((JToggleButton) objectHx);
@@ -693,7 +684,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         button_exit.setEnabled(false);
     }
 
-    private void activityPanelAccept(ActionEvent actionEvent){
+    private void activityPanelAccept(ActionEvent actionEvent) {
         // sets active item
         Object objectHx = itemEventHx.getItem();
         JToggleButton old_button = ((JToggleButton) objectHx);
@@ -715,15 +706,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchButtonStateSwitcher(player_selections.size());
     }
 
-    private void activityPanelReset(ActionEvent actionEvent){
+    private void activityPanelReset(ActionEvent actionEvent) {
         // resets all player selections & buttons
-        while (player_selections.size()>=1){
-            int last_index = player_selections.size()-1;
+        while (player_selections.size() >= 1) {
+            int last_index = player_selections.size() - 1;
             String activity = String.valueOf(player_selections.get(last_index).getAsJsonObject().get("activity"));
             activity = activity.replace("\"", "");
-            for (Object button : activity_buttons){
+            for (Object button : activity_buttons) {
                 JToggleButton jbutton = (JToggleButton) button;
-                if (jbutton.getName().equals(activity)){
+                if (jbutton.getName().equals(activity)) {
                     jbutton.setEnabled(true);
                     jbutton.setSelected(false);
                 }
@@ -735,16 +726,16 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchButtonStateSwitcher(player_selections.size());
     }
 
-    private void activityPanelUndo(ActionEvent actionEvent){
+    private void activityPanelUndo(ActionEvent actionEvent) {
         // removes most recently added player selection
-        if (player_selections.size()>=1){
+        if (player_selections.size() >= 1) {
 
-            int last_index = player_selections.size()-1;
+            int last_index = player_selections.size() - 1;
             String activity = String.valueOf(player_selections.get(last_index).getAsJsonObject().get("activity"));
             activity = activity.replace("\"", "");
-            for (Object button : activity_buttons){
+            for (Object button : activity_buttons) {
                 JToggleButton jbutton = (JToggleButton) button;
-                if (jbutton.getName().equals(activity)){
+                if (jbutton.getName().equals(activity)) {
                     jbutton.setEnabled(true);
                     jbutton.setSelected(false);
                 }
@@ -752,14 +743,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
             player_selections.remove(last_index);
         }
 
-        if (player_selections.size()==0){
+        if (player_selections.size() == 0) {
             button_reset.setEnabled(false);
             button_undo.setEnabled(false);
         }
         matchButtonStateSwitcher(player_selections.size());
     }
 
-    private void appendSelections(String activity_name){
+    private void appendSelections(String activity_name) {
         /** player_selections Layout
          *  [
          *   {
@@ -791,7 +782,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         boolean f2p = true;
         boolean p2p = true;
-        switch(config.worldTypeSelection()){
+        switch (config.worldTypeSelection()) {
             case F2P:
                 p2p = false;
                 break;
@@ -809,11 +800,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         player_selections.add(payload);
     }
 
-    private JPanel matchButton(){
+    private JPanel matchButton() {
         JPanel matchButton = new JPanel();
         matchButton.setBorder(new EmptyBorder(0, 0, 0, 0));
         matchButton.setBackground(SUB_BACKGROUND_COLOR);
-        matchButton.setLayout(new GridLayout(1,1));
+        matchButton.setLayout(new GridLayout(1, 1));
 
         matchingButton.setText("Offline");
         matchingButton.setBackground(COLOR_DISABLED);
@@ -822,11 +813,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return matchButton;
     }
 
-    private JPanel acceptOrDeclineButtons(){
+    private JPanel acceptOrDeclineButtons() {
         JPanel acceptOrDeclinePanel = new JPanel();
         acceptOrDeclinePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         acceptOrDeclinePanel.setBackground(SUB_BACKGROUND_COLOR);
-        acceptOrDeclinePanel.setLayout(new GridLayout(1,2));
+        acceptOrDeclinePanel.setLayout(new GridLayout(1, 2));
 
         acceptButton.setBackground(Color.green.darker().darker().darker());
         acceptButton.setText(QueueButtonStatus.ACCEPT.getName());
@@ -841,9 +832,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return acceptOrDeclinePanel;
     }
 
-    private void addQueueButtons(){
+    private void addQueueButtons() {
         ActivityReference[] values = ActivityReference.values();
-        for(ActivityReference value: values) {
+        for (ActivityReference value : values) {
             // button construction
             JToggleButton button = new JToggleButton();
             button.setIcon(value.getIcon());
@@ -853,7 +844,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.addItemListener(e -> buttons_ActivityOptions(e));
             activity_buttons.add(button);
 
-            switch(value.getActivity()){
+            switch (value.getActivity()) {
                 case "skill":
                     skillPanel.add(button);
                     break;
@@ -872,9 +863,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
     }
 
-    private void matchButtonStateSwitcher(int config_counter){
+    private void matchButtonStateSwitcher(int config_counter) {
         // switches match button state
-        switch(NeverScapeAlonePlugin.serverStatusState.getStatus()) {
+        switch (NeverScapeAlonePlugin.serverStatusState.getStatus()) {
             case ALIVE:
             case REGISTERED:
             case QUEUE_CANCELED:
@@ -903,7 +894,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
     }
 
-    public void matchButtonManager(QueueButtonStatus state){
+    public void matchButtonManager(QueueButtonStatus state) {
         switch (state) {
             case OFFLINE:
                 matchingButton.setText(state.getName());
@@ -944,7 +935,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 break;
         }
     }
-    private JPanel title(String title_text){
+
+    private JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);

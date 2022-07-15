@@ -30,10 +30,8 @@ import java.io.IOException;
 /**
  * Exception for when a tokenized route in {@link NeverScapeAloneClient} fails due to using a bad or unauthorized token.
  */
-public class UnauthorizedTokenException extends IOException
-{
-    public UnauthorizedTokenException(String message)
-    {
+public class UnauthorizedTokenException extends IOException {
+    public UnauthorizedTokenException(String message) {
         super(message);
     }
 }

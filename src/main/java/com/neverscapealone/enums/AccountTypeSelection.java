@@ -13,15 +13,14 @@ public enum AccountTypeSelection {
     GIM("GIM", 4),
     HCGIM("HCGIM", 5),
     MAINS("PVP Mains", 6),
-    PURES("PVP Pures",7),
-    ALL("All Accounts",8);
+    PURES("PVP Pures", 7),
+    ALL("All Accounts", 8);
 
     private final String name;
     private final int account_type;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }

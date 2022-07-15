@@ -43,10 +43,10 @@ public class NeverScapeAloneClient {
     private static final Supplier<String> CURRENT_EPOCH_SUPPLIER = () -> String.valueOf(Instant.now().getEpochSecond());
 
     private NeverScapeAlonePlugin plugin;
+
     @Getter
     @AllArgsConstructor
-    public enum ApiPath
-    {
+    public enum ApiPath {
         SERVER_STATUS("server-status/"),
         USER_REGISTRATION("user-token/register"),
         USER_QUEUE_START("queue/start"),
@@ -56,8 +56,7 @@ public class NeverScapeAloneClient {
         CHECK_MATCH_STATUS("matchmaking/check-status"),
         GET_MATCH_INFORMATION("matchmaking/get-match-information"),
         ACCEPT_MATCH("matchmaking/accept"),
-        END_MATCH("matchmaking/end-session")
-        ;
+        END_MATCH("matchmaking/end-session");
 
         final String path;
     }
@@ -73,19 +72,19 @@ public class NeverScapeAloneClient {
 
     /**
      * Constructs a base URL for the given {@code path}.
+     *
      * @param path The path to get the base URL for
      * @return The base URL for the given {@code path}.
      */
-    private HttpUrl getUrl(ApiPath path)
-    {
+    private HttpUrl getUrl(ApiPath path) {
 
         return BASE_HTTP_URL.newBuilder()
                 .addPathSegments(path.getPath())
                 .build();
     }
+
     @Inject
-    public NeverScapeAloneClient(OkHttpClient rlClient)
-    {
+    public NeverScapeAloneClient(OkHttpClient rlClient) {
         okHttpClient = rlClient.newBuilder()
                 .pingInterval(0, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
@@ -101,8 +100,7 @@ public class NeverScapeAloneClient {
                 .build();
     }
 
-    public CompletableFuture<ServerStatus> hitRoute(String login, String discord, String token, ApiPath apiPath)
-    {
+    public CompletableFuture<ServerStatus> hitRoute(String login, String discord, String token, ApiPath apiPath) {
         Request request = new Request.Builder()
                 .url(getUrl(apiPath).newBuilder()
                         .addQueryParameter("login", login)
@@ -112,13 +110,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -126,23 +122,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -151,8 +139,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> requestServerStatus(String login, String discord, String token)
-    {
+    public CompletableFuture<ServerStatus> requestServerStatus(String login, String discord, String token) {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.SERVER_STATUS).newBuilder()
                         .addQueryParameter("login", login)
@@ -162,13 +149,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -176,23 +161,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -201,8 +178,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> registerUser(String login, String discord, String token)
-    {
+    public CompletableFuture<ServerStatus> registerUser(String login, String discord, String token) {
 
         Gson bdGson = gson.newBuilder().create();
 
@@ -212,13 +188,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -226,23 +200,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -251,8 +217,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> startUserQueue(String login, String discord, String token, JsonObject wrapper)
-    {
+    public CompletableFuture<ServerStatus> startUserQueue(String login, String discord, String token, JsonObject wrapper) {
         Gson bdGson = gson.newBuilder().create();
 
         Request request = new Request.Builder()
@@ -261,18 +226,16 @@ public class NeverScapeAloneClient {
                         .addQueryParameter("discord", discord)
                         .addQueryParameter("token", token)
                         .build()
-                    )
+                )
                 .post(RequestBody.create(JSON, bdGson.toJson(wrapper)))
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -280,23 +243,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -305,8 +260,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String discord, String token)
-    {
+    public CompletableFuture<ServerStatus> cancelUserQueue(String login, String discord, String token) {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.USER_QUEUE_CANCEL).newBuilder()
                         .addQueryParameter("login", login)
@@ -317,13 +271,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -331,23 +283,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -356,8 +300,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> endMatch(String login, String discord, String token)
-    {
+    public CompletableFuture<ServerStatus> endMatch(String login, String discord, String token) {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.END_MATCH).newBuilder()
                         .addQueryParameter("login", login)
@@ -368,13 +311,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -382,23 +323,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -407,8 +340,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ArrayList<MatchInformation>> getMatchInformation(String login, String discord, String token)
-    {
+    public CompletableFuture<ArrayList<MatchInformation>> getMatchInformation(String login, String discord, String token) {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.GET_MATCH_INFORMATION).newBuilder()
                         .addQueryParameter("login", login)
@@ -419,40 +351,31 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ArrayList<MatchInformation>> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.completeExceptionally(e);
                     return;
                 }
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
+            public void onResponse(Call call, Response response) {
 
-                try
-                {
+                try {
                     assert response.body() != null;
                     String response_string = response.body().string();
-                    ArrayList<MatchInformation> matchData = gson.fromJson(response_string, new TypeToken<ArrayList<MatchInformation>>() {}.getType());
+                    ArrayList<MatchInformation> matchData = gson.fromJson(response_string, new TypeToken<ArrayList<MatchInformation>>() {
+                    }.getType());
                     future.complete(matchData);
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     plugin.processServerResponse(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build(), login, token);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -461,8 +384,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> checkMatchStatus(String login, String discord, String token)
-    {
+    public CompletableFuture<ServerStatus> checkMatchStatus(String login, String discord, String token) {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.CHECK_MATCH_STATUS).newBuilder()
                         .addQueryParameter("login", login)
@@ -473,13 +395,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -487,23 +407,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -512,8 +424,7 @@ public class NeverScapeAloneClient {
         return future;
     }
 
-    public CompletableFuture<ServerStatus> acceptMatch(String login, String discord, String token)
-    {
+    public CompletableFuture<ServerStatus> acceptMatch(String login, String discord, String token) {
         Request request = new Request.Builder()
                 .url(getUrl(ApiPath.ACCEPT_MATCH).newBuilder()
                         .addQueryParameter("login", login)
@@ -524,13 +435,11 @@ public class NeverScapeAloneClient {
                 .build();
 
         CompletableFuture<ServerStatus> future = new CompletableFuture<>();
-        okHttpClient.newCall(request).enqueue(new Callback()
-        {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 log.warn("Error obtaining Server Status data", e);
-                if (e instanceof SocketTimeoutException || e instanceof ConnectException){
+                if (e instanceof SocketTimeoutException || e instanceof ConnectException) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.UNREACHABLE).build());
                     return;
                 }
@@ -538,23 +447,15 @@ public class NeverScapeAloneClient {
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try
-                {
+            public void onResponse(Call call, Response response) {
+                try {
                     future.complete(processResponse(gson, response, ServerStatus.class));
-                }
-                catch (UnauthorizedTokenException ute)
-                {
+                } catch (UnauthorizedTokenException ute) {
                     future.complete(ServerStatus.builder().status(ServerStatusCode.AUTH_FAILURE).build());
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.warn("Error obtaining Server Status response", e);
                     future.completeExceptionally(e);
-                }
-                finally
-                {
+                } finally {
                     response.close();
                 }
             }
@@ -565,67 +466,54 @@ public class NeverScapeAloneClient {
 
     /**
      * Processes the body of the given response and parses out the contained JSON object.
-     * @param gson The {@link Gson} instance to use for parsing the JSON object in the {@code response}.
+     *
+     * @param gson     The {@link Gson} instance to use for parsing the JSON object in the {@code response}.
      * @param response The response containing the object to parse in {@link Response#body()}.
-     * @param type The type of the JSON object to parse.
-     * @param <T> The type of the JSON object to parse, inferred from {@code type}.
+     * @param type     The type of the JSON object to parse.
+     * @param <T>      The type of the JSON object to parse, inferred from {@code type}.
      * @return The parsed object, or {@code null} if the API returned a 404.
      * @throws IOException If the response is unsuccessful or the {@link Response#body()} contains malformed data.
      */
-    private <T> T processResponse(Gson gson, Response response, Type type) throws IOException
-    {
-        if (!response.isSuccessful())
-        {
-            if (response.code() == 404)
-            {
+    private <T> T processResponse(Gson gson, Response response, Type type) throws IOException {
+        if (!response.isSuccessful()) {
+            if (response.code() == 404) {
                 return null;
-            }
-            else if (response.code() == 401)
-            {
+            } else if (response.code() == 401) {
                 throw new UnauthorizedTokenException("Auth Failure");
             }
 
             throw getIOException(response);
         }
 
-        try
-        {
+        try {
             String response_string = response.body().string();
             return gson.fromJson(response_string, type);
-        }
-        catch (IOException | JsonSyntaxException ex)
-        {
+        } catch (IOException | JsonSyntaxException ex) {
             throw new IOException("Error parsing API response body", ex);
         }
     }
 
     /**
      * Gets the {@link IOException} to return for when {@link Response#isSuccessful()} returns false.
+     *
      * @param response The response object to get the {@link IOException} for.
      * @return The {@link IOException} with the appropriate message for the given {@code response}.
      */
-    private IOException getIOException(Response response)
-    {
+    private IOException getIOException(Response response) {
         int code = response.code();
-        if (code >= 400 && code < 500)
-        {
-            try
-            {
+        if (code >= 400 && code < 500) {
+            try {
                 Map<String, String> map = gson.fromJson(response.body().string(),
-                        new TypeToken<Map<String, String>>()
-                        {
+                        new TypeToken<Map<String, String>>() {
                         }.getType());
 
                 // "error" has priority if it exists, else use "detail" (FastAPI)
                 String error = map.get("error");
-                if (Strings.isNullOrEmpty(error))
-                {
+                if (Strings.isNullOrEmpty(error)) {
                     error = map.getOrDefault("detail", "Unknown " + code + " error from API");
                 }
                 return new IOException(error);
-            }
-            catch (IOException | JsonSyntaxException ex)
-            {
+            } catch (IOException | JsonSyntaxException ex) {
                 return new IOException("Error " + code + " with no error info", ex);
             }
         }
@@ -634,8 +522,7 @@ public class NeverScapeAloneClient {
     }
 
     @Value
-    private static class UserRegistration
-    {
+    private static class UserRegistration {
         @SerializedName("login")
         String login;
         @SerializedName("discord")

@@ -6,8 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum QueueButtonStatus
-{
+public enum QueueButtonStatus {
     @SerializedName("Offline")
     OFFLINE("Offline"),
     @SerializedName("Online")

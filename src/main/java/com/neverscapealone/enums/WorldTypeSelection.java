@@ -1,4 +1,5 @@
 package com.neverscapealone.enums;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,9 +11,9 @@ public enum WorldTypeSelection {
     BOTH("Both", 2);
     private final String name;
     private final int world_type;
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }
