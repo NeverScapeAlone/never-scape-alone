@@ -97,8 +97,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private ItemEvent itemEventHx = null;
     // SPINNERS
     SpinnerNumberModel party_member_count_numbers = new SpinnerNumberModel(2, 2, 100, 1);
-    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[]{"Flexible", "Beginner", "Intermediate", "Advanced"});
-    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[]{"Flexible", "Beginner", "Intermediate", "Advanced"});
+    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[]{"Flexible", "Beginner", "Average", "Advanced"});
+    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[]{"Flexible", "Beginner", "Average", "Advanced"});
     private final JSpinner party_member_count = new JSpinner(party_member_count_numbers);
     private final JSpinner self_experience_level = new JSpinner(self_experience_level_list);
     private final JSpinner partner_experience_level = new JSpinner(partner_experience_level_list);
