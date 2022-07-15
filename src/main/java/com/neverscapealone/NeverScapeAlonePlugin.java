@@ -53,11 +53,6 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
 
-    // Party
-
-    public static PartyPlugin partyPlugin;
-    public static PluginManager pluginManager;
-
     // basic user information for panel
     private String username = "";
 
