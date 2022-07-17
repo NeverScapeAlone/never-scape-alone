@@ -70,39 +70,39 @@ public interface NeverScapeAloneConfig extends Config {
         return "";
     }
 
-    //	@ConfigItem(
-//			position = 1,
-//			keyName = "ignoreIgnores",
-//			name = "Ignore Ignores",
-//			description = "Ignore match-ups with players that are on your ignore list.",
-//			section = matchSection
-//	)
-//	default boolean ignoreIgnores()
-//	{
-//		return true;
-//	}
-//	@ConfigItem(
-//			position = 2,
-//			keyName = "prioritizeFriends",
-//			name = "Prioritize Friends",
-//			description = "Prioritize added friends when matching with other players.",
-//			section = matchSection
-//	)
-//	default boolean prioritizeFriends()
-//	{
-//		return true;
-//	}
-//	@ConfigItem(
-//			position = 3,
-//			keyName = "verifiedUsers",
-//			name = "Verified Users",
-//			description = "Allow strict matching with Verified users of the plugin.",
-//			section = matchSection
-//	)
-//	default boolean verifiedPartners()
-//	{
-//		return false;
-//	}
+    @ConfigItem(
+			position = 1,
+			keyName = "ignoreIgnores",
+			name = "Ignore Ignores",
+			description = "Ignore match-ups with players that are on your ignore list.",
+			section = matchSection
+	)
+	default boolean ignoreIgnores()
+	{
+		return true;
+	}
+	@ConfigItem(
+			position = 2,
+			keyName = "prioritizeFriends",
+			name = "Prioritize Friends",
+			description = "Prioritize added friends when matching with other players.",
+			section = matchSection
+	)
+	default boolean prioritizeFriends()
+	{
+		return true;
+	}
+	@ConfigItem(
+			position = 3,
+			keyName = "verifiedUsers",
+			name = "Verified Users",
+			description = "Allow strict matching with Verified users of the plugin.",
+			section = matchSection
+	)
+	default boolean verifiedPartners()
+	{
+		return false;
+	}
     @ConfigItem(
             position = 4,
             keyName = "WorldTypeSelection",
@@ -114,15 +114,15 @@ public interface NeverScapeAloneConfig extends Config {
         return WorldTypeSelection.BOTH;
     }
 
-    //	@ConfigItem(
-//			position = 5,
-//			keyName = "AccountTypeSelection",
-//			name = "Account Type",
-//			description = "Select the types of accounts you would like to match with.",
-//			section = matchSection
-//	)
-//	default AccountTypeSelection accountTypeSelection()
-//	{return AccountTypeSelection.ALL;}
+    @ConfigItem(
+			position = 5,
+			keyName = "AccountTypeSelection",
+			name = "Account Type",
+			description = "Select the types of accounts you would like to match with.",
+			section = matchSection
+	)
+	default AccountTypeSelection accountTypeSelection()
+	{return AccountTypeSelection.ALL;}
     @ConfigItem(
             position = 1,
             keyName = "US",
@@ -166,27 +166,5 @@ public interface NeverScapeAloneConfig extends Config {
     default boolean oceania() {
         return true;
     }
-//	@ConfigItem(
-//			position = 1,
-//			keyName = "playFireworks",
-//			name = "Play Fireworks",
-//			description = "When a queue has been finished, play fireworks on the player.",
-//			section = otherSection
-//	)
-//	default boolean playFireworks()
-//	{
-//		return true;
-//	}
-//	@ConfigItem(
-//			position = 2,
-//			keyName = "playSound",
-//			name = "Play Sound",
-//			description = "When a queue has been finished, play a sound byte.",
-//			section = otherSection
-//	)
-//	default boolean playSound()
-//	{
-//		return true;
-//	}
 }
 
