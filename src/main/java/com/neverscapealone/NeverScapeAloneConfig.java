@@ -69,31 +69,8 @@ public interface NeverScapeAloneConfig extends Config {
     default String authToken() {
         return "";
     }
-
-    @ConfigItem(
+	@ConfigItem(
 			position = 1,
-			keyName = "ignoreIgnores",
-			name = "Ignore Ignores",
-			description = "Ignore match-ups with players that are on your ignore list.",
-			section = matchSection
-	)
-	default boolean ignoreIgnores()
-	{
-		return true;
-	}
-	@ConfigItem(
-			position = 2,
-			keyName = "prioritizeFriends",
-			name = "Prioritize Friends",
-			description = "Prioritize added friends when matching with other players.",
-			section = matchSection
-	)
-	default boolean prioritizeFriends()
-	{
-		return true;
-	}
-	@ConfigItem(
-			position = 3,
 			keyName = "verifiedUsers",
 			name = "Verified Users",
 			description = "Allow strict matching with Verified users of the plugin.",
@@ -104,7 +81,7 @@ public interface NeverScapeAloneConfig extends Config {
 		return false;
 	}
     @ConfigItem(
-            position = 4,
+            position = 2,
             keyName = "WorldTypeSelection",
             name = "World Type",
             description = "Select if you would like to match on free-to-play, members or both",
@@ -115,7 +92,7 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-			position = 5,
+			position = 3,
 			keyName = "AccountTypeSelection",
 			name = "Account Type",
 			description = "Select the types of accounts you would like to match with.",

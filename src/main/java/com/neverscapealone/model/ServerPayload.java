@@ -18,5 +18,7 @@ public class ServerPayload {
     JsonArray array;
     @SerializedName("match_information")
     ArrayList<MatchInformation> match_information;
+    @SerializedName("server_message")
+    String message;
 }
 

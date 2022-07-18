@@ -1,5 +1,6 @@
 package com.neverscapealone;
 
+import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
@@ -96,11 +98,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
-    @Schedule(period=1, unit=ChronoUnit.SECONDS, asynchronous=true)
-    public void great_function(){
-        websocket.connect(username, config.discordUsername(), config.authToken(), "default");
-    }
-
     public static String formatSeconds(int timeInSeconds) {
         int hours = timeInSeconds / 3600;
         int secondsLeft = timeInSeconds - hours * 3600;
@@ -119,6 +116,24 @@ public class NeverScapeAlonePlugin extends Plugin {
 
         return formattedTime;
     }
+
+    public void quickMatchQueueStart(ActionEvent actionEvent){
+
+    }
+
+    public void searchActiveMatches(ActionEvent actionEvent){
+        websocket.connect(username, config.discordUsername(), config.authToken(), "default");
+        String target = actionEvent.getActionCommand();
+        if (target.length() <= 0)
+        {
+            return;
+        }
+        JsonObject search_request = new JsonObject();
+        search_request.addProperty("detail","search match");
+        search_request.addProperty("search", target);
+        websocket.send(search_request);
+    }
+
 
     @Provides
     NeverScapeAloneConfig provideConfig(ConfigManager configManager) {

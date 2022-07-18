@@ -6,7 +6,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.model.SimpleMessage;
+import com.neverscapealone.model.ServerPayload;
+import jogamp.common.util.locks.SingletonInstanceServerSocket;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import okhttp3.*;
@@ -28,6 +29,12 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private NeverScapeAloneConfig config;
     private WebSocket socket;
 
+    @Inject
+    private NeverScapeAloneWebsocket()
+    {
+        this.gson = new Gson();
+    }
+
     public void connect(String username, String discord, String token, String groupID) {
         if (username.equals("")){
             log.debug("Cannot connect without a username!");
@@ -48,17 +55,18 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 .addHeader("Time", Instant.now().toString())
                 .build();
 
-        NeverScapeAloneWebsocket listener = new NeverScapeAloneWebsocket();;
+        NeverScapeAloneWebsocket listener = new NeverScapeAloneWebsocket();
         socket = okHttpClient.newWebSocket(request, listener);
+    }
 
-        JsonObject greetings = new JsonObject();
-        greetings.addProperty("detail","Hello!");
-        socket.send(greetings.toString());
+    public void send(JsonObject jsonObject){
+        socket.send(jsonObject.toString());
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        System.out.println("Receiving: " + text);
+        ServerPayload payload = this.gson.fromJson(text, ServerPayload.class);
+        System.out.println(payload);
     }
 
     @Override
