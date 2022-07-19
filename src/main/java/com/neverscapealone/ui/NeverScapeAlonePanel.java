@@ -27,15 +27,13 @@
 
 package com.neverscapealone.ui;
 
-import com.google.gson.JsonObject;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.*;
+import com.neverscapealone.enums.ActivityReference;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.Client;
-import net.runelite.api.JagexColor;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.game.WorldService;
@@ -49,9 +47,12 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.HashMap;
 
 public class NeverScapeAlonePanel extends PluginPanel {
 
@@ -81,19 +82,20 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private JPanel raidPanel;
     private JPanel minigamePanel;
     private JPanel miscPanel;
+    private JPanel connectingPanel;
 
     private JPanel createskillPanel;
     private JPanel createbossPanel;
     private JPanel createraidPanel;
     private JPanel createminigamePanel;
     private JPanel createmiscPanel;
-    private JPanel quickPanel;
-    private JPanel createPanel;
-    private JPanel createPanel2;
-    private JPanel searchPanel;
+    private final JPanel quickPanel;
+    private final JPanel createPanel;
+    private final JPanel createPanel2;
+    private final JPanel searchPanel;
 
     // BUTTONS
-    private IconTextField activitySearchBar = new IconTextField();
+    private final IconTextField activitySearchBar = new IconTextField();
     private final JButton quickMatchButton = new JButton();
     private final JToggleButton quickMatchPanelButton = new JToggleButton();
     private final JToggleButton createMatchPanelButton = new JToggleButton();
@@ -101,8 +103,25 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public ArrayList activity_buttons = new ArrayList<JToggleButton>();
     public ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
 
+    // SPINNERS & MODELS
+    SpinnerNumberModel min_party_member_count_model = new SpinnerNumberModel(2, 2, 200, 1);
+    SpinnerNumberModel max_party_member_count_model = new SpinnerNumberModel(2, 2, 200, 1);
+    SpinnerListModel experience_level_model = new SpinnerListModel(new String[]{"Flexible", "Novice", "Average", "Experienced"});
+    SpinnerListModel party_loot_model = new SpinnerListModel(new String[]{"FFA", "Split"});
+    SpinnerListModel account_type_model = new SpinnerListModel(new String[]{"All Accounts", "Normal", "IM", "HCIM", "UIM", "GIM", "HCGIM"});
+    SpinnerListModel region_model = new SpinnerListModel(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
+
+    public final JSpinner min_party_member_count = new JSpinner(min_party_member_count_model);
+    public final JSpinner max_party_member_count = new JSpinner(max_party_member_count_model);
+    public final JSpinner experience_level = new JSpinner(experience_level_model);
+    public final JSpinner party_loot = new JSpinner(party_loot_model);
+    public final JSpinner account_type = new JSpinner(account_type_model);
+    public final JSpinner region = new JSpinner(region_model);
+
+
     // GLOBAL VARIABLES
     public String step1_activity = "";
+    public ArrayList<String> queue_list = new ArrayList<String>();
 
     // CLASSES
     private final NeverScapeAlonePlugin plugin;
@@ -113,16 +132,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     @Getter
     @AllArgsConstructor
-    public enum WebLink
-    {
-        DISCORD(Icons.DISCORD_ICON, "Join our Discord","https://discord.gg/rs2AH3vnmf"),
+    public enum WebLink {
+        DISCORD(Icons.DISCORD_ICON, "Join our Discord", "https://discord.gg/rs2AH3vnmf"),
         TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter", "https://www.twitter.com/NeverScapeAlone"),
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-        PATREON(Icons.PATREON_ICON, "Support us through Patreon","https://www.patreon.com/bot_detector"),
-        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal","https://www.paypal.com/paypalme/osrsbotdetector"),
+        PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
+        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
         ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
-        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github","https://github.com/NeverScapeAlone"),
-        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here","https://github.com/NeverScapeAlone/never-scape-alone/issues");
+        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github", "https://github.com/NeverScapeAlone"),
+        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
         private final ImageIcon image;
         private final String tooltip;
@@ -138,8 +156,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
             Client user,
-            WorldService worldService)
-    {
+            WorldService worldService) {
         this.config = config;
         this.plugin = plugin;
         this.websocket = websocket;
@@ -152,6 +169,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         // panel inits
         linksPanel = linksPanel(); // add link panel perm
         switchMenuPanel = switchMenuPanel(); // add switch menu panel perm
+        connectingPanel = connectingPanel();
+        connectingPanel.setVisible(false);
+        // constructions
         constructQueuePanels(); // construct queue panels for placement in quick panel
         constructCreatePanels(); // construct create panels for placement in create panel
         // quick panel
@@ -182,25 +202,22 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(createPanel);
         add(createPanel2);
         add(searchPanel);
+        add(connectingPanel);
 
         addQueueButtons();
         addCreateButtons();
     }
 
-    private JPanel linksPanel()
-    {
+    private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         linksPanel.setBackground(SUB_BACKGROUND_COLOR);
-        for (WebLink w : WebLink.values())
-        {
+        for (WebLink w : WebLink.values()) {
             JLabel link = new JLabel(w.getImage());
             link.setToolTipText(w.getTooltip());
-            link.addMouseListener(new MouseAdapter()
-            {
+            link.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e)
-                {
+                public void mousePressed(MouseEvent e) {
                     LinkBrowser.browse(w.getLink());
                 }
             });
@@ -209,7 +226,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return linksPanel;
     }
 
-    private JPanel switchMenuPanel(){
+    private JPanel switchMenuPanel() {
         JPanel switchMenuPanel = new JPanel();
         switchMenuPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         switchMenuPanel.setBackground(SUB_BACKGROUND_COLOR);
@@ -243,34 +260,88 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return switchMenuPanel;
     }
 
-    private void quickPanelManager(ActionEvent actionEvent){
+    private JPanel connectingPanel(){
+        JPanel connectingPanel = new JPanel();
+        connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        connectingPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+//        c.weightx = 1;
+//        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.NORTHEAST;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        JButton escape = new JButton();
+        escape.setIcon(Icons.CANCEL_ICON);
+        escape.setToolTipText("Exit");
+        escape.setSize(25,25);
+        escape.addActionListener(this::quickPanelManager);
+        connectingPanel.add(escape, c);
+        c.gridy += 1;
+        connectingPanel.add(title("Connecting..."));
+
+        return connectingPanel;
+    }
+
+    public void connectingPanelManager(ActionEvent actionEvent){
+        connectingPanelManager();
+    }
+
+    public void connectingPanelManager() {
+        switchMenuPanel.setVisible(false);
+
+        connectingPanel.setVisible(true);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(false);
+        searchPanel.setVisible(false);
+
+        quickMatchPanelButton.setSelected(false);
+        createMatchPanelButton.setSelected(false);
+    }
+
+
+    private void quickPanelManager(ActionEvent actionEvent) {
+        switchMenuPanel.setVisible(true);
+
+        connectingPanel.setVisible(false);
         createPanel.setVisible(false);
         createPanel2.setVisible(false);
         quickPanel.setVisible(true);
         searchPanel.setVisible(false);
+
         searchMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
 
-    private void createPanelManager(ActionEvent actionEvent){
+    private void createPanelManager(ActionEvent actionEvent) {
+        switchMenuPanel.setVisible(true);
+
+        connectingPanel.setVisible(false);
         createPanel.setVisible(true);
         createPanel2.setVisible(false);
         quickPanel.setVisible(false);
         searchPanel.setVisible(false);
+
         quickMatchPanelButton.setSelected(false);
         searchMatchPanelButton.setSelected(false);
     }
 
-    private void searchPanelManager(ActionEvent actionEvent){
+    private void searchPanelManager(ActionEvent actionEvent) {
+        switchMenuPanel.setVisible(true);
+
+        connectingPanel.setVisible(false);
         createPanel.setVisible(false);
         createPanel2.setVisible(false);
         quickPanel.setVisible(false);
         searchPanel.setVisible(true);
+
         quickMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
 
-    private JPanel quickPanel(){
+    private JPanel quickPanel() {
         JPanel quickPanel = new JPanel();
         quickPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         quickPanel.setLayout(new GridBagLayout());
@@ -285,7 +356,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickMatchButton.setText("Select Activities");
         quickMatchButton.setToolTipText("Choose activities to play!");
         quickMatchButton.setBackground(COLOR_INPROGRESS);
-        quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
         quickPanel.add(quickMatchButton, c);
         c.gridy += 1;
 
@@ -325,10 +395,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return quickPanel;
     }
 
-    private JPanel subActivityPanel(int row, int column){
-        if (row==0 || column==0){
-            row=5;
-            column=5;
+    private JPanel subActivityPanel(int row, int column) {
+        if (row == 0 || column == 0) {
+            row = 5;
+            column = 5;
         }
         JPanel subActivityPanel = new JPanel();
         subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -337,19 +407,18 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return subActivityPanel;
     }
 
-    private void addQueueButtons(){
+    private void addQueueButtons() {
         ActivityReference[] values = ActivityReference.values();
-        for(ActivityReference value: values) {
-            // button construction
+        for (ActivityReference value : values) {
             JToggleButton button = new JToggleButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getTooltip());
             button.setName(value.getLabel());
-            button.addItemListener(e -> activityButtonManager(e)); // add function here
+            button.addItemListener(this::activityButtonManager); // add function here
             activity_buttons.add(button);
 
-            switch(value.getActivity()){
+            switch (value.getActivity()) {
                 case "skill":
                     skillPanel.add(button);
                     break;
@@ -368,42 +437,35 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
     }
 
-    private void activityButtonManager(ItemEvent itemEvent){
-        System.out.println("test");
-//        Object object = itemEvent.getItem();
-//        if (object instanceof JToggleButton){
-//
-//            // opens selection choices
-//            if (itemEventHx != null){
-//                if (itemEventHx != itemEvent){
-//                    Object objectHx = itemEventHx.getItem();
-//                    JToggleButton old_button = ((JToggleButton) objectHx);
-//
-//                    if (old_button.isSelected() && old_button.isEnabled()){
-//                        old_button.setSelected(false);
-//                    }
-//
-//                }
-//            }
-//
-//            itemEventHx = itemEvent;
-//            // disable button status
-//            button_accept.setEnabled(true);
-//            button_exit.setEnabled(true);
-//
-//            enableDisableResetUndo();
-//        }
+    private void activityButtonManager(ItemEvent itemEvent) {
+        JToggleButton button = (JToggleButton) itemEvent.getItem();
+        String selection = button.getName();
+        if (button.isSelected()){
+            queue_list.add(selection);
+        } else {
+            queue_list.remove(selection);
+        }
+
+        if (queue_list.size() > 0){
+            quickMatchButton.setText("Start Queue");
+            quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
+            quickMatchButton.setBackground(COLOR_COMPLETED);
+        } else {
+            quickMatchButton.setText("Select Activities");
+            quickMatchButton.removeActionListener(plugin::quickMatchQueueStart);
+            quickMatchButton.setBackground(COLOR_INPROGRESS);
+        }
     }
 
-    private void constructQueuePanels(){
-        skillPanel = subActivityPanel(4,6);
-        bossPanel = subActivityPanel(7,6);
-        raidPanel = subActivityPanel(2,2);
-        minigamePanel = subActivityPanel(6,6);
-        miscPanel = subActivityPanel(1,3);
+    private void constructQueuePanels() {
+        skillPanel = subActivityPanel(4, 6);
+        bossPanel = subActivityPanel(7, 6);
+        raidPanel = subActivityPanel(2, 2);
+        minigamePanel = subActivityPanel(6, 6);
+        miscPanel = subActivityPanel(1, 3);
     }
 
-    private JPanel createPanel(){
+    private JPanel createPanel() {
         JPanel createPanel = new JPanel();
         createPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         createPanel.setLayout(new GridBagLayout());
@@ -455,19 +517,19 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return createPanel;
     }
 
-    private void addCreateButtons(){
+    private void addCreateButtons() {
         ActivityReference[] values = ActivityReference.values();
-        for(ActivityReference value: values) {
+        for (ActivityReference value : values) {
             // button construction
             JButton button = new JButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getTooltip());
             button.setName(value.getLabel());
-            button.addActionListener(e -> create_activityButtonManager(e)); // add function here
+            button.addActionListener(this::create_activityButtonManager); // add function here
             create_activity_buttons.add(button);
 
-            switch(value.getActivity()){
+            switch (value.getActivity()) {
                 case "skill":
                     createskillPanel.add(button);
                     break;
@@ -486,26 +548,24 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
     }
 
-    private void constructCreatePanels(){
-        createskillPanel = subActivityPanel(4,6);
-        createbossPanel = subActivityPanel(7,6);
-        createraidPanel = subActivityPanel(2,2);
-        createminigamePanel = subActivityPanel(6,6);
-        createmiscPanel = subActivityPanel(1,3);
+    private void constructCreatePanels() {
+        createskillPanel = subActivityPanel(4, 6);
+        createbossPanel = subActivityPanel(7, 6);
+        createraidPanel = subActivityPanel(2, 2);
+        createminigamePanel = subActivityPanel(6, 6);
+        createmiscPanel = subActivityPanel(1, 3);
     }
 
-    private void create_activityButtonManager(ActionEvent actionEvent){
+    private void create_activityButtonManager(ActionEvent actionEvent) {
         Object object = actionEvent.getSource();
-        System.out.println("test");
-        if (object instanceof JButton){
-            System.out.println("hello!");
+        if (object instanceof JButton) {
             step1_activity = ((JButton) object).getName();
             createPanel.setVisible(false);
             createPanel2.setVisible(true);
         }
     }
 
-    private JPanel createPanel2(){
+    private JPanel createPanel2() {
         JPanel createPanel2 = new JPanel();
         createPanel2.setBorder(new EmptyBorder(0, 0, 0, 0));
         createPanel2.setLayout(new GridBagLayout());
@@ -520,11 +580,77 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         createPanel2.add(instructionTitle("Step 2: Choose Requirements"), c);
         c.gridy += 1;
+        JPanel createSelectionPanel = createSelectionPanel();
+        createPanel2.add(createSelectionPanel, c);
+        c.gridy += 1;
+        createPanel2.add(Box.createVerticalStrut(5));
+        c.gridy += 1;
+
+        JButton button_confirm = new JButton();
+        button_confirm.setBackground(Color.green.darker().darker());
+        button_confirm.setText("Create Group");
+        button_confirm.setToolTipText("Click here to create a group with your current configuration!");
+        button_confirm.setIcon(Icons.NSA_ICON);
+        button_confirm.addActionListener(plugin::createMatchStart);
+        createPanel2.add(button_confirm, c);
 
         return createPanel2;
     }
 
-    private JPanel searchPanel(){
+
+
+    private JPanel createSelectionPanel() {
+        JPanel createSelectionPanel = new JPanel();
+        createSelectionPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        createSelectionPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridy = 0;
+        c.gridx = 0;
+
+        createSelectionPanel.add(header("Max Members"), c);
+        c.gridx = 1;
+        createSelectionPanel.add(max_party_member_count, c);
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Min Members"), c);
+        c.gridx = 1;
+        createSelectionPanel.add(min_party_member_count, c);
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Experience"), c);
+        c.gridx = 1;
+        createSelectionPanel.add(experience_level, c);
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Split Type"), c);
+        c.gridx = 1;
+        createSelectionPanel.add(party_loot, c);
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Accounts"), c);
+        c.gridx = 1;
+        createSelectionPanel.add(account_type, c);
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Region"), c);
+        c.gridx = 1;
+        createSelectionPanel.add(region, c);
+        c.gridy += 1;
+
+        return createSelectionPanel;
+    }
+
+    private JPanel searchPanel() {
         JPanel searchPanel = new JPanel();
         searchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         searchPanel.setLayout(new GridBagLayout());
@@ -543,8 +669,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return searchPanel;
     }
-    private IconTextField activitySearchBar()
-    {
+
+    private IconTextField activitySearchBar() {
         IconTextField searchBar = new IconTextField();
         searchBar.setIcon(IconTextField.Icon.SEARCH);
         searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
@@ -555,7 +681,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return searchBar;
     }
 
-    private JPanel title(String title_text){
+    private JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
@@ -564,7 +690,16 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return label_holder;
     }
 
-    private JPanel instructionTitle(String title_text){
+    private JPanel header(String title_text) {
+        JPanel label_holder = new JPanel();
+        JLabel label = new JLabel(title_text);
+        label.setHorizontalAlignment(JLabel.LEFT);
+        label.setFont(FontManager.getRunescapeSmallFont());
+        label_holder.add(label);
+        return label_holder;
+    }
+
+    private JPanel instructionTitle(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);

@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Base64;
 
 @Slf4j
@@ -118,7 +119,28 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent){
+        ArrayList<String> queue_list = panel.queue_list;
+        if (queue_list.size() == 0){
+            return;
+        }
+        panel.connectingPanelManager();
+    }
 
+    public void createMatchStart(ActionEvent actionEvent){
+        // creates a match with the current panel configuration
+        // transitions to connecting... panel and sends websocket request with payload.
+
+        Integer max_party_members = (Integer) panel.max_party_member_count.getValue();
+        Integer min_party_members = (Integer) panel.min_party_member_count.getValue();
+        String experience = (String) panel.experience_level.getValue();
+        String split_type = (String) panel.party_loot.getValue();
+        String accounts = (String) panel.account_type.getValue();
+        String regions = (String) panel.region.getValue();
+
+        System.out.println(max_party_members);
+        System.out.println(accounts);
+
+        panel.connectingPanelManager();
     }
 
     public void searchActiveMatches(ActionEvent actionEvent){
@@ -132,6 +154,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         search_request.addProperty("detail","search match");
         search_request.addProperty("search", target);
         websocket.send(search_request);
+        panel.connectingPanelManager();
     }
 
 
