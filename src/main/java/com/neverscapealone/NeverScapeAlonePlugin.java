@@ -45,6 +45,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
     public String username = "Ferrariic";
+    public Integer timer = 0;
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -99,6 +100,17 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
+    @Schedule(period=1, unit=ChronoUnit.SECONDS, asynchronous=true)
+    public void timer(){
+        if (!panel.isConnecting) {
+            timer = 0;
+            return;
+        }
+        String timer_string = "Queue Time: " + formatSeconds(timer);
+        panel.setConnectingPanelQueueTime(timer_string);
+        timer += 1;
+    }
+
     public static String formatSeconds(int timeInSeconds) {
         int hours = timeInSeconds / 3600;
         int secondsLeft = timeInSeconds - hours * 3600;
@@ -132,15 +144,13 @@ public class NeverScapeAlonePlugin extends Plugin {
 
         Integer max_party_members = (Integer) panel.max_party_member_count.getValue();
         Integer min_party_members = (Integer) panel.min_party_member_count.getValue();
-        String experience = (String) panel.experience_level.getValue();
-        String split_type = (String) panel.party_loot.getValue();
-        String accounts = (String) panel.account_type.getValue();
-        String regions = (String) panel.region.getValue();
+        String experience = (String) panel.experience_level.getSelectedItem().toString();
+        String split_type = (String) panel.party_loot.getSelectedItem().toString();
+        String accounts = (String) panel.account_type.getSelectedItem().toString();
+        String regions = (String) panel.region.getSelectedItem().toString();
 
         System.out.println(max_party_members);
         System.out.println(accounts);
-
-        panel.connectingPanelManager();
     }
 
     public void searchActiveMatches(ActionEvent actionEvent){
@@ -154,7 +164,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         search_request.addProperty("detail","search match");
         search_request.addProperty("search", target);
         websocket.send(search_request);
-        panel.connectingPanelManager();
     }
 
 

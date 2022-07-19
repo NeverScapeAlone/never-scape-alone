@@ -45,6 +45,7 @@ import net.runelite.client.util.LinkBrowser;
 
 import javax.inject.Inject;
 import javax.swing.*;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -52,6 +53,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class NeverScapeAlonePanel extends PluginPanel {
@@ -106,22 +108,19 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // SPINNERS & MODELS
     SpinnerNumberModel min_party_member_count_model = new SpinnerNumberModel(2, 2, 200, 1);
     SpinnerNumberModel max_party_member_count_model = new SpinnerNumberModel(2, 2, 200, 1);
-    SpinnerListModel experience_level_model = new SpinnerListModel(new String[]{"Flexible", "Novice", "Average", "Experienced"});
-    SpinnerListModel party_loot_model = new SpinnerListModel(new String[]{"FFA", "Split"});
-    SpinnerListModel account_type_model = new SpinnerListModel(new String[]{"All Accounts", "Normal", "IM", "HCIM", "UIM", "GIM", "HCGIM"});
-    SpinnerListModel region_model = new SpinnerListModel(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
 
     public final JSpinner min_party_member_count = new JSpinner(min_party_member_count_model);
     public final JSpinner max_party_member_count = new JSpinner(max_party_member_count_model);
-    public final JSpinner experience_level = new JSpinner(experience_level_model);
-    public final JSpinner party_loot = new JSpinner(party_loot_model);
-    public final JSpinner account_type = new JSpinner(account_type_model);
-    public final JSpinner region = new JSpinner(region_model);
+    public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
+    public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
+    public final JComboBox<String> account_type = new JComboBox(new String[]{"All Accounts", "Normal", "IM", "HCIM", "UIM", "GIM", "HCGIM"});
+    public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
 
 
     // GLOBAL VARIABLES
     public String step1_activity = "";
     public ArrayList<String> queue_list = new ArrayList<String>();
+    public boolean isConnecting = false;
 
     // CLASSES
     private final NeverScapeAlonePlugin plugin;
@@ -266,22 +265,30 @@ public class NeverScapeAlonePanel extends PluginPanel {
         connectingPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-//        c.weightx = 1;
-//        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTHEAST;
-
+        c.weightx = 1;
+        c.weighty = 1;
+        c.anchor = GridBagConstraints.FIRST_LINE_END;
         c.gridx = 0;
         c.gridy = 0;
         JButton escape = new JButton();
         escape.setIcon(Icons.CANCEL_ICON);
         escape.setToolTipText("Exit");
-        escape.setSize(25,25);
+        escape.setSize(20,20);
         escape.addActionListener(this::quickPanelManager);
         connectingPanel.add(escape, c);
+
+        c.anchor = GridBagConstraints.CENTER;
         c.gridy += 1;
-        connectingPanel.add(title("Connecting..."));
+        connectingPanel.add(title("Connecting..."), c);
+        c.gridy += 1;
+        connectingPanel.add(new JLabel("Queue Time: 00:00:00"), c);
 
         return connectingPanel;
+    }
+
+    public void setConnectingPanelQueueTime(String display_text){
+        JLabel label = (JLabel) (connectingPanel.getComponent(2));
+        label.setText(display_text);
     }
 
     public void connectingPanelManager(ActionEvent actionEvent){
@@ -290,6 +297,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     public void connectingPanelManager() {
         switchMenuPanel.setVisible(false);
+        isConnecting = true;
 
         connectingPanel.setVisible(true);
         createPanel.setVisible(false);
@@ -304,6 +312,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     private void quickPanelManager(ActionEvent actionEvent) {
         switchMenuPanel.setVisible(true);
+        isConnecting = false;
+        plugin.timer = 0;
 
         connectingPanel.setVisible(false);
         createPanel.setVisible(false);
@@ -317,6 +327,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     private void createPanelManager(ActionEvent actionEvent) {
         switchMenuPanel.setVisible(true);
+        isConnecting = false;
+
 
         connectingPanel.setVisible(false);
         createPanel.setVisible(true);
@@ -330,6 +342,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     private void searchPanelManager(ActionEvent actionEvent) {
         switchMenuPanel.setVisible(true);
+        isConnecting = false;
 
         connectingPanel.setVisible(false);
         createPanel.setVisible(false);
@@ -520,7 +533,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private void addCreateButtons() {
         ActivityReference[] values = ActivityReference.values();
         for (ActivityReference value : values) {
-            // button construction
             JButton button = new JButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
@@ -626,24 +638,28 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
         createSelectionPanel.add(header("Experience"), c);
         c.gridx = 1;
+        ((JLabel)experience_level.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(experience_level, c);
         c.gridy += 1;
 
         c.gridx = 0;
         createSelectionPanel.add(header("Split Type"), c);
         c.gridx = 1;
+        ((JLabel)party_loot.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(party_loot, c);
         c.gridy += 1;
 
         c.gridx = 0;
         createSelectionPanel.add(header("Accounts"), c);
         c.gridx = 1;
+        ((JLabel)account_type.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(account_type, c);
         c.gridy += 1;
 
         c.gridx = 0;
         createSelectionPanel.add(header("Region"), c);
         c.gridx = 1;
+        ((JLabel)region.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(region, c);
         c.gridy += 1;
 

@@ -1,7 +1,5 @@
 package com.neverscapealone;
 
-import com.neverscapealone.enums.AccountTypeSelection;
-import com.neverscapealone.enums.WorldTypeSelection;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -26,20 +24,6 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Select match up settings here."
     )
     String matchSection = "matchSection";
-
-    @ConfigSection(
-            position = 3,
-            name = "Region Settings",
-            description = "Select regions to search for partners here."
-    )
-    String regionSection = "regionSection";
-
-//	@ConfigSection(
-//			position = 4,
-//			name = "Other Settings",
-//			description = "Select misc. settings for the plugin."
-//	)
-//	String otherSection = "otherSection";
 
 
 	/*
@@ -80,68 +64,6 @@ public interface NeverScapeAloneConfig extends Config {
 	{
 		return false;
 	}
-    @ConfigItem(
-            position = 2,
-            keyName = "WorldTypeSelection",
-            name = "World Type",
-            description = "Select if you would like to match on free-to-play, members or both",
-            section = matchSection
-    )
-    default WorldTypeSelection worldTypeSelection() {
-        return WorldTypeSelection.BOTH;
-    }
 
-    @ConfigItem(
-			position = 3,
-			keyName = "AccountTypeSelection",
-			name = "Account Type",
-			description = "Select the types of accounts you would like to match with.",
-			section = matchSection
-	)
-	default AccountTypeSelection accountTypeSelection()
-	{return AccountTypeSelection.ALL;}
-    @ConfigItem(
-            position = 1,
-            keyName = "US",
-            name = "United States",
-            description = "Allow for United States matches.",
-            section = regionSection
-    )
-    default boolean us() {
-        return true;
-    }
-
-    @ConfigItem(
-            position = 2,
-            keyName = "euWest",
-            name = "EU West",
-            description = "Allow for West Europe matches.",
-            section = regionSection
-    )
-    default boolean euWest() {
-        return true;
-    }
-
-    @ConfigItem(
-            position = 3,
-            keyName = "euCentral",
-            name = "EU Central",
-            description = "Allow for Central Europe matches.",
-            section = regionSection
-    )
-    default boolean euCentral() {
-        return true;
-    }
-
-    @ConfigItem(
-            position = 4,
-            keyName = "oceania",
-            name = "Oceania",
-            description = "Allow for Oceania matches.",
-            section = regionSection
-    )
-    default boolean oceania() {
-        return true;
-    }
 }
 
