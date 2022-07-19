@@ -9,7 +9,6 @@ import net.runelite.client.config.ConfigSection;
 public interface NeverScapeAloneConfig extends Config {
     String CONFIG_GROUP = "NeverScapeAlone";
     String AUTH_TOKEN_KEY = "authToken";
-    String CONFIG_TRUE = "countConfigTrue";
     // SECTIONS
     @ConfigSection(
             position = 1,

@@ -45,7 +45,6 @@ import net.runelite.client.util.LinkBrowser;
 
 import javax.inject.Inject;
 import javax.swing.*;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -53,8 +52,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class NeverScapeAlonePanel extends PluginPanel {
 
@@ -115,7 +112,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
     public final JComboBox<String> account_type = new JComboBox(new String[]{"All Accounts", "Normal", "IM", "HCIM", "UIM", "GIM", "HCGIM"});
     public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
-
+    public final JTextField passcode = new JTextField();
 
     // GLOBAL VARIABLES
     public String step1_activity = "";
@@ -591,13 +588,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
 
         createPanel2.add(instructionTitle("Step 2: Choose Requirements"), c);
+
         c.gridy += 1;
         JPanel createSelectionPanel = createSelectionPanel();
         createPanel2.add(createSelectionPanel, c);
-        c.gridy += 1;
-        createPanel2.add(Box.createVerticalStrut(5));
-        c.gridy += 1;
 
+        c.gridy += 1;
+        createPanel2.add(Box.createVerticalStrut(6), c);
+
+        c.gridy += 1;
         JButton button_confirm = new JButton();
         button_confirm.setBackground(Color.green.darker().darker());
         button_confirm.setText("Create Group");
@@ -661,6 +660,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 1;
         ((JLabel)region.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(region, c);
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Passcode"), c);
+        c.gridx = 1;
+        passcode.setToolTipText("Leave blank for a Public match");
+        createSelectionPanel.add(passcode, c);
         c.gridy += 1;
 
         return createSelectionPanel;

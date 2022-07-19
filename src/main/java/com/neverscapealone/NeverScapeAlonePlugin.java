@@ -6,9 +6,7 @@ import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.Player;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -144,10 +142,11 @@ public class NeverScapeAlonePlugin extends Plugin {
 
         Integer max_party_members = (Integer) panel.max_party_member_count.getValue();
         Integer min_party_members = (Integer) panel.min_party_member_count.getValue();
-        String experience = (String) panel.experience_level.getSelectedItem().toString();
-        String split_type = (String) panel.party_loot.getSelectedItem().toString();
-        String accounts = (String) panel.account_type.getSelectedItem().toString();
-        String regions = (String) panel.region.getSelectedItem().toString();
+        String experience = panel.experience_level.getSelectedItem().toString();
+        String split_type =  panel.party_loot.getSelectedItem().toString();
+        String accounts =  panel.account_type.getSelectedItem().toString();
+        String regions = panel.region.getSelectedItem().toString();
+        String group_passcode = panel.passcode.toString();
 
         System.out.println(max_party_members);
         System.out.println(accounts);

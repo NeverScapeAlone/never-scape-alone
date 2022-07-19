@@ -28,7 +28,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private Gson gson;
     private NeverScapeAloneConfig config;
     private WebSocket socket;
-
     @Inject
     private NeverScapeAloneWebsocket()
     {
