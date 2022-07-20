@@ -20,12 +20,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @PluginDescriptor(name = "NeverScapeAlone", description = "This plugin lets you partner up with other players to complete bosses, minigames, skills, and other miscellaneous activities.", tags = {"Matchmaking", "Party", "Skill", "PVP", "Boss", "Minigame"}, enabledByDefault = true)
@@ -140,16 +145,57 @@ public class NeverScapeAlonePlugin extends Plugin {
         // creates a match with the current panel configuration
         // transitions to connecting... panel and sends websocket request with payload.
 
-        Integer max_party_members = (Integer) panel.max_party_member_count.getValue();
-        Integer min_party_members = (Integer) panel.min_party_member_count.getValue();
+        String party_members = panel.party_member_count.getText();
         String experience = panel.experience_level.getSelectedItem().toString();
         String split_type =  panel.party_loot.getSelectedItem().toString();
         String accounts =  panel.account_type.getSelectedItem().toString();
         String regions = panel.region.getSelectedItem().toString();
         String group_passcode = panel.passcode.toString();
 
-        System.out.println(max_party_members);
-        System.out.println(accounts);
+        String converted_party_size = convertInput(party_members);
+        Pattern p = Pattern.compile("[0-9<>=&|]*");
+        Matcher m = p.matcher(converted_party_size);
+        if (m.matches()){
+            panel.party_member_count.setBackground(Color.darkGray);
+            panel.party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
+        } else {
+            panel.party_member_count.setBackground(Color.RED.darker().darker().darker());
+            panel.party_member_count.setToolTipText("Try the help button to the right! Your input was invalid.");
+            return;
+        }
+        // TODO create match with webhook
+
+    }
+
+    public String convertInput(String text){
+        text = text.replaceAll("\\s", "");
+        text = text.toLowerCase();
+        // ex. [2,5] -> >=2&<=5
+        text = text.replaceAll("(\\[)([0-9]{1,3})(,)([0-9]{1,3})(])",">=$2&<=$4");
+        // ex. (2,5] -> >2&<=5
+        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\])",">$2&<=$4");
+        // ex. [2,5) -> >=2&<5
+        text = text.replaceAll("(\\[){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))",">=$2&<$4");
+        // ex. (2,5) -> >2&<5
+        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))",">$2&<$4");
+        // ex. (between*) 100 and 145 -> >=100&<=145
+        text = text.replaceAll("(between){0,1}([0-9]{1,3})(to|-|&|and)([0-9]{1,3})",">=$2&<=$4");
+        // ex. lt4 -> <4
+        text = text.replaceAll("(lessthan|lt|-lt|<){1}([0-9]{1,3})","<$2");
+        // ex. max5 -> <=5
+        text = text.replaceAll("(max|maximum|le|-le|<=){1}([0-9]{1,3})","<=$2");
+        // ex. greaterthan20 -> >20
+        text = text.replaceAll("(greaterthan|gt|-gt|>){1}([0-9]{1,3})",">$2");
+        // ex. min50 -> >=50
+        text = text.replaceAll("(min|minimum|ge|-ge|>=){1}([0-9]{1,3})",">=$2");
+        // ex. 5+ -> >=5
+        text = text.replaceAll("([0-9]{1,3})([+]{1})",">=$1");
+        // ex. 'and' -> &
+        text = text.replaceAll("(and){1}","&");
+        // ex. 'or' -> ||
+        text = text.replaceAll("(or){1}","||");
+
+        return text;
     }
 
     public void searchActiveMatches(ActionEvent actionEvent){

@@ -102,12 +102,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public ArrayList activity_buttons = new ArrayList<JToggleButton>();
     public ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
 
-    // SPINNERS & MODELS
-    SpinnerNumberModel min_party_member_count_model = new SpinnerNumberModel(2, 2, 200, 1);
-    SpinnerNumberModel max_party_member_count_model = new SpinnerNumberModel(2, 2, 200, 1);
+    public final JButton member_count_help_button = new JButton();
+    public final JButton experience_help_button = new JButton();
+    public final JButton split_help_button = new JButton();
+    public final JButton accounts_help_button = new JButton();
+    public final JButton region_help_button = new JButton();
+    public final JButton passcode_help_button = new JButton();
 
-    public final JSpinner min_party_member_count = new JSpinner(min_party_member_count_model);
-    public final JSpinner max_party_member_count = new JSpinner(max_party_member_count_model);
+    public final JTextField party_member_count = new JTextField();
     public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
     public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
     public final JComboBox<String> account_type = new JComboBox(new String[]{"All Accounts", "Normal", "IM", "HCIM", "UIM", "GIM", "HCGIM"});
@@ -623,15 +625,21 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridy = 0;
         c.gridx = 0;
 
-        createSelectionPanel.add(header("Max Members"), c);
+        createSelectionPanel.add(header("Group Size"), c);
         c.gridx = 1;
-        createSelectionPanel.add(max_party_member_count, c);
-        c.gridy += 1;
+        party_member_count.setFont(FontManager.getRunescapeSmallFont());
+        party_member_count.setText("2+");
+        party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
+        createSelectionPanel.add(party_member_count, c);
 
-        c.gridx = 0;
-        createSelectionPanel.add(header("Min Members"), c);
-        c.gridx = 1;
-        createSelectionPanel.add(min_party_member_count, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        member_count_help_button.setIcon(Icons.HELP_ICON);
+        member_count_help_button.setSize(16, 16);
+        member_count_help_button.setToolTipText("Click here for help!");
+        member_count_help_button.addActionListener(this::count_help_button_panel);
+        createSelectionPanel.add(member_count_help_button, c);
+        c.weightx = 1;
         c.gridy += 1;
 
         c.gridx = 0;
@@ -639,6 +647,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 1;
         ((JLabel)experience_level.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(experience_level, c);
+
+        c.gridx = 2;
+        c.weightx = 0;
+        experience_help_button.setIcon(Icons.HELP_ICON);
+        experience_help_button.setSize(16, 16);
+        experience_help_button.setToolTipText("Click here for help!");
+        experience_help_button.addActionListener(this::experience_help_button_panel);
+        createSelectionPanel.add(experience_help_button, c);
+        c.weightx = 1;
         c.gridy += 1;
 
         c.gridx = 0;
@@ -646,6 +663,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 1;
         ((JLabel)party_loot.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(party_loot, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        split_help_button.setIcon(Icons.HELP_ICON);
+        split_help_button.setSize(16, 16);
+        split_help_button.setToolTipText("Click here for help!");
+        split_help_button.addActionListener(this::split_help_button_panel);
+        createSelectionPanel.add(split_help_button, c);
+        c.weightx = 1;
         c.gridy += 1;
 
         c.gridx = 0;
@@ -653,6 +678,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 1;
         ((JLabel)account_type.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(account_type, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        accounts_help_button.setIcon(Icons.HELP_ICON);
+        accounts_help_button.setSize(16, 16);
+        accounts_help_button.setToolTipText("Click here for help!");
+        accounts_help_button.addActionListener(this::accounts_help_button_panel);
+        createSelectionPanel.add(accounts_help_button, c);
+        c.weightx = 1;
         c.gridy += 1;
 
         c.gridx = 0;
@@ -660,6 +693,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 1;
         ((JLabel)region.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(region, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        region_help_button.setIcon(Icons.HELP_ICON);
+        region_help_button.setSize(16, 16);
+        region_help_button.setToolTipText("Click here for help!");
+        region_help_button.addActionListener(this::region_help_button_panel);
+        createSelectionPanel.add(region_help_button, c);
+        c.weightx = 1;
         c.gridy += 1;
 
         c.gridx = 0;
@@ -667,10 +708,32 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 1;
         passcode.setToolTipText("Leave blank for a Public match");
         createSelectionPanel.add(passcode, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        passcode_help_button.setIcon(Icons.HELP_ICON);
+        passcode_help_button.setSize(16, 16);
+        passcode_help_button.setToolTipText("Click here for help!");
+        passcode_help_button.addActionListener(this::passcode_help_button_panel);
+        createSelectionPanel.add(passcode_help_button, c);
+        c.weightx = 1;
         c.gridy += 1;
 
         return createSelectionPanel;
     }
+
+    private void count_help_button_panel(ActionEvent actionEvent){
+    }
+    private void experience_help_button_panel(ActionEvent actionEvent){
+    }
+    private void split_help_button_panel(ActionEvent actionEvent){
+    }
+    private void accounts_help_button_panel(ActionEvent actionEvent){
+    }
+    private void region_help_button_panel(ActionEvent actionEvent){
+    }
+    private void passcode_help_button_panel(ActionEvent actionEvent){
+    }
+
 
     private JPanel searchPanel() {
         JPanel searchPanel = new JPanel();
