@@ -1,5 +1,6 @@
 package com.neverscapealone;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
@@ -142,29 +143,57 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void createMatchStart(ActionEvent actionEvent){
-        // creates a match with the current panel configuration
-        // transitions to connecting... panel and sends websocket request with payload.
-
+        String activity = panel.step1_activity;
         String party_members = panel.party_member_count.getText();
         String experience = panel.experience_level.getSelectedItem().toString();
         String split_type =  panel.party_loot.getSelectedItem().toString();
         String accounts =  panel.account_type.getSelectedItem().toString();
         String regions = panel.region.getSelectedItem().toString();
-        String group_passcode = panel.passcode.toString();
+        String group_passcode = panel.passcode.getText();
 
         String converted_party_size = convertInput(party_members);
         Pattern p = Pattern.compile("[0-9<>=&|]*");
         Matcher m = p.matcher(converted_party_size);
         if (m.matches()){
-            panel.party_member_count.setBackground(Color.darkGray);
+            panel.party_member_count.setBackground(Color.green.darker().darker().darker());
             panel.party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
         } else {
             panel.party_member_count.setBackground(Color.RED.darker().darker().darker());
             panel.party_member_count.setToolTipText("Try the help button to the right! Your input was invalid.");
             return;
         }
-        // TODO create match with webhook
 
+        if (checkPasscode(group_passcode)){
+            panel.passcode.setBackground(Color.green.darker().darker().darker());
+            panel.passcode.setToolTipText("Input your group passcode here.");
+        } else {
+            panel.passcode.setBackground(Color.RED.darker().darker().darker());
+            panel.passcode.setToolTipText("Your passcode contains invalid characters. Try the help button to the right!");
+            return;
+        }
+        panel.connectingPanelManager();
+        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
+
+        JsonObject sub_request = new JsonObject();
+        sub_request.addProperty("activity", activity);
+        sub_request.addProperty("party_members", party_members);
+        sub_request.addProperty("experience", experience);
+        sub_request.addProperty("split_type", split_type);
+        sub_request.addProperty("accounts",accounts);
+        sub_request.addProperty("regions",regions);
+        sub_request.addProperty("group_passcode", group_passcode);
+
+        JsonObject create_request = new JsonObject();
+        create_request.addProperty("detail","create_match");
+        create_request.add("create_match", sub_request);
+
+        websocket.send(create_request);
+    }
+
+    public Boolean checkPasscode(String group_passcode){
+        Pattern p = Pattern.compile("^[A-Za-z0-9-_ ]{0,64}$");
+        Matcher m = p.matcher(group_passcode);
+        return m.matches();
     }
 
     public String convertInput(String text){
@@ -199,14 +228,14 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void searchActiveMatches(ActionEvent actionEvent){
-        websocket.connect(username, config.discordUsername(), config.authToken(), "default");
+        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0)
         {
             return;
         }
         JsonObject search_request = new JsonObject();
-        search_request.addProperty("detail","search match");
+        search_request.addProperty("detail","search_match");
         search_request.addProperty("search", target);
         websocket.send(search_request);
     }

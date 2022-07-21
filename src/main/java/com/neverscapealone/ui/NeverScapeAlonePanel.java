@@ -127,7 +127,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final NeverScapeAloneWebsocket websocket;
     private final Client user;
     private final WorldService worldService;
-
     @Getter
     @AllArgsConstructor
     public enum WebLink {
@@ -145,8 +144,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         private final String link;
 
     }
-
-
     @Inject
     public NeverScapeAlonePanel(
             NeverScapeAlonePlugin plugin,
@@ -205,7 +202,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         addQueueButtons();
         addCreateButtons();
     }
-
     private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -223,7 +219,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
         return linksPanel;
     }
-
     private JPanel switchMenuPanel() {
         JPanel switchMenuPanel = new JPanel();
         switchMenuPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -257,7 +252,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return switchMenuPanel;
     }
-
     private JPanel connectingPanel(){
         JPanel connectingPanel = new JPanel();
         connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -284,16 +278,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return connectingPanel;
     }
-
     public void setConnectingPanelQueueTime(String display_text){
         JLabel label = (JLabel) (connectingPanel.getComponent(2));
         label.setText(display_text);
     }
-
     public void connectingPanelManager(ActionEvent actionEvent){
         connectingPanelManager();
     }
-
     public void connectingPanelManager() {
         switchMenuPanel.setVisible(false);
         isConnecting = true;
@@ -307,8 +298,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
-
-
     private void quickPanelManager(ActionEvent actionEvent) {
         switchMenuPanel.setVisible(true);
         isConnecting = false;
@@ -323,7 +312,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
-
     private void createPanelManager(ActionEvent actionEvent) {
         switchMenuPanel.setVisible(true);
         isConnecting = false;
@@ -338,7 +326,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickMatchPanelButton.setSelected(false);
         searchMatchPanelButton.setSelected(false);
     }
-
     private void searchPanelManager(ActionEvent actionEvent) {
         switchMenuPanel.setVisible(true);
         isConnecting = false;
@@ -352,7 +339,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
-
     private JPanel quickPanel() {
         JPanel quickPanel = new JPanel();
         quickPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -406,7 +392,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickPanel.add(miscPanel, c);
         return quickPanel;
     }
-
     private JPanel subActivityPanel(int row, int column) {
         if (row == 0 || column == 0) {
             row = 5;
@@ -418,7 +403,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         subActivityPanel.setLayout(new GridLayout(row, column));
         return subActivityPanel;
     }
-
     private void addQueueButtons() {
         ActivityReference[] values = ActivityReference.values();
         for (ActivityReference value : values) {
@@ -448,7 +432,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
         }
     }
-
     private void activityButtonManager(ItemEvent itemEvent) {
         JToggleButton button = (JToggleButton) itemEvent.getItem();
         String selection = button.getName();
@@ -468,7 +451,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             quickMatchButton.setBackground(COLOR_INPROGRESS);
         }
     }
-
     private void constructQueuePanels() {
         skillPanel = subActivityPanel(4, 6);
         bossPanel = subActivityPanel(7, 6);
@@ -476,7 +458,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         minigamePanel = subActivityPanel(6, 6);
         miscPanel = subActivityPanel(1, 3);
     }
-
     private JPanel createPanel() {
         JPanel createPanel = new JPanel();
         createPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -528,7 +509,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return createPanel;
     }
-
     private void addCreateButtons() {
         ActivityReference[] values = ActivityReference.values();
         for (ActivityReference value : values) {
@@ -558,7 +538,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
         }
     }
-
     private void constructCreatePanels() {
         createskillPanel = subActivityPanel(4, 6);
         createbossPanel = subActivityPanel(7, 6);
@@ -566,7 +545,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createminigamePanel = subActivityPanel(6, 6);
         createmiscPanel = subActivityPanel(1, 3);
     }
-
     private void create_activityButtonManager(ActionEvent actionEvent) {
         Object object = actionEvent.getSource();
         if (object instanceof JButton) {
@@ -575,7 +553,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             createPanel2.setVisible(true);
         }
     }
-
     private JPanel createPanel2() {
         JPanel createPanel2 = new JPanel();
         createPanel2.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -609,9 +586,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return createPanel2;
     }
-
-
-
     private JPanel createSelectionPanel() {
         JPanel createSelectionPanel = new JPanel();
         createSelectionPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -720,21 +694,89 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return createSelectionPanel;
     }
-
     private void count_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Group Size Help"+"\n"+
+                "The group size string indicates how many players your party should have."+"\n"+
+                "The input can be quite dynamic. This allows extensive flexibility when creating a group."+"\n"+
+                "--- Examples ---"+"\n"+
+                "5 -> 'Group size of 5.'"+"\n"+
+                "5+ -> 'Group size greater than 5 inclusive.'"+"\n"+
+                "5-10 -> 'Group size between 5 and 10 inclusive.'"+"\n"+
+                "[2,5] -> 'Group size greater than 2 inclusive, and less than 5 inclusive. This is the same as 2-5.'"+"\n"+
+                "(2,5] -> 'Group size greater than 2 exclusive, and less than 5 inclusive.'"+"\n"+
+                "[2,5) -> 'Group size greater than 2 inclusive, and less than 5 exclusive.'"+"\n"+
+                "(2,5) -> 'Group size greater than 2 exclusive and less than 5 exclusive.'"+"\n"+
+                "between 100 and|&|to|- 145 -> 'Group size greater than 100 inclusive, and less than 145 inclusive'"+"\n"+
+                "less than 4|lt 4|-lt 4|<4 -> 'Group size smaller than 4 exclusive.'"+"\n"+
+                "max 10|maximum 10|le 10|-le 10|<=10 -> 'Group size less than or equal to 10.'" +"\n"+
+                "greater than 50|gt 50|-gt 50|>50 -> 'Group size greater than 50 exclusive.'"+"\n"+
+                "min 99|minimum 99|ge 99|-ge 99|>=99 -> 'Group size greater than or equal to 99 inclusive.'"+"\n"+
+                "-- Chaining Group Sizes --"+"\n"+
+                "Sometimes, you would like to have a group of 5, or a group between 10-20, this can be done easily:"+"\n"+
+                "5 or 10-20"+"\n"+
+                "Add 'or' between groups, in order to create explicit group sizes."+"\n"+
+                "5+ or 7-10 -> Group size greater than 5, or between 7 inclusive and 10 inclusive."+"\n"+
+                "min 5 or [2,3) or max 50 or lt4 -> Group size at minimum 5 players, or between 2 inclusive and 3 exclusive, or max 50, or less than 4."+"\n"+
+                "Please visit our discord if you have any further questions!";
+        JOptionPane.showMessageDialog(frame, message);
     }
     private void experience_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Experience Help"+"\n"+
+                        "Different experience values can be used to indicate how competent your party is."+"\n"+
+                        "Note: Anyone can join a party, regardless of the designation."+"\n"+
+                        "1. Flexible - Anyone, of any experience level, can join."+"\n"+
+                        "2. Novice - Those with some experience in the activity should join."+"\n"+
+                        "3. Average - Those that see themselves as average in the activity, should join."+"\n"+
+                        "4. Experienced - Those with plenty of experience should join in this activity.";
+        JOptionPane.showMessageDialog(frame, message);
     }
     private void split_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Split Help"+"\n"+
+                "How you would like to split your loot."+"\n"+
+                "This can be ignored if you're doing an activity which doesn't require loot splitting."+"\n"+
+                "1. FFA - Free for all, everyone picks up their own loot."+"\n"+
+                "2. Splits - Everyone splits the loot evenly at the end.";
+        JOptionPane.showMessageDialog(frame, message);
     }
     private void accounts_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Account Help"+"\n"+
+                "The types of accounts that you would like to have in your party"+"\n"+
+                "Note: Anyone can join a party, regardless of the designation."+"\n"+
+                "1. All Accounts - Every account type should join."+"\n"+
+                "2. Normal - Accounts without special designations should join."+"\n"+
+                "3. IM - Regular Ironmen should join."+"\n"+
+                "4. HCIM - Hardcore Ironmen should join."+"\n"+
+                "5. UIM - Ultimate Ironmen should join.."+"\n"+
+                "6. GIM - Group Ironmen should join."+"\n"+
+                "7. HCGIM - Hardcore Group Ironmen should join.";
+        JOptionPane.showMessageDialog(frame, message);
     }
     private void region_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Region Help"+"\n"+
+                "What region would like to set the group in."+"\n"+
+                "Note: Anyone can join a party, regardless of the designation.";
+        JOptionPane.showMessageDialog(frame, message);
     }
     private void passcode_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Passcode Help"+"\n"+
+                "Passcode to set for a private match."+"\n"+
+                "Leave the passcode field blank in order for your match to be public."+"\n"+
+                "-- Rules --"+"\n"+
+                "Any string of size <64 characters is allowed, with permitted characters: [A-Za-z0-9_- ]";
+        JOptionPane.showMessageDialog(frame, message);
     }
-
-
     private JPanel searchPanel() {
         JPanel searchPanel = new JPanel();
         searchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -754,7 +796,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return searchPanel;
     }
-
     private IconTextField activitySearchBar() {
         IconTextField searchBar = new IconTextField();
         searchBar.setIcon(IconTextField.Icon.SEARCH);
@@ -765,7 +806,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchBar.addActionListener(plugin::searchActiveMatches);
         return searchBar;
     }
-
     private JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
@@ -774,7 +814,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         label_holder.add(label);
         return label_holder;
     }
-
     private JPanel header(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
@@ -783,7 +822,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         label_holder.add(label);
         return label_holder;
     }
-
     private JPanel instructionTitle(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);

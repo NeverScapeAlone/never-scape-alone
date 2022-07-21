@@ -5,9 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
-import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.model.ServerPayload;
-import jogamp.common.util.locks.SingletonInstanceServerSocket;
+import com.neverscapealone.model.Payload;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import okhttp3.*;
@@ -34,7 +32,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
         this.gson = new Gson();
     }
 
-    public void connect(String username, String discord, String token, String groupID) {
+    public void connect(String username, String discord, String token, String groupID, String passcode) {
         if (username.equals("")){
             log.debug("Cannot connect without a username!");
             return;
@@ -45,8 +43,13 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
             return;
         }
 
+        String url = BASE_HTTP+"/"+groupID+"/"+"0";
+        if (passcode != null){
+            url = BASE_HTTP+"/"+groupID+"/"+passcode;
+        }
+
         Request request = new Request.Builder()
-                .url(BASE_HTTP+"/"+groupID)
+                .url(url)
                 .addHeader("User-Agent", RuneLite.USER_AGENT)
                 .addHeader("Login", username)
                 .addHeader("Discord", discord)
@@ -64,7 +67,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        ServerPayload payload = this.gson.fromJson(text, ServerPayload.class);
+        Payload payload = this.gson.fromJson(text, Payload.class);
         System.out.println(payload);
     }
 
