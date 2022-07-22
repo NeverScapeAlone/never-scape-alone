@@ -27,12 +27,16 @@
 
 package com.neverscapealone.ui;
 
+import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ActivityReference;
+import com.neverscapealone.enums.SearchMatchData;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.Payload;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -794,8 +798,50 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchPanel.add(activitySearchBar, c);
         c.gridy += 1;
 
+        searchPanel.add(new JPanel());
         return searchPanel;
     }
+
+    public void setSearchPanel(Payload payload){
+        JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
+        searchMatchPanel.removeAll();
+
+        searchMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        searchMatchPanel.setBackground(SUB_BACKGROUND_COLOR);
+        searchMatchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        for (SearchMatchData match : payload.getSearch().getSearchMatches()){
+            JPanel sMatch = new JPanel();
+            sMatch.setBorder(new EmptyBorder(0, 0, 0, 0));
+            sMatch.setBackground(SUB_BACKGROUND_COLOR);
+            sMatch.setLayout(new GridBagLayout());
+            GridBagConstraints cMatch = new GridBagConstraints();
+            cMatch.weightx = 1;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.gridx = 0;
+            cMatch.gridy = 0;
+            /// start match block
+            searchMatchPanel.add(new JLabel(match.getPartyLeader()), cMatch);
+
+            /// end match code
+            c.gridy += 1;
+            searchMatchPanel.add(Box.createVerticalStrut(5),c);
+            c.gridy += 1;
+            searchMatchPanel.add(sMatch, c);
+        }
+
+        searchMatchPanel.revalidate();
+        searchMatchPanel.repaint();
+    }
+
+
     private IconTextField activitySearchBar() {
         IconTextField searchBar = new IconTextField();
         searchBar.setIcon(IconTextField.Icon.SEARCH);

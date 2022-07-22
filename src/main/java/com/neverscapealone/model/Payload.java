@@ -18,6 +18,6 @@ public class Payload {
     @SerializedName("passcode") // the passcode that is sent on a create_match request
     String passcode;
     @SerializedName("search_match_data")
-    SearchMatches searchMatches;
+    SearchMatches search;
 }
 

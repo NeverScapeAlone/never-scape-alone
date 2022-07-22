@@ -5,14 +5,13 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
-import com.neverscapealone.enums.SearchMatches;
+import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.model.Payload;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import okhttp3.*;
-import okio.ByteString;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.function.Supplier;
 
@@ -28,6 +27,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     @Inject
     private Gson gson;
     private NeverScapeAloneConfig config;
+    NeverScapeAlonePlugin plugin = new NeverScapeAlonePlugin();
     private static String username;
     private static String discord;
     private static String token;
@@ -57,12 +57,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
         NeverScapeAloneWebsocket.token = token;
         NeverScapeAloneWebsocket.groupID = groupID;
 
-        System.out.println(username);
-        System.out.println(discord);
-        System.out.println(token);
-        System.out.println(groupID);
-        System.out.println(passcode);
-
         String url = BASE_HTTP+"/"+groupID+"/"+"0";
         NeverScapeAloneWebsocket.passcode = "0";
         if (passcode != null){
@@ -81,7 +75,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 .addHeader("Time", Instant.now().toString())
                 .build();
 
-        System.out.println(request);
         NeverScapeAloneWebsocket listener = new NeverScapeAloneWebsocket();
         socket = this.okHttpClient.newWebSocket(request, listener);
     }
@@ -117,10 +110,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 System.out.println("Successful connection!");
                 break;
             case SEARCH_MATCH_DATA:
-                System.out.println(payload);
-                SearchMatches searchMatches = payload.getSearchMatches();
-                System.out.println(searchMatches.toString());
-                // TODO fix this
+                //TODO update panel panel.setSearchPanel(payload);
                 break;
         }
     }

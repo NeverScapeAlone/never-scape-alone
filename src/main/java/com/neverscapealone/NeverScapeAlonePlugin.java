@@ -1,9 +1,9 @@
 package com.neverscapealone;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.Payload;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -20,16 +20,14 @@ import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
-
+import javax.inject.Singleton;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -239,7 +237,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         search_request.addProperty("search", target);
         websocket.send(search_request);
     }
-
 
     @Provides
     NeverScapeAloneConfig provideConfig(ConfigManager configManager) {
