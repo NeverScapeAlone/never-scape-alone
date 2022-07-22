@@ -4,12 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.neverscapealone.NeverScapeAloneConfig;
-import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.model.Payload;
-import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
+import net.runelite.client.eventbus.EventBus;
 import okhttp3.*;
 
 import java.time.Instant;
@@ -26,21 +24,20 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private OkHttpClient okHttpClient;
     @Inject
     private Gson gson;
-    private NeverScapeAloneConfig config;
-    NeverScapeAlonePlugin plugin = new NeverScapeAlonePlugin();
     private static String username;
     private static String discord;
     private static String token;
     private static String groupID;
     private static String passcode;
     private WebSocket socket;
+    private final EventBus eventBus;
     @Inject
-    private NeverScapeAloneWebsocket()
+    private NeverScapeAloneWebsocket(EventBus eventbus)
     {
+        this.eventBus = eventbus;
         this.gson = new Gson();
         this.okHttpClient = new OkHttpClient();
     }
-
     public void connect(String username, String discord, String token, String groupID, String passcode) {
         if (username.equals("")){
             log.debug("Cannot connect without a username!");
@@ -75,8 +72,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 .addHeader("Time", Instant.now().toString())
                 .build();
 
-        NeverScapeAloneWebsocket listener = new NeverScapeAloneWebsocket();
-        socket = this.okHttpClient.newWebSocket(request, listener);
+        socket = this.okHttpClient.newWebSocket(request, this);
     }
 
     public void send(JsonObject jsonObject){
@@ -110,7 +106,8 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 System.out.println("Successful connection!");
                 break;
             case SEARCH_MATCH_DATA:
-                //TODO update panel panel.setSearchPanel(payload);
+                System.out.println("Websocket class");
+                this.eventBus.post(payload);
                 break;
         }
     }

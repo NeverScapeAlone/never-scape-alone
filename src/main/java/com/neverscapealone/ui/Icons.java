@@ -47,6 +47,9 @@ public class Icons {
     public static final ImageIcon SPINNER_GIF = new ImageIcon("/loading_spinner_darker.gif");
     public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
 
+    // other
+    public static final ImageIcon YELLOW_PARTYHAT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/yellow_partyhat.png"));
+
     // "skill", "boss", "minigame", "misc", "solo", "raids"
     // SKILLS
     public static final ImageIcon ATTACK = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/attack.png"));

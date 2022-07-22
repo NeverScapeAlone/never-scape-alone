@@ -40,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
@@ -57,6 +58,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+@Slf4j
+@Singleton
 public class NeverScapeAlonePanel extends PluginPanel {
 
     @Inject
@@ -127,6 +130,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     // CLASSES
     private final NeverScapeAlonePlugin plugin;
+    private final EventBus eventBus;
     private final NeverScapeAloneConfig config;
     private final NeverScapeAloneWebsocket websocket;
     private final Client user;
@@ -160,7 +164,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.plugin = plugin;
         this.websocket = websocket;
         this.user = user;
+        this.eventBus = eventBus;
         this.worldService = worldService;
+
+        this.eventBus.register(this);
+
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(BACKGROUND_COLOR);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -206,6 +214,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
         addQueueButtons();
         addCreateButtons();
     }
+
+    @Subscribe
+    public void onPayload(Payload payload) {
+        SwingUtilities.invokeLater(() -> setSearchPanel(payload));
+    }
+
+
     private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -797,8 +812,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         IconTextField activitySearchBar = activitySearchBar();
         searchPanel.add(activitySearchBar, c);
         c.gridy += 1;
-
-        searchPanel.add(new JPanel());
+        searchPanel.add(new JPanel(), c);
         return searchPanel;
     }
 
@@ -817,6 +831,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridy = 0;
 
         for (SearchMatchData match : payload.getSearch().getSearchMatches()){
+            c.gridy += 1; // increment new value
+
             JPanel sMatch = new JPanel();
             sMatch.setBorder(new EmptyBorder(0, 0, 0, 0));
             sMatch.setBackground(SUB_BACKGROUND_COLOR);
@@ -827,8 +843,36 @@ public class NeverScapeAlonePanel extends PluginPanel {
             cMatch.anchor = GridBagConstraints.CENTER;
             cMatch.gridx = 0;
             cMatch.gridy = 0;
+
             /// start match block
-            searchMatchPanel.add(new JLabel(match.getPartyLeader()), cMatch);
+            String activity = match.getActivity();
+            ActivityReference activityReference = ActivityReference.valueOf(activity);
+            ImageIcon activity_icon = activityReference.getIcon();
+            String activity_name = activityReference.getTooltip();
+
+            JLabel match_title = new JLabel(activity_name);
+            match_title.setIcon(activity_icon);
+            match_title.setFont(FontManager.getRunescapeBoldFont());
+            searchMatchPanel.add(match_title, cMatch);
+            cMatch.gridx = 1;
+            JLabel privateLabel = new JLabel();
+            if (match.getIsPrivate()){
+                privateLabel.setText("Private");
+
+            } else {
+                privateLabel.setText("Public");
+
+            }
+
+            cMatch.gridy += 1;
+
+            searchMatchPanel.add(Box.createVerticalStrut(2),c);
+            cMatch.gridy += 1;
+
+            String party_leader = match.getPartyLeader();
+            JLabel partyLeader_label = new JLabel(party_leader);
+            partyLeader_label.setIcon(Icons.YELLOW_PARTYHAT_ICON);
+            searchMatchPanel.add(partyLeader_label, cMatch);
 
             /// end match code
             c.gridy += 1;
@@ -840,7 +884,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanel.revalidate();
         searchMatchPanel.repaint();
     }
-
 
     private IconTextField activitySearchBar() {
         IconTextField searchBar = new IconTextField();
