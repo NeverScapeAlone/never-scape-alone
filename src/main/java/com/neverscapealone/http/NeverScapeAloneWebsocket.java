@@ -73,11 +73,16 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 .build();
 
         socket = this.okHttpClient.newWebSocket(request, this);
+
+        JsonObject check_connection = new JsonObject();
+        check_connection.addProperty("detail","check_connection");
+        send(check_connection);
     }
 
     public void send(JsonObject jsonObject){
         socket.send(jsonObject.toString());
     }
+    public void logoff(String reason){socket.close(1000, reason);}
 
     @Override
     public void onMessage(WebSocket socket, String text) {
@@ -104,9 +109,10 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 break;
             case SUCCESSFUL_CONNECTION:
                 System.out.println("Successful connection!");
+                this.eventBus.post(payload.getMatchData());
                 break;
             case SEARCH_MATCH_DATA:
-                this.eventBus.post(payload);
+                this.eventBus.post(payload.getSearch());
                 break;
         }
     }

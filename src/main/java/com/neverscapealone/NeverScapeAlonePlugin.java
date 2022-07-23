@@ -150,10 +150,12 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     public void privateMatchJoin(String matchID, String passcode){
         websocket.connect(username, config.discordUsername(), config.authToken(), matchID, passcode);
+        panel.connectingPanelManager();
     }
 
     public void publicMatchJoin(String matchID){
         websocket.connect(username, config.discordUsername(), config.authToken(), matchID, null);
+        panel.connectingPanelManager();
     }
 
     public void createMatchStart(ActionEvent actionEvent){

@@ -15,6 +15,7 @@ public class Icons {
     public static final ImageIcon WORLD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/world.png"));
     public static final ImageIcon HELP_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/help.png"));
     public static final ImageIcon ACCEPT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Checkmark.png"));
+    public static final ImageIcon LOGOUT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/logout.png"));
     public static final ImageIcon CANCEL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Xmark.png"));
     public static final ImageIcon UNDO_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/undo.png"));
     public static final ImageIcon RESET_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/reset.png"));

@@ -1,6 +1,7 @@
 package com.neverscapealone.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.neverscapealone.enums.MatchData;
 import com.neverscapealone.enums.SearchMatches;
 import com.neverscapealone.enums.ServerStatusCode;
 import lombok.Builder;
@@ -17,7 +18,9 @@ public class Payload {
     String group_id;
     @SerializedName("passcode") // the passcode that is sent on a create_match request
     String passcode;
-    @SerializedName("search_match_data")
+    @SerializedName("search_match_data") // limited data to be sent over to the client, this is mainly for selecting a match
     SearchMatches search;
+    @SerializedName("match_data") // data regarding the match itself
+    MatchData matchData;
 }
 

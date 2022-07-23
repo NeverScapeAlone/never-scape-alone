@@ -30,9 +30,7 @@ package com.neverscapealone.ui;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.AccountTypeSelection;
-import com.neverscapealone.enums.ActivityReference;
-import com.neverscapealone.enums.SearchMatchData;
+import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.Payload;
 import lombok.AllArgsConstructor;
@@ -89,7 +87,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private JPanel raidPanel;
     private JPanel minigamePanel;
     private JPanel miscPanel;
-    private JPanel connectingPanel;
+    private final JPanel connectingPanel;
+    private final JPanel matchPanel;
 
     private JPanel createskillPanel;
     private JPanel createbossPanel;
@@ -144,8 +143,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
         PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
         PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
-        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
-        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github", "https://github.com/NeverScapeAlone"),
+//        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
+//        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github", "https://github.com/NeverScapeAlone"),
         BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
         private final ImageIcon image;
@@ -176,9 +175,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         // panel inits
         linksPanel = linksPanel(); // add link panel perm
-        switchMenuPanel = switchMenuPanel(); // add switch menu panel perm
+        // switch menu panel
+        switchMenuPanel = switchMenuPanel();
+        // connecting panel
         connectingPanel = connectingPanel();
         connectingPanel.setVisible(false);
+        // match panel
+        matchPanel = matchPanel();
+        matchPanel.setVisible(false);
         // constructions
         constructQueuePanels(); // construct queue panels for placement in quick panel
         constructCreatePanels(); // construct create panels for placement in create panel
@@ -211,16 +215,21 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(createPanel2);
         add(searchPanel);
         add(connectingPanel);
+        add(matchPanel);
 
         addQueueButtons();
         addCreateButtons();
     }
 
     @Subscribe
-    public void onPayload(Payload payload) {
-        SwingUtilities.invokeLater(() -> setSearchPanel(payload));
+    public void onSearchMatches(SearchMatches searchMatches) {
+        SwingUtilities.invokeLater(() -> setSearchPanel(searchMatches));
     }
 
+    @Subscribe
+    public void onMatchData(MatchData matchData) {
+        SwingUtilities.invokeLater(() -> setMatchPanel(matchData));
+    }
 
     private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
@@ -255,23 +264,94 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         quickMatchPanelButton.setText("Quick");
         quickMatchPanelButton.setToolTipText("Quickly find a match");
-        quickMatchPanelButton.addActionListener(e -> quickPanelManager(e));
+        quickMatchPanelButton.addActionListener(this::quickPanelManager);
         switchMenuPanel.add(quickMatchPanelButton, c);
         c.gridx += 1;
 
         createMatchPanelButton.setText("Create");
         createMatchPanelButton.setToolTipText("Create a new match");
-        createMatchPanelButton.addActionListener(e -> createPanelManager(e));
+        createMatchPanelButton.addActionListener(this::createPanelManager);
         switchMenuPanel.add(createMatchPanelButton, c);
         c.gridx += 1;
 
         searchMatchPanelButton.setText("Search");
         searchMatchPanelButton.setToolTipText("Search for active matches");
-        searchMatchPanelButton.addActionListener(e -> searchPanelManager(e));
+        searchMatchPanelButton.addActionListener(this::searchPanelManager);
         switchMenuPanel.add(searchMatchPanelButton, c);
 
         return switchMenuPanel;
     }
+
+    private void setMatchPanel(MatchData matchdata){
+        matchPanelManager(); // switch to match panel
+        JPanel mp = (JPanel) matchPanel.getComponent(1);
+        mp.removeAll();
+
+        mp.setBorder(new EmptyBorder(0, 0, 0, 0));
+        mp.setBackground(BACKGROUND_COLOR);
+        mp.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        mp.add(Box.createVerticalStrut(5),c);
+        c.gridy += 1;
+
+        mp.revalidate();
+        mp.repaint();
+    }
+
+    private JPanel matchPanel() {
+        JPanel matchPanel = new JPanel();
+        matchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        matchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+        c.fill = GridBagConstraints.LINE_END;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        JButton escape = new JButton();
+        escape.setIcon(Icons.LOGOUT_ICON);
+        escape.setToolTipText("Exit");
+        escape.setSize(20, 20);
+        escape.setBorderPainted(false);
+        escape.setFocusPainted(false);
+        escape.setContentAreaFilled(false);
+        escape.addActionListener(this::leaveMatch);
+        matchPanel.add(escape, c);
+
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridy += 1;
+
+        matchPanel.add(new JPanel(), c);
+        return matchPanel;
+    }
+
+    private void leaveMatch(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Object[] options = {"Leave",
+                            "Stay"};
+        int n = JOptionPane.showOptionDialog(frame,
+                "Would you like to leave this match?",
+                "Match Logout",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);
+        if (n == 0){
+            websocket.logoff("Exiting match");
+            quickPanelManager(actionEvent);
+        }
+    }
+
     private JPanel connectingPanel(){
         JPanel connectingPanel = new JPanel();
         connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -308,7 +388,26 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public void connectingPanelManager(ActionEvent actionEvent){
         connectingPanelManager();
     }
+
+    public void matchPanelManager() {
+        matchPanel.setVisible(true);
+
+        switchMenuPanel.setVisible(false);
+        isConnecting = false;
+        plugin.timer = 0;
+
+        connectingPanel.setVisible(false);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(false);
+        searchPanel.setVisible(false);
+
+        quickMatchPanelButton.setSelected(false);
+        createMatchPanelButton.setSelected(false);
+    }
     public void connectingPanelManager() {
+        matchPanel.setVisible(false);
+
         switchMenuPanel.setVisible(false);
         isConnecting = true;
 
@@ -322,6 +421,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createMatchPanelButton.setSelected(false);
     }
     private void quickPanelManager(ActionEvent actionEvent) {
+        matchPanel.setVisible(false);
+
         switchMenuPanel.setVisible(true);
         isConnecting = false;
         plugin.timer = 0;
@@ -336,9 +437,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createMatchPanelButton.setSelected(false);
     }
     private void createPanelManager(ActionEvent actionEvent) {
+        matchPanel.setVisible(false);
+
         switchMenuPanel.setVisible(true);
         isConnecting = false;
-
 
         connectingPanel.setVisible(false);
         createPanel.setVisible(true);
@@ -350,6 +452,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanelButton.setSelected(false);
     }
     private void searchPanelManager(ActionEvent actionEvent) {
+        matchPanel.setVisible(false);
+
         switchMenuPanel.setVisible(true);
         isConnecting = false;
 
@@ -838,9 +942,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return searchPanel;
     }
 
-    public void setSearchPanel(Payload payload){
+    public void setSearchPanel(SearchMatches searchMatches){
         JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
-        System.out.println(payload.getSearch().getSearchMatches());
         searchMatchPanel.removeAll();
 
         searchMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -856,7 +959,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanel.add(Box.createVerticalStrut(5),c);
         c.gridy += 1;
 
-        for (SearchMatchData match : payload.getSearch().getSearchMatches()){
+        for (SearchMatchData match : searchMatches.getSearchMatches()){
             JPanel sMatch = new JPanel();
             sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
             sMatch.setBackground(SUB_BACKGROUND_COLOR);
