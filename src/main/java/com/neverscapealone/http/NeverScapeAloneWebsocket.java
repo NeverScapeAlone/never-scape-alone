@@ -106,7 +106,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 System.out.println("Successful connection!");
                 break;
             case SEARCH_MATCH_DATA:
-                System.out.println("Websocket class");
                 this.eventBus.post(payload);
                 break;
         }

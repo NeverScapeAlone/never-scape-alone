@@ -30,6 +30,7 @@ package com.neverscapealone.ui;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.AccountTypeSelection;
 import com.neverscapealone.enums.ActivityReference;
 import com.neverscapealone.enums.SearchMatchData;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
@@ -52,11 +53,11 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
@@ -119,7 +120,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public final JTextField party_member_count = new JTextField();
     public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
     public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
-    public final JComboBox<String> account_type = new JComboBox(new String[]{"All Accounts", "Normal", "IM", "HCIM", "UIM", "GIM", "HCGIM"});
+    public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
     public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
     public final JTextField passcode = new JTextField();
 
@@ -286,6 +287,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         escape.setIcon(Icons.CANCEL_ICON);
         escape.setToolTipText("Exit");
         escape.setSize(20,20);
+        escape.setBorderPainted(false);
+        escape.setFocusPainted(false);
+        escape.setContentAreaFilled(false);
         escape.addActionListener(this::quickPanelManager);
         connectingPanel.add(escape, c);
 
@@ -631,6 +635,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         member_count_help_button.setSize(16, 16);
         member_count_help_button.setToolTipText("Click here for help!");
         member_count_help_button.addActionListener(this::count_help_button_panel);
+        member_count_help_button.setBorderPainted(false);
+        member_count_help_button.setFocusPainted(false);
+        member_count_help_button.setContentAreaFilled(false);
         createSelectionPanel.add(member_count_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -643,10 +650,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        experience_help_button.setIcon(Icons.HELP_ICON);
+        experience_help_button.setIcon(Icons.EXPERIENCE_ICON);
         experience_help_button.setSize(16, 16);
         experience_help_button.setToolTipText("Click here for help!");
         experience_help_button.addActionListener(this::experience_help_button_panel);
+        experience_help_button.setBorderPainted(false);
+        experience_help_button.setFocusPainted(false);
+        experience_help_button.setContentAreaFilled(false);
         createSelectionPanel.add(experience_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -658,10 +668,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(party_loot, c);
         c.gridx = 2;
         c.weightx = 0;
-        split_help_button.setIcon(Icons.HELP_ICON);
+        split_help_button.setIcon(Icons.LOOTBAG_ICON);
         split_help_button.setSize(16, 16);
         split_help_button.setToolTipText("Click here for help!");
         split_help_button.addActionListener(this::split_help_button_panel);
+        split_help_button.setBorderPainted(false);
+        split_help_button.setFocusPainted(false);
+        split_help_button.setContentAreaFilled(false);
         createSelectionPanel.add(split_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -673,10 +686,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(account_type, c);
         c.gridx = 2;
         c.weightx = 0;
-        accounts_help_button.setIcon(Icons.HELP_ICON);
+        accounts_help_button.setIcon(Icons.NSA_ICON);
         accounts_help_button.setSize(16, 16);
         accounts_help_button.setToolTipText("Click here for help!");
         accounts_help_button.addActionListener(this::accounts_help_button_panel);
+        accounts_help_button.setBorderPainted(false);
+        accounts_help_button.setFocusPainted(false);
+        accounts_help_button.setContentAreaFilled(false);
         createSelectionPanel.add(accounts_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -688,10 +704,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(region, c);
         c.gridx = 2;
         c.weightx = 0;
-        region_help_button.setIcon(Icons.HELP_ICON);
+        region_help_button.setIcon(Icons.WORLD_ICON);
         region_help_button.setSize(16, 16);
         region_help_button.setToolTipText("Click here for help!");
         region_help_button.addActionListener(this::region_help_button_panel);
+        region_help_button.setBorderPainted(false);
+        region_help_button.setFocusPainted(false);
+        region_help_button.setContentAreaFilled(false);
         createSelectionPanel.add(region_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -703,10 +722,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(passcode, c);
         c.gridx = 2;
         c.weightx = 0;
-        passcode_help_button.setIcon(Icons.HELP_ICON);
+        passcode_help_button.setIcon(Icons.PRIVATE_ICON);
         passcode_help_button.setSize(16, 16);
         passcode_help_button.setToolTipText("Click here for help!");
         passcode_help_button.addActionListener(this::passcode_help_button_panel);
+        passcode_help_button.setBorderPainted(false);
+        passcode_help_button.setFocusPainted(false);
+        passcode_help_button.setContentAreaFilled(false);
         createSelectionPanel.add(passcode_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -818,10 +840,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     public void setSearchPanel(Payload payload){
         JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
+        System.out.println(payload.getSearch().getSearchMatches());
         searchMatchPanel.removeAll();
 
         searchMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        searchMatchPanel.setBackground(SUB_BACKGROUND_COLOR);
+        searchMatchPanel.setBackground(BACKGROUND_COLOR);
         searchMatchPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1;
@@ -830,11 +853,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
         c.gridy = 0;
 
-        for (SearchMatchData match : payload.getSearch().getSearchMatches()){
-            c.gridy += 1; // increment new value
+        searchMatchPanel.add(Box.createVerticalStrut(5),c);
+        c.gridy += 1;
 
+        for (SearchMatchData match : payload.getSearch().getSearchMatches()){
             JPanel sMatch = new JPanel();
-            sMatch.setBorder(new EmptyBorder(0, 0, 0, 0));
+            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
             sMatch.setBackground(SUB_BACKGROUND_COLOR);
             sMatch.setLayout(new GridBagLayout());
             GridBagConstraints cMatch = new GridBagConstraints();
@@ -853,37 +877,107 @@ public class NeverScapeAlonePanel extends PluginPanel {
             JLabel match_title = new JLabel(activity_name);
             match_title.setIcon(activity_icon);
             match_title.setFont(FontManager.getRunescapeBoldFont());
-            searchMatchPanel.add(match_title, cMatch);
+            sMatch.add(match_title, cMatch);
             cMatch.gridx = 1;
+
             JLabel privateLabel = new JLabel();
             if (match.getIsPrivate()){
                 privateLabel.setText("Private");
-
+                privateLabel.setIcon(Icons.PRIVATE_ICON);
+                privateLabel.setForeground(Color.yellow.darker().darker());
             } else {
                 privateLabel.setText("Public");
-
+                privateLabel.setIcon(Icons.PUBLIC_ICON);
+                privateLabel.setForeground(Color.green.darker().darker());
             }
-
+            privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+            privateLabel.setToolTipText("Match ID: "+ match.getId());
+            cMatch.anchor = GridBagConstraints.LINE_END;
+            cMatch.fill = GridBagConstraints.LINE_END;
+            sMatch.add(privateLabel,cMatch);
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.gridx = 0;
             cMatch.gridy += 1;
 
-            searchMatchPanel.add(Box.createVerticalStrut(2),c);
+            sMatch.add(Box.createVerticalStrut(2), cMatch);
             cMatch.gridy += 1;
 
             String party_leader = match.getPartyLeader();
             JLabel partyLeader_label = new JLabel(party_leader);
             partyLeader_label.setIcon(Icons.YELLOW_PARTYHAT_ICON);
-            searchMatchPanel.add(partyLeader_label, cMatch);
+            partyLeader_label.setToolTipText("The party leader");
+            sMatch.add(partyLeader_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            JLabel experience_label = new JLabel(match.getExperience());
+            experience_label.setIcon(Icons.EXPERIENCE_ICON);
+            experience_label.setToolTipText("Experience");
+            sMatch.add(experience_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            JLabel split_label = new JLabel(match.getSplitType());
+            split_label.setIcon(Icons.LOOTBAG_ICON);
+            split_label.setToolTipText("Loot Split");
+            sMatch.add(split_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            String account_string = match.getAccounts();
+            ImageIcon account_image = AccountTypeSelection.valueOf(account_string).getImage();
+            JLabel accounts_label = new JLabel(account_string);
+            accounts_label.setIcon(account_image);
+            accounts_label.setToolTipText("Accounts");
+            sMatch.add(accounts_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            JLabel region_label = new JLabel(match.getRegions());
+            region_label.setIcon(Icons.WORLD_ICON);
+            region_label.setToolTipText("Match Region");
+            sMatch.add(region_label, cMatch);
+            cMatch.gridy += 1;
 
             /// end match code
             c.gridy += 1;
             searchMatchPanel.add(Box.createVerticalStrut(5),c);
             c.gridy += 1;
+
+            int v = 0;
+            if (match.getIsPrivate()){
+                v = 1;
+            }
+            sMatch.setName(match.getId()+":"+ v);
+            sMatch.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    JPanel panel = (JPanel) e.getSource();
+                    String name = panel.getName();
+                    String[] name_split = name.split(":");
+                    if (Objects.equals(name_split[1], "1")){
+                        plugin.privateMatchPasscode(name_split[0]);
+                    } else {
+                        plugin.publicMatchJoin(name_split[0]);
+                    }
+                }
+            });
             searchMatchPanel.add(sMatch, c);
         }
 
         searchMatchPanel.revalidate();
         searchMatchPanel.repaint();
     }
+
 
     private IconTextField activitySearchBar() {
         IconTextField searchBar = new IconTextField();

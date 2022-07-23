@@ -20,6 +20,7 @@ import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -137,6 +138,22 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         panel.connectingPanelManager();
+    }
+
+    public void privateMatchPasscode(String matchID){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Enter passcode for "+matchID;
+        String passcode = JOptionPane.showInputDialog(frame, message);
+        privateMatchJoin(matchID, passcode);
+    }
+
+    public void privateMatchJoin(String matchID, String passcode){
+        websocket.connect(username, config.discordUsername(), config.authToken(), matchID, passcode);
+    }
+
+    public void publicMatchJoin(String matchID){
+        websocket.connect(username, config.discordUsername(), config.authToken(), matchID, null);
     }
 
     public void createMatchStart(ActionEvent actionEvent){

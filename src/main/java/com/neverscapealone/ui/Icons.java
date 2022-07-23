@@ -33,6 +33,15 @@ public class Icons {
     public static final ImageIcon RUNEWATCH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runewatch.png"));
     public static final ImageIcon WDR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/wdr_symbol.png"));
 
+    // account flags
+    public static final ImageIcon IM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/IM.png"));
+    public static final ImageIcon HCIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/HCIM.png"));
+    public static final ImageIcon UIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/UIM.png"));
+    public static final ImageIcon GIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/GIM.png"));
+    public static final ImageIcon HCGIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/HCGIM.png"));
+    public static final ImageIcon UGIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/UGIM.png"));
+
+
     // region flags
 
     public static final ImageIcon US_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/us.png"));
@@ -48,6 +57,11 @@ public class Icons {
     public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
 
     // other
+    public static final ImageIcon PRIVATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/private.png"));
+    public static final ImageIcon PUBLIC_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/public.png"));
+    public static final ImageIcon EXPERIENCE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/experience.png"));
+    public static final ImageIcon LIGHTBULB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/lightbulb.png"));
+    public static final ImageIcon LOOTBAG_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/lootbag.png"));
     public static final ImageIcon YELLOW_PARTYHAT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/yellow_partyhat.png"));
 
     // "skill", "boss", "minigame", "misc", "solo", "raids"
