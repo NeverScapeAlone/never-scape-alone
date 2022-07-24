@@ -52,17 +52,17 @@ public interface NeverScapeAloneConfig extends Config {
     default String authToken() {
         return "";
     }
-	@ConfigItem(
-			position = 1,
-			keyName = "verifiedUsers",
-			name = "Verified Users",
-			description = "Allow strict matching with Verified users of the plugin.",
-			section = matchSection
-	)
-	default boolean verifiedPartners()
-	{
-		return false;
-	}
+//	@ConfigItem(
+//			position = 1,
+//			keyName = "verifiedUsers",
+//			name = "Verified Users",
+//			description = "Allow strict matching with Verified users of the plugin.",
+//			section = matchSection
+//	)
+//	default boolean verifiedPartners()
+//	{
+//		return false;
+//	}
 
 }
 

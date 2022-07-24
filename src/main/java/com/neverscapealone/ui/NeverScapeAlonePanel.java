@@ -456,8 +456,19 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
             if (player.getStatus() != null){
                 player_panel.add(Box.createVerticalStrut(3));
-
                 cp.gridy+=1;
+
+                JPanel player_status = new JPanel();
+                player_status.setBorder(new EmptyBorder(5, 0, 5, 0));
+                player_status.setBackground(SUB_BACKGROUND_COLOR);
+                player_status.setLayout(new GridBagLayout());
+                player_status.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+                GridBagConstraints cs = new GridBagConstraints();
+                cs.weightx = 1;
+                cs.fill = GridBagConstraints.HORIZONTAL;
+                cs.anchor = GridBagConstraints.CENTER;
+                cs.gridx = 0;
+                cs.gridy = 0;
 
                 Integer base_hitpoints =  player.getStatus().getBaseHp();
                 Integer hitpoints = player.getStatus().getHp();
@@ -465,25 +476,21 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 Integer base_prayer = player.getStatus().getBasePrayer();
                 Integer run_energy = player.getStatus().getRunEnergy();
 
-                cp.anchor = GridBagConstraints.CENTER;
-                cp.fill = GridBagConstraints.HORIZONTAL;
-
-                cp.gridx=0;
-                JLabel hitpoint_label = new JLabel();
+                JLabel hitpoint_label = new JLabel(hitpoints+"/"+base_hitpoints);
                 hitpoint_label.setIcon(Icons.HITPOINTS);
-                player_panel.add(hitpoint_label, cp);
+                player_status.add(hitpoint_label, cs);
 
-                cp.gridx=1;
+                cs.gridx=1;
                 JLabel prayer_label = new JLabel(prayer+"/"+base_prayer);
                 prayer_label.setIcon(Icons.PRAYER);
-                player_panel.add(prayer_label, cp);
+                player_status.add(prayer_label, cs);
 
-                cp.gridx=2;
+                cs.gridx=2;
                 JLabel run_label = new JLabel(run_energy+"/100");
                 run_label.setIcon(Icons.AGILITY);
-                player_panel.add(run_label, cp);
+                player_status.add(run_label, cs);
 
-                cp.gridx=0;
+                player_panel.add(player_status, cp);
                 cp.gridy+=1;
             }
 
