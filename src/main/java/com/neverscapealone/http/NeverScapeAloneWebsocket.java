@@ -108,7 +108,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 System.out.println("Bad passcode entered");
                 break;
             case SUCCESSFUL_CONNECTION:
-                System.out.println("Successful connection!");
                 this.eventBus.post(payload.getMatchData());
                 break;
             case SEARCH_MATCH_DATA:

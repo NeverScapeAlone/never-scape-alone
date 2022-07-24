@@ -50,6 +50,7 @@ import net.runelite.client.util.LinkBrowser;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.Array;
@@ -300,6 +301,166 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.add(Box.createVerticalStrut(5),c);
         c.gridy += 1;
 
+        /// current activity panel
+        JPanel current_activity_panel = new JPanel();
+        current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        current_activity_panel.setBackground(SUB_BACKGROUND_COLOR);
+        current_activity_panel.setLayout(new GridBagLayout());
+        current_activity_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        GridBagConstraints ca = new GridBagConstraints();
+        ca.weightx = 1;
+        ca.fill = GridBagConstraints.HORIZONTAL;
+        ca.anchor = GridBagConstraints.CENTER;
+        ca.gridx = 0;
+        ca.gridy = 0;
+
+        String activity = matchdata.getActivity();
+        ActivityReference activityReference = ActivityReference.valueOf(activity);
+        ImageIcon activity_icon = activityReference.getIcon();
+        String activity_name = activityReference.getTooltip();
+
+        JLabel match_title = new JLabel(activity_name);
+        match_title.setIcon(activity_icon);
+        match_title.setFont(FontManager.getRunescapeBoldFont());
+        current_activity_panel.add(match_title, ca);
+        ca.gridx = 1;
+
+        JLabel privateLabel = new JLabel();
+        if (matchdata.getIsPrivate()){
+            privateLabel.setText("Private");
+            privateLabel.setIcon(Icons.PRIVATE_ICON);
+            privateLabel.setForeground(Color.yellow.darker().darker());
+        } else {
+            privateLabel.setText("Public");
+            privateLabel.setIcon(Icons.PUBLIC_ICON);
+            privateLabel.setForeground(Color.green.darker().darker());
+        }
+        privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        privateLabel.setToolTipText("Match ID: "+ matchdata.getId());
+
+        ca.anchor = GridBagConstraints.LINE_END;
+        ca.fill = GridBagConstraints.LINE_END;
+        current_activity_panel.add(privateLabel, ca);
+
+        ca.anchor = GridBagConstraints.CENTER;
+        ca.fill = GridBagConstraints.HORIZONTAL;
+        ca.gridx = 0;
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(2), ca);
+        ca.gridy += 1;
+
+        JLabel experience_label = new JLabel(matchdata.getRequirement().getExperience());
+        experience_label.setIcon(Icons.EXPERIENCE_ICON);
+        experience_label.setToolTipText("Experience");
+        current_activity_panel.add(experience_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        JLabel split_label = new JLabel(matchdata.getRequirement().getSplitType());
+        split_label.setIcon(Icons.LOOTBAG_ICON);
+        split_label.setToolTipText("Loot Split");
+        current_activity_panel.add(split_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        String account_string = matchdata.getRequirement().getAccounts();
+        ImageIcon account_image = AccountTypeSelection.valueOf(account_string).getImage();
+        JLabel accounts_label = new JLabel(account_string);
+        accounts_label.setIcon(account_image);
+        accounts_label.setToolTipText("Accounts");
+        current_activity_panel.add(accounts_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        JLabel region_label = new JLabel(matchdata.getRequirement().getRegions());
+        region_label.setIcon(Icons.WORLD_ICON);
+        region_label.setToolTipText("Match Region");
+        current_activity_panel.add(region_label, ca);
+
+        mp.add(current_activity_panel, c);
+        c.gridy += 1;
+
+        /// end current activity panel
+        mp.add(Box.createVerticalStrut(5),c);
+        c.gridy += 1;
+
+        for (Player player : matchdata.getPlayers()){
+            JPanel player_panel = new JPanel();
+
+            player_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+            player_panel.setBackground(SUB_BACKGROUND_COLOR);
+            player_panel.setLayout(new GridBagLayout());
+            player_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            GridBagConstraints cp = new GridBagConstraints();
+            cp.weightx = 1;
+            cp.fill = GridBagConstraints.HORIZONTAL;
+            cp.anchor = GridBagConstraints.CENTER;
+            cp.gridx = 0;
+            cp.gridy = 0;
+
+            JLabel player_name = new JLabel(player.getLogin());
+            player_name.setFont(FontManager.getRunescapeBoldFont());
+            if (player.getIsPartyLeader()){
+                player_name.setIcon(Icons.YELLOW_PARTYHAT_ICON);
+            } else {
+                if (player.getVerified()){
+                    player_name.setIcon(Icons.VERIFIED_ICON);
+                } else {
+                    player_name.setIcon(Icons.UNVERIFIED_ICON);
+                }
+            }
+            player_name.setToolTipText("ID: "+String.valueOf(player.getUserId()));
+            player_panel.add(player_name, cp);
+            cp.gridy += 1;
+
+            if (player.getRunewatch() != null){
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
+
+                JLabel runewatch_label = new JLabel(player.getRunewatch());
+                runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
+                runewatch_label.setFont(FontManager.getRunescapeFont());
+                runewatch_label.setForeground(Color.red.darker());
+                player_panel.add(runewatch_label, cp);
+                cp.gridy +=1;
+            }
+
+            if (player.getWdr() != null){
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
+
+                JLabel wdr_label = new JLabel(player.getWdr());
+                wdr_label.setIcon(Icons.RUNEWATCH_ICON);
+                wdr_label.setFont(FontManager.getRunescapeFont());
+                wdr_label.setForeground(Color.red.darker());
+                player_panel.add(wdr_label, cp);
+                cp.gridy +=1;
+            }
+
+            if (player.getDiscord() != null) {
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
+
+                JLabel discord_label = new JLabel(player.getDiscord());
+                discord_label.setIcon(Icons.DISCORD_ICON);
+                discord_label.setFont(FontManager.getRunescapeFont());
+                player_panel.add(discord_label, cp);
+                cp.gridy += 1;
+            }
+
+            mp.add(player_panel, c);
+            c.gridy += 1;
+            mp.add(Box.createVerticalStrut(5), c);
+            c.gridy += 1;
+        }
+
         mp.revalidate();
         mp.repaint();
     }
@@ -327,6 +488,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchPanel.add(escape, c);
 
         c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridy += 1;
 
         matchPanel.add(new JPanel(), c);
@@ -871,12 +1033,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "Experience Help"+"\n"+
-                        "Different experience values can be used to indicate how competent your party is."+"\n"+
-                        "Note: Anyone can join a party, regardless of the designation."+"\n"+
-                        "1. Flexible - Anyone, of any experience level, can join."+"\n"+
-                        "2. Novice - Those with some experience in the activity should join."+"\n"+
-                        "3. Average - Those that see themselves as average in the activity, should join."+"\n"+
-                        "4. Experienced - Those with plenty of experience should join in this activity.";
+                "Different experience values can be used to indicate how competent your party is."+"\n"+
+                "Note: Anyone can join a party, regardless of the designation."+"\n"+
+                "1. Flexible - Anyone, of any experience level, can join."+"\n"+
+                "2. Novice - Those with some experience in the activity should join."+"\n"+
+                "3. Average - Those that see themselves as average in the activity, should join."+"\n"+
+                "4. Experienced - Those with plenty of experience should join in this activity.";
         JOptionPane.showMessageDialog(frame, message);
     }
     private void split_help_button_panel(ActionEvent actionEvent){
@@ -901,7 +1063,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 "4. HCIM - Hardcore Ironmen should join."+"\n"+
                 "5. UIM - Ultimate Ironmen should join.."+"\n"+
                 "6. GIM - Group Ironmen should join."+"\n"+
-                "7. HCGIM - Hardcore Group Ironmen should join.";
+                "7. HCGIM - Hardcore Group Ironmen should join."+"\n"+
+                "8. UGIM - Unranked Group Ironmen should join.";
         JOptionPane.showMessageDialog(frame, message);
     }
     private void region_help_button_panel(ActionEvent actionEvent){
@@ -964,6 +1127,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
             sMatch.setBackground(SUB_BACKGROUND_COLOR);
             sMatch.setLayout(new GridBagLayout());
+            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
             GridBagConstraints cMatch = new GridBagConstraints();
             cMatch.weightx = 1;
             cMatch.fill = GridBagConstraints.HORIZONTAL;

@@ -143,9 +143,11 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void privateMatchPasscode(String matchID){
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Enter passcode for "+matchID;
+        String message = "ID: "+matchID+"\n"+"Enter passcode for Private Match:";
         String passcode = JOptionPane.showInputDialog(frame, message);
-        privateMatchJoin(matchID, passcode);
+        if (passcode.length() > 0){
+            privateMatchJoin(matchID, passcode);
+        }
     }
 
     public void privateMatchJoin(String matchID, String passcode){
