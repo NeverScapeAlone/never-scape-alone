@@ -27,7 +27,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private static String username;
     private static String discord;
     private static String token;
-    private static String groupID;
+    private static String groupID = "0";
     private static String passcode;
     private WebSocket socket;
     private final EventBus eventBus;
@@ -82,6 +82,10 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     public void send(JsonObject jsonObject){
         socket.send(jsonObject.toString());
     }
+
+    public String getGroupID(){
+        return NeverScapeAloneWebsocket.groupID;
+    }
     public void logoff(String reason){socket.close(1000, reason);}
 
     @Override
@@ -108,6 +112,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 System.out.println("Bad passcode entered");
                 break;
             case SUCCESSFUL_CONNECTION:
+            case MATCH_UPDATE:
                 this.eventBus.post(payload.getMatchData());
                 break;
             case SEARCH_MATCH_DATA:

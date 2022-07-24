@@ -11,6 +11,8 @@ public enum ServerStatusCode {
     SUCCESSFUL_CONNECTION,
     @SerializedName("bad passcode")
     BAD_PASSCODE,
+    @SerializedName("match update")
+    MATCH_UPDATE,
     @SerializedName("search match data")
     SEARCH_MATCH_DATA;
 }

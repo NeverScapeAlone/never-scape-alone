@@ -8,6 +8,10 @@ import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
+import net.runelite.api.Skill;
+import net.runelite.api.VarPlayer;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.PlayerChanged;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -28,6 +32,7 @@ import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +53,15 @@ public class NeverScapeAlonePlugin extends Plugin {
     private NavigationButton navButton;
     public String username = "Ferrariic";
     public Integer timer = 0;
+
+    // garbage variable dump
+    private String old_username = "";
+    private Integer old_health = 0;
+    private Integer old_base_health = 0;
+    private Integer old_prayer = 0;
+    private Integer old_base_prayer = 0;
+    private Integer old_run_energy = 0;
+
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -82,24 +96,6 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Override
     protected void shutDown() throws Exception {
         log.info("NeverScapeAlone stopped!");
-    }
-
-    @Subscribe
-    private void onPlayerSpawned(PlayerSpawned event) {
-        if (username != "") {
-            return;
-        }
-
-        Player player = event.getPlayer();
-
-        if (player == null) {
-            return;
-        }
-
-        if (player == client.getLocalPlayer()) {
-            username = player.getName();
-            return;
-        }
     }
 
     @Schedule(period=1, unit=ChronoUnit.SECONDS, asynchronous=true)
@@ -138,6 +134,55 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         panel.connectingPanelManager();
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick gameTick){
+        switch (client.getGameState()){
+            case LOGGED_IN:
+                username = client.getLocalPlayer().getName();
+                Integer health = client.getBoostedSkillLevel(Skill.HITPOINTS);
+                Integer base_health = client.getRealSkillLevel(Skill.HITPOINTS);
+                Integer prayer = client.getBoostedSkillLevel(Skill.PRAYER);
+                Integer base_prayer = client.getRealSkillLevel(Skill.PRAYER);
+                Integer run_energy = client.getEnergy();
+
+                if (username.equals(old_username)&
+                    health.equals(old_health)&
+                    base_health.equals(old_base_health)&
+                    prayer.equals(old_prayer)&
+                    base_prayer.equals(old_base_prayer)&
+                    run_energy.equals(old_run_energy)) {
+                    return;
+                }
+
+                old_username = username;
+                old_health = health;
+                old_base_health = base_health;
+                old_prayer = prayer;
+                old_base_prayer = base_prayer;
+                old_run_energy = run_energy;
+
+                if (websocket.getGroupID().equals("0")){
+                    return;
+                };
+
+                JsonObject status_payload = new JsonObject();
+                status_payload.addProperty("username", username);
+                status_payload.addProperty("hp", health);
+                status_payload.addProperty("base_hp", base_health);
+                status_payload.addProperty("prayer", prayer);
+                status_payload.addProperty("base_prayer", base_prayer);
+                status_payload.addProperty("run_energy",run_energy);
+
+                JsonObject create_request = new JsonObject();
+                create_request.addProperty("detail","set_status");
+                create_request.add("status", status_payload);
+
+                websocket.send(create_request);
+
+                break;
+        }
     }
 
     public void privateMatchPasscode(String matchID){

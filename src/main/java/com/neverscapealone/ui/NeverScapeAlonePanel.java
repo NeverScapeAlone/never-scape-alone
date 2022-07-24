@@ -454,6 +454,38 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 player_panel.add(discord_label, cp);
                 cp.gridy += 1;
             }
+            if (player.getStatus() != null){
+                player_panel.add(Box.createVerticalStrut(3));
+
+                cp.gridy+=1;
+
+                Integer base_hitpoints =  player.getStatus().getBaseHp();
+                Integer hitpoints = player.getStatus().getHp();
+                Integer prayer = player.getStatus().getPrayer();
+                Integer base_prayer = player.getStatus().getBasePrayer();
+                Integer run_energy = player.getStatus().getRunEnergy();
+
+                cp.anchor = GridBagConstraints.CENTER;
+                cp.fill = GridBagConstraints.HORIZONTAL;
+
+                cp.gridx=0;
+                JLabel hitpoint_label = new JLabel();
+                hitpoint_label.setIcon(Icons.HITPOINTS);
+                player_panel.add(hitpoint_label, cp);
+
+                cp.gridx=1;
+                JLabel prayer_label = new JLabel(prayer+"/"+base_prayer);
+                prayer_label.setIcon(Icons.PRAYER);
+                player_panel.add(prayer_label, cp);
+
+                cp.gridx=2;
+                JLabel run_label = new JLabel(run_energy+"/100");
+                run_label.setIcon(Icons.AGILITY);
+                player_panel.add(run_label, cp);
+
+                cp.gridx=0;
+                cp.gridy+=1;
+            }
 
             mp.add(player_panel, c);
             c.gridy += 1;
@@ -890,6 +922,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         createSelectionPanel.add(header("Group Size"), c);
         c.gridx = 1;
+
         party_member_count.setFont(FontManager.getRunescapeSmallFont());
         party_member_count.setText("2+");
         party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
