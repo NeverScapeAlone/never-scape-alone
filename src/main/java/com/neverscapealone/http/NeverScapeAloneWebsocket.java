@@ -118,6 +118,9 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
             case SEARCH_MATCH_DATA:
                 this.eventBus.post(payload.getSearch());
                 break;
+            case GLOBAL_MESSAGE:
+                this.eventBus.post(payload.getServerMessage());
+                break;
         }
     }
 

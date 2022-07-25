@@ -2,18 +2,23 @@ package com.neverscapealone;
 
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
+import com.neverscapealone.enums.ServerMessage;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.Payload;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.Player;
-import net.runelite.api.Skill;
-import net.runelite.api.VarPlayer;
+import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerChanged;
 import net.runelite.api.events.PlayerSpawned;
+import net.runelite.client.chat.ChatCommandManager;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -49,6 +54,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     private NeverScapeAloneConfig config;
     @Inject
     private NeverScapeAloneWebsocket websocket;
+    private EventBus eventBus;
+    private ChatMessageManager chatMessageManager;
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
     public String username = "Ferrariic";
@@ -90,13 +97,13 @@ public class NeverScapeAlonePlugin extends Plugin {
                 .priority(90)
                 .build();
         clientToolbar.addNavigation(navButton);
-
     }
 
     @Override
     protected void shutDown() throws Exception {
         log.info("NeverScapeAlone stopped!");
     }
+
 
     @Schedule(period=1, unit=ChronoUnit.SECONDS, asynchronous=true)
     public void timer(){
@@ -180,7 +187,6 @@ public class NeverScapeAlonePlugin extends Plugin {
                 create_request.add("status", status_payload);
 
                 websocket.send(create_request);
-
                 break;
         }
     }

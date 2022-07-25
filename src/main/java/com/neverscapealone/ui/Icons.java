@@ -58,6 +58,9 @@ public class Icons {
     public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
 
     // other
+
+    public static final ImageIcon FILTER_FULL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/filter_full.png"));
+    public static final ImageIcon FILTER_EMPTY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/filter_empty.png"));
     public static final ImageIcon PRIVATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/private.png"));
     public static final ImageIcon PUBLIC_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/public.png"));
     public static final ImageIcon EXPERIENCE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/experience.png"));

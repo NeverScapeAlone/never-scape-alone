@@ -104,6 +104,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // BUTTONS
     private final IconTextField activitySearchBar = new IconTextField();
     private final JButton quickMatchButton = new JButton();
+    private final JButton filter = new JButton();
     private final JToggleButton quickMatchPanelButton = new JToggleButton();
     private final JToggleButton createMatchPanelButton = new JToggleButton();
     private final JToggleButton searchMatchPanelButton = new JToggleButton();
@@ -225,6 +226,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
     @Subscribe
     public void onSearchMatches(SearchMatches searchMatches) {
         SwingUtilities.invokeLater(() -> setSearchPanel(searchMatches));
+    }
+
+    @Subscribe
+    public void onServerMessage(ServerMessage serverMessage){
+        String message = serverMessage.getServerMessage();
+        System.out.println(message);
     }
 
     @Subscribe
@@ -1138,7 +1145,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridy = 0;
         c.gridx = 0;
 
-        IconTextField activitySearchBar = activitySearchBar();
+        JPanel activitySearchBar = activitySearchBar();
         searchPanel.add(activitySearchBar, c);
         c.gridy += 1;
         searchPanel.add(new JPanel(), c);
@@ -1161,6 +1168,29 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         searchMatchPanel.add(Box.createVerticalStrut(5),c);
         c.gridy += 1;
+
+        if (searchMatches.getSearchMatches().size() == 0){
+            JPanel sMatch = new JPanel();
+            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
+            sMatch.setBackground(SUB_BACKGROUND_COLOR);
+            sMatch.setLayout(new GridBagLayout());
+            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            GridBagConstraints cMatch = new GridBagConstraints();
+            cMatch.weightx = 1;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.gridx = 0;
+            cMatch.gridy = 0;
+
+            JLabel no_matches_label = new JLabel("No Matches Found");
+            no_matches_label.setForeground(Color.red.darker().darker());
+            no_matches_label.setIcon(Icons.CANCEL_ICON);
+            no_matches_label.setToolTipText("No matches found with this current search, try again!");
+            no_matches_label.setFont(FontManager.getRunescapeBoldFont());
+
+            searchMatchPanel.add(no_matches_label, c);
+            return;
+        }
 
         for (SearchMatchData match : searchMatches.getSearchMatches()){
             JPanel sMatch = new JPanel();
@@ -1286,16 +1316,34 @@ public class NeverScapeAlonePanel extends PluginPanel {
     }
 
 
-    private IconTextField activitySearchBar() {
+    private JPanel activitySearchBar() {
+        JPanel searchbar_panel = new JPanel();
+        searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        searchbar_panel.setBackground(BACKGROUND_COLOR);
+        searchbar_panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+
         IconTextField searchBar = new IconTextField();
         searchBar.setIcon(IconTextField.Icon.SEARCH);
-        searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
+        searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
         searchBar.setBackground(SUB_BACKGROUND_COLOR);
         searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
-        searchBar.setMinimumSize(new Dimension(0, 30));
+        searchBar.setText("*");
         searchBar.addActionListener(plugin::searchActiveMatches);
-        return searchBar;
+        searchbar_panel.add(searchBar, c);
+
+        return searchbar_panel;
     }
+
+    private void filterSearches(ActionEvent actionEvent){
+
+    }
+
     private JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);

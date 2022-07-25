@@ -13,6 +13,8 @@ public enum ServerStatusCode {
     BAD_PASSCODE,
     @SerializedName("match update")
     MATCH_UPDATE,
+    @SerializedName("global message")
+    GLOBAL_MESSAGE,
     @SerializedName("search match data")
     SEARCH_MATCH_DATA;
 }
