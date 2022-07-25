@@ -1,27 +1,28 @@
 package com.neverscapealone.enums;
 
+import com.neverscapealone.ui.Icons;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import javax.swing.*;
 
 @Getter
 @RequiredArgsConstructor
 public enum AccountTypeSelection {
-    NORMAL("Normal", 0),
-    IM("IM", 1),
-    HCIM("HCIM", 2),
-    UIM("UIM", 3),
-    GIM("GIM", 4),
-    HCGIM("HCGIM", 5),
-    MAINS("PVP Mains", 6),
-    PURES("PVP Pures",7),
-    ALL("All Accounts",8);
+    NORMAL("Normal", Icons.NSA_ICON),
+    IM("IM", Icons.IM_ICON),
+    HCIM("HCIM", Icons.HCGIM_ICON),
+    UIM("UIM", Icons.UIM_ICON),
+    GIM("GIM", Icons.GIM_ICON),
+    HCGIM("HCGIM", Icons.HCGIM_ICON),
+    UGIM("UGIM", Icons.UGIM_ICON),
+    ANY("Any", Icons.NSA_ICON);
 
     private final String name;
-    private final int account_type;
+    private final ImageIcon image;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }

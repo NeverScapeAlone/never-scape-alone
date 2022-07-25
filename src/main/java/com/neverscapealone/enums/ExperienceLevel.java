@@ -5,21 +5,17 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ExperienceLevel
-{
-    Learner("Learner",0),
-    Novice("Novice", 1),
-    Apprentice("Apprentice", 2),
-    Adept("Adept", 3),
-    Expert("Expert", 4),
-    Master("Master", 5);
+public enum ExperienceLevel {
+    Flexible("Flexible", 0),
+    Beginner("Beginner", 1),
+    Average("Average", 2),
+    Advanced("Advanced", 3);
 
     private final String name;
     private final int experienceRating;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }
