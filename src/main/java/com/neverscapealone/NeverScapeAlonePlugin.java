@@ -1,8 +1,6 @@
 package com.neverscapealone;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
@@ -134,7 +132,17 @@ public class NeverScapeAlonePlugin extends Plugin {
         if (queue_list.size() == 0) {
             return;
         }
-        System.out.println(queue_list);
+        String queues = new Gson().toJson(queue_list);
+        JsonParser parser = new JsonParser();
+        JsonElement jsonElement = parser.parse(queues);
+        JsonArray jsonArray = (JsonArray) jsonElement;
+
+        JsonObject create_request = new JsonObject();
+        create_request.addProperty("detail","quick_match");
+        create_request.add("match_list", jsonArray);
+        System.out.println(create_request);
+        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
+        websocket.send(create_request);
         panel.connectingPanelManager();
     }
 

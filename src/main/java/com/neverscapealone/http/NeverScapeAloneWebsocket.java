@@ -12,6 +12,7 @@ import net.runelite.client.RuneLite;
 import net.runelite.client.eventbus.EventBus;
 import okhttp3.*;
 
+import java.io.EOFException;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.time.Instant;
@@ -135,7 +136,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         if (t instanceof ConnectException) {
             this.eventBus.post(new ServerMessage().buildServerMessage("No Server Connection"));
-        } else if (t instanceof SocketException) {
+        } else if (t instanceof SocketException || t instanceof EOFException) {
             this.eventBus.post(new ServerMessage().buildServerMessage("Connection Reset"));
         } else {
             this.eventBus.post(new ServerMessage().buildServerMessage("Unknown Error"));

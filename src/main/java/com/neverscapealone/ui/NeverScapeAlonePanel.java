@@ -262,7 +262,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         serverWarningPanel.add(add(Box.createVerticalStrut(3)), c);
         return serverWarningPanel;
     }
-
     private void setServerWarningPanel(String message, boolean b){
         JLabel label = (JLabel) serverWarningPanel.getComponent(1);
         label.setFont(FontManager.getRunescapeBoldFont());
@@ -272,7 +271,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         label.setForeground(Color.YELLOW);
         serverWarningPanel.setVisible(b);
     }
-
     private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -323,7 +321,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return switchMenuPanel;
     }
-
     private void setMatchPanel(MatchData matchdata){
         matchPanelManager(); // switch to match panel
         JPanel mp = (JPanel) matchPanel.getComponent(1);
@@ -544,7 +541,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.revalidate();
         mp.repaint();
     }
-
     private JPanel matchPanel() {
         JPanel matchPanel = new JPanel();
         matchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -574,7 +570,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchPanel.add(new JPanel(), c);
         return matchPanel;
     }
-
     private void leaveMatch(ActionEvent actionEvent){
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -593,7 +588,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
             quickPanelManager(actionEvent);
         }
     }
-
     private JPanel connectingPanel(){
         JPanel connectingPanel = new JPanel();
         connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -630,7 +624,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public void connectingPanelManager(ActionEvent actionEvent){
         connectingPanelManager();
     }
-
     public void matchPanelManager() {
         matchPanel.setVisible(true);
 
@@ -723,6 +716,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickMatchButton.setText("Select Activities");
         quickMatchButton.setToolTipText("Choose activities to play!");
         quickMatchButton.setBackground(COLOR_INPROGRESS);
+        quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
         quickPanel.add(quickMatchButton, c);
         c.gridy += 1;
 
@@ -804,6 +798,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private void activityButtonManager(ItemEvent itemEvent) {
         JToggleButton button = (JToggleButton) itemEvent.getItem();
         String selection = button.getName();
+
         if (button.isSelected()){
             queue_list.add(selection);
         } else {
@@ -812,11 +807,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         if (queue_list.size() > 0){
             quickMatchButton.setText("Start Queue");
-            quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
             quickMatchButton.setBackground(COLOR_COMPLETED);
         } else {
             quickMatchButton.setText("Select Activities");
-            quickMatchButton.removeActionListener(plugin::quickMatchQueueStart);
             quickMatchButton.setBackground(COLOR_INPROGRESS);
         }
     }
@@ -1185,7 +1178,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchPanel.add(new JPanel(), c);
         return searchPanel;
     }
-
     public void setSearchPanel(SearchMatches searchMatches){
         JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
         searchMatchPanel.removeAll();
@@ -1348,8 +1340,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanel.revalidate();
         searchMatchPanel.repaint();
     }
-
-
     private JPanel activitySearchBar() {
         JPanel searchbar_panel = new JPanel();
         searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -1373,7 +1363,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return searchbar_panel;
     }
-
     private JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
