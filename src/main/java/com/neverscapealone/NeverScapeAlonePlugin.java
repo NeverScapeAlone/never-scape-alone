@@ -1,22 +1,17 @@
 package com.neverscapealone;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
-import com.neverscapealone.enums.ServerMessage;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import com.neverscapealone.model.Payload;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
+import jdk.nashorn.internal.runtime.JSONListAdapter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.PlayerChanged;
-import net.runelite.api.events.PlayerSpawned;
-import net.runelite.client.chat.ChatCommandManager;
-import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.ChatColorType;
-import net.runelite.client.chat.ChatMessageBuilder;
-import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -37,7 +32,6 @@ import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,9 +131,10 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     public void quickMatchQueueStart(ActionEvent actionEvent){
         ArrayList<String> queue_list = panel.queue_list;
-        if (queue_list.size() == 0){
+        if (queue_list.size() == 0) {
             return;
         }
+        System.out.println(queue_list);
         panel.connectingPanelManager();
     }
 

@@ -32,7 +32,6 @@ import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import com.neverscapealone.model.Payload;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,10 +51,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.*;
-import java.lang.reflect.Array;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 @Slf4j
@@ -90,7 +90,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private JPanel miscPanel;
     private final JPanel connectingPanel;
     private final JPanel matchPanel;
-
+    private JPanel serverWarningPanel;
     private JPanel createskillPanel;
     private JPanel createbossPanel;
     private JPanel createraidPanel;
@@ -104,7 +104,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // BUTTONS
     private final IconTextField activitySearchBar = new IconTextField();
     private final JButton quickMatchButton = new JButton();
-    private final JButton filter = new JButton();
     private final JToggleButton quickMatchPanelButton = new JToggleButton();
     private final JToggleButton createMatchPanelButton = new JToggleButton();
     private final JToggleButton searchMatchPanelButton = new JToggleButton();
@@ -145,8 +144,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
         PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
         PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
-//        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
-//        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github", "https://github.com/NeverScapeAlone"),
         BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
         private final ImageIcon image;
@@ -177,6 +174,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         // panel inits
         linksPanel = linksPanel(); // add link panel perm
+        serverWarningPanel = serverWarningPanel();
+        serverWarningPanel.setVisible(false);
         // switch menu panel
         switchMenuPanel = switchMenuPanel();
         // connecting panel
@@ -206,10 +205,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         // ADD PANELS
         add(linksPanel);
-        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
+        add(Box.createVerticalStrut(3));
+
+        add(serverWarningPanel);
 
         add(switchMenuPanel);
-        add(Box.createVerticalStrut(5));
+        add(Box.createVerticalStrut(3));
 
         // add quick, create, and search panels -- these should never be visible when the other is visible. So no separator is required, held as a single group.
         add(quickPanel);
@@ -226,17 +227,50 @@ public class NeverScapeAlonePanel extends PluginPanel {
     @Subscribe
     public void onSearchMatches(SearchMatches searchMatches) {
         SwingUtilities.invokeLater(() -> setSearchPanel(searchMatches));
+        setServerWarningPanel("", false);
     }
 
     @Subscribe
     public void onServerMessage(ServerMessage serverMessage){
         String message = serverMessage.getServerMessage();
-        System.out.println(message);
+        setServerWarningPanel(message, true);
     }
 
     @Subscribe
     public void onMatchData(MatchData matchData) {
         SwingUtilities.invokeLater(() -> setMatchPanel(matchData));
+        setServerWarningPanel("", false);
+    }
+
+    private JPanel serverWarningPanel(){
+        JPanel serverWarningPanel = new JPanel();
+        serverWarningPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        serverWarningPanel.setBackground(SUB_BACKGROUND_COLOR);
+        serverWarningPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+
+        serverWarningPanel.add(add(Box.createVerticalStrut(3)), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(new JLabel(), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(add(Box.createVerticalStrut(3)), c);
+        return serverWarningPanel;
+    }
+
+    private void setServerWarningPanel(String message, boolean b){
+        JLabel label = (JLabel) serverWarningPanel.getComponent(1);
+        label.setFont(FontManager.getRunescapeBoldFont());
+        label.setToolTipText("Message from the server!");
+        label.setIcon(Icons.NSA_ICON);
+        label.setText(message);
+        label.setForeground(Color.YELLOW);
+        serverWarningPanel.setVisible(b);
     }
 
     private JPanel linksPanel() {
@@ -791,7 +825,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         bossPanel = subActivityPanel(7, 6);
         raidPanel = subActivityPanel(2, 2);
         minigamePanel = subActivityPanel(6, 6);
-        miscPanel = subActivityPanel(1, 3);
+        miscPanel = subActivityPanel(3, 5);
     }
     private JPanel createPanel() {
         JPanel createPanel = new JPanel();
@@ -878,7 +912,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createbossPanel = subActivityPanel(7, 6);
         createraidPanel = subActivityPanel(2, 2);
         createminigamePanel = subActivityPanel(6, 6);
-        createmiscPanel = subActivityPanel(1, 3);
+        createmiscPanel = subActivityPanel(3, 5);
     }
     private void create_activityButtonManager(ActionEvent actionEvent) {
         Object object = actionEvent.getSource();
@@ -1338,10 +1372,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchbar_panel.add(searchBar, c);
 
         return searchbar_panel;
-    }
-
-    private void filterSearches(ActionEvent actionEvent){
-
     }
 
     private JPanel title(String title_text) {

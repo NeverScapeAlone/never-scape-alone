@@ -4,12 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.neverscapealone.enums.ServerMessage;
 import com.neverscapealone.model.Payload;
+import jogamp.common.util.locks.SingletonInstanceServerSocket;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import net.runelite.client.eventbus.EventBus;
 import okhttp3.*;
 
+import java.net.ConnectException;
+import java.net.SocketException;
 import java.time.Instant;
 import java.util.function.Supplier;
 
@@ -40,12 +44,12 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     }
     public void connect(String username, String discord, String token, String groupID, String passcode) {
         if (username.equals("")){
-            log.debug("Cannot connect without a username!");
+            this.eventBus.post(new ServerMessage().buildServerMessage("Please Login"));
             return;
         }
 
         if (token == null){
-            log.debug("Auth token is required to connect.");
+            this.eventBus.post(new ServerMessage().buildServerMessage("Refresh Plugin in Config"));
             return;
         }
 
@@ -101,15 +105,12 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 }
                 socket.close(1000, "Ending connection to join a new match");
                 connect(username, discord, token, groupID, passcode);
-                JsonObject request_initial_match_data = new JsonObject();
-                request_initial_match_data.addProperty("detail","request_match_data");
-                send(request_initial_match_data);
                 break;
             case DISCONNECTED:
-                System.out.println("You have been disconnected by the host.");
+                this.eventBus.post(new ServerMessage().buildServerMessage("You Were Disconnected"));
                 break;
             case BAD_PASSCODE:
-                System.out.println("Bad passcode entered");
+                this.eventBus.post(new ServerMessage().buildServerMessage("Bad Match Passcode"));
                 break;
             case SUCCESSFUL_CONNECTION:
             case MATCH_UPDATE:
@@ -132,7 +133,14 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        t.printStackTrace();
+        if (t instanceof ConnectException) {
+            this.eventBus.post(new ServerMessage().buildServerMessage("No Server Connection"));
+        } else if (t instanceof SocketException) {
+            this.eventBus.post(new ServerMessage().buildServerMessage("Connection Reset"));
+        } else {
+            this.eventBus.post(new ServerMessage().buildServerMessage("Unknown Error"));
+            t.printStackTrace();
+        }
     }
 
 }

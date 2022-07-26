@@ -189,4 +189,17 @@ public class Icons {
     public static final ImageIcon CLUES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/cluescrollsall.png"));
     public static final ImageIcon FALADOR_PARTY_ROOM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/faladorpartyroom.png"));
     public static final ImageIcon PVP_GENERIC = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/wilderness.png"));
+    public static final ImageIcon CHAT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/chat.png"));
+    public static final ImageIcon QUEST = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/quest.png"));
+    public static final ImageIcon DIARY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/diary.png"));
+    public static final ImageIcon FAVOR = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/favor.png"));
+    public static final ImageIcon CA1 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca1.png"));
+    public static final ImageIcon CA2 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca2.png"));
+    public static final ImageIcon CA3 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca3.png"));
+    public static final ImageIcon CA4 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca4.png"));
+    public static final ImageIcon CA5 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca5.png"));
+    public static final ImageIcon CA6 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca6.png"));
+    public static final ImageIcon ALL_COMBAT_ACHIEVEMENTS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/combat_achievements.png"));
+    public static final ImageIcon F2P = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/f2p.png"));
+
 }

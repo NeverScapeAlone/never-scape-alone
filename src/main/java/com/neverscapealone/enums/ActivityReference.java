@@ -3,6 +3,7 @@ package com.neverscapealone.enums;
 import com.neverscapealone.ui.Icons;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.runelite.client.util.ImageUtil;
 
 import javax.swing.*;
 
@@ -75,7 +76,7 @@ public enum ActivityReference
     THERMONUCLEARSMOKEDEVIL(Icons.THERMONUCLEARSMOKEDEVIL, "boss", "Thermonuclearsmokedevil", "THERMONUCLEARSMOKEDEVIL"),
     TZ_KAL_ZUK(Icons.TZ_KAL_ZUK, "boss", "The Inferno", "TZ_KAL_ZUK"),
     TZ_TOK_JAD(Icons.TZ_TOK_JAD, "boss", "The Fight Caves", "TZ_TOK_JAD"),
-    VENENATIS(Icons.VENENATIS, "boss", "Venenatis", "VENEATIS"),
+    VENENATIS(Icons.VENENATIS, "boss", "Venenatis", "VENENATIS"),
     VETION(Icons.VETION, "boss", "Vet'ion", "VETION"),
     VORKATH(Icons.VORKATH, "boss", "Vorkath", "VORKATH"),
     ZALCANO(Icons.ZALCANO, "boss", "Zalcano", "ZALCANO"),
@@ -129,6 +130,18 @@ public enum ActivityReference
     CLUES(Icons.CLUES, "misc", "Clues", "CLUES"),
     FALADOR_PARTY_ROOM(Icons.FALADOR_PARTY_ROOM, "misc", "Falador Party Room", "FALADOR_PARTY_ROOM"),
     PVP_GENERIC(Icons.PVP_GENERIC, "misc", "PKing", "PVP_GENERIC"),
+    CHAT(Icons.CHAT, "misc", "Chat and Relax", "CHAT"),
+    QUEST(Icons.QUEST, "misc", "All Quests", "QUEST"),
+    DIARY(Icons.DIARY, "misc", "All Diaries", "DIARY"),
+    FAVOR(Icons.FAVOR, "misc", "All Kourend Favors", "FAVOR"),
+    CA1(Icons.CA1, "misc", "Combat Achievements (Easy)", "CA1"),
+    CA2(Icons.CA2, "misc", "Combat Achievements (Medium)", "CA2"),
+    CA3(Icons.CA3, "misc", "Combat Achievements (Hard)", "CA3"),
+    CA4(Icons.CA4, "misc", "Combat Achievements (Elite)", "CA4"),
+    CA5(Icons.CA5, "misc", "Combat Achievements (Master)", "CA5"),
+    CA6(Icons.CA6, "misc", "Combat Achievements (Grandmaster)", "CA6"),
+    ALL_COMBAT_ACHIEVEMENTS(Icons.ALL_COMBAT_ACHIEVEMENTS, "misc", "All Combat Achievements", "ALL_COMBAT_ACHIEVEMENTS"),
+    F2P(Icons.F2P, "misc", "Free-to-Play", "F2P"),
     ;
 
     private final ImageIcon icon;
