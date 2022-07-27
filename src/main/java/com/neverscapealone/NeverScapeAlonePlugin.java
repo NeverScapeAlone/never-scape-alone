@@ -3,6 +3,7 @@ package com.neverscapealone;
 import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.ui.Icons;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import jdk.nashorn.internal.runtime.JSONListAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +54,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     private ChatMessageManager chatMessageManager;
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
-    public String username = "Ferrariic";
+    public String username = "";
     public Integer timer = 0;
 
     // garbage variable dump
@@ -301,10 +303,14 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void searchActiveMatches(ActionEvent actionEvent){
+        panel.searchBar.setEditable(false);
+        panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
         websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0)
         {
+            panel.searchBar.setEditable(true);
+            panel.searchBar.setIcon(IconTextField.Icon.SEARCH);
             return;
         }
         JsonObject search_request = new JsonObject();
