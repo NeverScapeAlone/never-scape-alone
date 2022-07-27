@@ -1,36 +1,65 @@
+/*
+ * Copyright (c) 2021, Ferrariic, Seltzer Bro, Cyborger1
+ * Copyright (c) 2022, Ferrariic
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.neverscapealone.ui;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.*;
-import com.neverscapealone.http.NeverScapeAloneClient;
+import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.util.LinkBrowser;
-import net.runelite.http.api.worlds.World;
-import org.apache.commons.text.WordUtils;
 
 import javax.inject.Inject;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
+@Slf4j
+@Singleton
 public class NeverScapeAlonePanel extends PluginPanel {
 
     @Inject
@@ -44,419 +73,214 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final Color COLOR_INFO = ColorScheme.GRAND_EXCHANGE_LIMIT.darker().darker().darker();
     public static final Color COLOR_WARNING = ColorScheme.GRAND_EXCHANGE_ALCH.darker().darker().darker();
     public static final Color COLOR_COMPLETED = ColorScheme.PROGRESS_COMPLETE_COLOR.darker().darker().darker();
-    public static final Color COLOR_INPROGRESS = ColorScheme.PROGRESS_INPROGRESS_COLOR.darker().darker().darker();
+    public static final Color COLOR_INPROGRESS = ColorScheme.PROGRESS_INPROGRESS_COLOR.darker().darker();
 
     /// panel match statics
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
     public static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
 
+    // PANELS
+    private final JPanel linksPanel;
+    private final JPanel switchMenuPanel;
+    private JPanel skillPanel;
+    private JPanel bossPanel;
+    private JPanel raidPanel;
+    private JPanel minigamePanel;
+    private JPanel miscPanel;
+    private final JPanel connectingPanel;
+    private final JPanel matchPanel;
+    private JPanel serverWarningPanel;
+    private JPanel createskillPanel;
+    private JPanel createbossPanel;
+    private JPanel createraidPanel;
+    private JPanel createminigamePanel;
+    private JPanel createmiscPanel;
+    private final JPanel quickPanel;
+    private final JPanel createPanel;
+    private final JPanel createPanel2;
+    private final JPanel searchPanel;
+
+    // BUTTONS
+    private final IconTextField activitySearchBar = new IconTextField();
+    private final JButton quickMatchButton = new JButton();
+    private final JToggleButton quickMatchPanelButton = new JToggleButton();
+    private final JToggleButton createMatchPanelButton = new JToggleButton();
+    private final JToggleButton searchMatchPanelButton = new JToggleButton();
+    public ArrayList activity_buttons = new ArrayList<JToggleButton>();
+    public ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
+
+    public final JButton member_count_help_button = new JButton();
+    public final JButton experience_help_button = new JButton();
+    public final JButton split_help_button = new JButton();
+    public final JButton accounts_help_button = new JButton();
+    public final JButton region_help_button = new JButton();
+    public final JButton passcode_help_button = new JButton();
+
+    public final JTextField party_member_count = new JTextField();
+    public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
+    public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
+    public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
+    public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
+    public final JTextField passcode = new JTextField();
+
+    // GLOBAL VARIABLES
+    public String step1_activity = "";
+    public ArrayList<String> queue_list = new ArrayList<String>();
+    public boolean isConnecting = false;
+
     // CLASSES
     private final NeverScapeAlonePlugin plugin;
+    private final EventBus eventBus;
     private final NeverScapeAloneConfig config;
-    private final NeverScapeAloneClient client;
+    private final NeverScapeAloneWebsocket websocket;
     private final Client user;
-
     private final WorldService worldService;
-
-    // SWING OBJECTS
-    JButton button_exit = new JButton();
-    JButton button_accept = new JButton();
-    JButton button_reset = new JButton();
-    JButton button_undo = new JButton();
-    private final JPanel linksPanel;
-    public JPanel serverPanel;
-    public final JPanel matchPanel;
-    private final Component activityOptionPanelSeperator;
-    public final Component matchPanelSeperator;
-    public final Component partnerPanelSeperator;
-    public final JPanel partnerPanel;
-    private final JPanel activityPanelTitle;
-    private final JPanel activityOptionPanel;
-    private final JPanel skillPanel;
-    private final JPanel bossPanel;
-    private final JPanel raidPanel;
-    private final JPanel minigamePanel;
-    private final JPanel miscPanel;
-    private final JPanel matchButton;
-    private final Component skillPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-    private final Component bossPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-    private final Component raidPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-    private final Component minigamePanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-    private final Component miscPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-    private final JPanel skillPanelTitle = title("Skills");
-    private final JPanel bossPanelTitle = title("Bosses");
-    private final JPanel raidPanelTitle = title("Raids");
-    private final JPanel minigamePanelTitle = title("Minigames");
-    private final JPanel miscPanelTitle = title("Miscellaneous");
-    private final JPanel acceptOrDeclineButtons;
-    private final JButton matchingButton = new JButton();
-    private final JButton acceptButton = new JButton();
-    private final JButton declineButton = new JButton();
-    public ArrayList activity_buttons = new ArrayList<JToggleButton>();
-    private ItemEvent itemEventHx = null;
-    // SPINNERS
-    SpinnerNumberModel party_member_count_numbers = new SpinnerNumberModel(2, 2,100, 1);
-    SpinnerListModel self_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
-    SpinnerListModel partner_experience_level_list = new SpinnerListModel(new String[] { "Learner","Novice","Apprentice","Adept","Expert","Master" });
-    private final JSpinner party_member_count = new JSpinner(party_member_count_numbers);
-    private final JSpinner self_experience_level = new JSpinner(self_experience_level_list);
-    private final JSpinner partner_experience_level = new JSpinner(partner_experience_level_list);
-
-    // ENUMS
-    private ActivityReference activityReference;
-    private QueueButtonStatus queueButtonStatus;
-    private ExperienceLevel experienceLevel;
-    private ServerStatusCode serverStatusCode;
-
-    // JSON
-    public JsonArray player_selections = new JsonArray();
-    private int party_member_count_payload = 0;
-    private int self_experience_payload = 0;
-    private int partner_experience_payload = 0;
-
     @Getter
     @AllArgsConstructor
-    public enum WebLink
-    {
-        DISCORD(Icons.DISCORD_ICON, "Join our Discord","https://discord.gg/rs2AH3vnmf"),
+    public enum WebLink {
+        DISCORD(Icons.DISCORD_ICON, "Join our Discord", "https://discord.gg/rs2AH3vnmf"),
         TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter", "https://www.twitter.com/NeverScapeAlone"),
         GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-        PATREON(Icons.PATREON_ICON, "Support us through Patreon","https://www.patreon.com/bot_detector"),
-        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal","https://www.paypal.com/paypalme/osrsbotdetector"),
-        ETH_ICON(Icons.ETH_ICON, "Support us with Ethereum, you will be sent to our Github", "https://github.com/NeverScapeAlone"),
-        BTC_ICON(Icons.BTC_ICON, "Support us with Bitcoin,  you will be sent to our Github","https://github.com/NeverScapeAlone"),
-        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here","https://github.com/NeverScapeAlone/never-scape-alone/issues");
+        PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
+        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
+        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
         private final ImageIcon image;
         private final String tooltip;
         private final String link;
-    }
 
+    }
     @Inject
     public NeverScapeAlonePanel(
             NeverScapeAlonePlugin plugin,
             NeverScapeAloneConfig config,
-            EventBus eventBus, NeverScapeAloneClient client, Client user, WorldService worldService)
-    {
+            EventBus eventBus,
+            NeverScapeAloneWebsocket websocket,
+            Client user,
+            WorldService worldService) {
         this.config = config;
         this.plugin = plugin;
-        this.client = client;
+        this.websocket = websocket;
         this.user = user;
+        this.eventBus = eventBus;
         this.worldService = worldService;
+
+        this.eventBus.register(this);
+
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(BACKGROUND_COLOR);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // links panel
-        linksPanel = linksPanel();
-
-        // server panel
-        serverPanel = serverPanel();
-
+        // panel inits
+        linksPanel = linksPanel(); // add link panel perm
+        serverWarningPanel = serverWarningPanel();
+        serverWarningPanel.setVisible(false);
+        // switch menu panel
+        switchMenuPanel = switchMenuPanel();
+        // connecting panel
+        connectingPanel = connectingPanel();
+        connectingPanel.setVisible(false);
         // match panel
-        matchPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-        matchPanelSeperator.setVisible(false);
         matchPanel = matchPanel();
         matchPanel.setVisible(false);
+        // constructions
+        constructQueuePanels(); // construct queue panels for placement in quick panel
+        constructCreatePanels(); // construct create panels for placement in create panel
+        // quick panel
+        quickPanel = quickPanel();
+        quickPanel.setVisible(true);
+        quickMatchPanelButton.setSelected(true);
+        // create panel
+        createPanel = createPanel();
+        createPanel.setVisible(false);
+        createMatchPanelButton.setSelected(false);
+        // create panel step 2
+        createPanel2 = createPanel2();
+        createPanel2.setVisible(false);
+        // search panel
+        searchPanel = searchPanel();
+        searchPanel.setVisible(false);
+        searchMatchPanelButton.setSelected(false);
 
-        // match button
-        matchButton = matchButton();
-        acceptOrDeclineButtons = acceptOrDeclineButtons();
-        acceptOrDeclineButtons.setVisible(false);
-
-        // partner panel
-        partnerPanel = partnerPanel();
-        partnerPanel.setVisible(false);
-        partnerPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-        partnerPanelSeperator.setVisible(false);
-
-        // activity panel
-        activityOptionPanelSeperator = Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT);
-        activityPanelTitle = title("Customize Your Activity");
-        activityOptionPanel = activityOptionPanelMaker();
-
-        // icon panels
-        skillPanel = queuePanel(4,6);
-        bossPanel = queuePanel(7,6);
-        raidPanel = queuePanel(2,2);
-        minigamePanel = queuePanel(6,6);
-        miscPanel = queuePanel(1,3);
-
-        // TOOLBAR CONSTRUCTION
-
+        // ADD PANELS
         add(linksPanel);
+        add(Box.createVerticalStrut(3));
 
-        //server panel
-        add(Box.createVerticalStrut(SUB_PANEL_SEPARATION_HEIGHT));
-        add(serverPanel);
+        add(serverWarningPanel);
 
-        // match panel
-        add(matchPanelSeperator);
+        add(switchMenuPanel);
+        add(Box.createVerticalStrut(3));
+
+        // add quick, create, and search panels -- these should never be visible when the other is visible. So no separator is required, held as a single group.
+        add(quickPanel);
+        add(createPanel);
+        add(createPanel2);
+        add(searchPanel);
+        add(connectingPanel);
         add(matchPanel);
 
-        // Match Button
-        add(matchButton);
-
-        // Partner panel
-        add(partnerPanelSeperator);
-        add(partnerPanel);
-
-        // Accept or Decline Buttons
-        add(acceptOrDeclineButtons);
-
-        // activity panel
-        add(activityOptionPanelSeperator);
-        add(activityPanelTitle);
-        add(activityOptionPanel);
-
-        add(skillPanelSeperator);
-        add(skillPanelTitle);
-        add(skillPanel);
-
-        add(bossPanelSeperator);
-        add(bossPanelTitle);
-        add(bossPanel);
-
-        add(raidPanelSeperator);
-        add(raidPanelTitle);
-        add(raidPanel);
-
-        add(minigamePanelSeperator);
-        add(minigamePanelTitle);
-        add(minigamePanel);
-
-        add(miscPanelSeperator);
-        add(miscPanelTitle);
-        add(miscPanel);
-
-        setServerPanel("Plugin Starting", "The plugin is currently starting...", COLOR_INPROGRESS);
-        matchButtonManager(QueueButtonStatus.OFFLINE);
-
         addQueueButtons();
+        addCreateButtons();
     }
 
-    public JPanel partnerPanel() {
-        JPanel partnerPanel = new JPanel();
-        partnerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        partnerPanel.setBackground(SUB_BACKGROUND_COLOR);
-        partnerPanel.setLayout(new GridBagLayout());
-        partnerPanel.add(new JPanel());
-        return partnerPanel;
+    @Subscribe
+    public void onSearchMatches(SearchMatches searchMatches) {
+        SwingUtilities.invokeLater(() -> setSearchPanel(searchMatches));
+        setServerWarningPanel("", false);
     }
 
-    public void setPartnerPanel(ArrayList<MatchInformation> matchInformationArrayList){
-        JPanel usersPanel = (JPanel) partnerPanel.getComponent(0);
-        usersPanel.removeAll();
+    @Subscribe
+    public void onServerMessage(ServerMessage serverMessage){
+        String message = serverMessage.getServerMessage();
+        setServerWarningPanel(message, true);
+    }
 
-        usersPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        usersPanel.setBackground(SUB_BACKGROUND_COLOR);
-        usersPanel.setLayout(new GridBagLayout());
+    @Subscribe
+    public void onMatchData(MatchData matchData) {
+        SwingUtilities.invokeLater(() -> setMatchPanel(matchData));
+        setServerWarningPanel("", false);
+    }
+
+    private JPanel serverWarningPanel(){
+        JPanel serverWarningPanel = new JPanel();
+        serverWarningPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        serverWarningPanel.setBackground(SUB_BACKGROUND_COLOR);
+        serverWarningPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-
-        Border border = BorderFactory.createBevelBorder(1);
-        String header = WordUtils.capitalizeFully(matchInformationArrayList.get(0).party_identifier.split("[$]")[0].replace('_',' '));
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(border,header,TitledBorder.CENTER, TitledBorder.TOP);
-        usersPanel.setBorder(titledBorder);
-
-        String world_number = matchInformationArrayList.get(0).party_identifier.split("(&world=)")[1];
-
-        c.weightx = 1;
+        c.gridy = 0;
+        c.gridx = 0;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.WEST;
+        c.anchor = GridBagConstraints.CENTER;
 
-        c.gridx=0;
-        c.gridy=0;
+        serverWarningPanel.add(add(Box.createVerticalStrut(3)), c);
+        c.gridy += 1;
 
-        JLabel pluginVersion = new JLabel(matchInformationArrayList.get(0).version);
-        pluginVersion.setIcon(Icons.GITHUB_ICON);
-        pluginVersion.setToolTipText("The current plugin version.");
-        usersPanel.add(pluginVersion, c);
-        c.gridy +=1;
+        serverWarningPanel.add(new JLabel(), c);
+        c.gridy += 1;
 
-        String party_identifier = matchInformationArrayList.get(0).party_identifier;
-        JLabel partyLabel = new JLabel("Hover for Party ID");
-        partyLabel.setToolTipText(party_identifier);
-        partyLabel.setIcon(Icons.NSA_ICON);
-
-        usersPanel.add(partyLabel, c);
-        c.gridy+=1;
-
-        World world = worldService.getWorlds().findWorld(Integer.parseInt(world_number));
-        ImageIcon worldIcon = Icons.WARNING_ICON;
-        switch(world.getLocation()){
-            case 0:
-                worldIcon = Icons.US_ICON;
-                break;
-            case 1:
-                worldIcon = Icons.EU_WEST_ICON;
-                break;
-            case 7:
-                worldIcon = Icons.EU_CENTRAL_ICON;
-                break;
-            case 3:
-                worldIcon = Icons.OCEANIA_ICON;
-                break;
-        }
-
-        JLabel worldLabel = new JLabel("World: "+world_number);
-        worldLabel.setIcon(worldIcon);
-        usersPanel.add(worldLabel, c);
-        c.gridy+=1;
-
-        JLabel playerLabel = new JLabel("Players: "+String.valueOf(world.getPlayers()));
-        playerLabel.setIcon(Icons.PLAYERS_ICON);
-        usersPanel.add(playerLabel, c);
-        c.gridy+=1;
-
-        if (!matchInformationArrayList.get(0).discord_invite.equals("NONE")){
-            JButton discordInviteButton = new JButton();
-            String invite = matchInformationArrayList.get(0).discord_invite;
-            discordInviteButton.setText("Join Party");
-            discordInviteButton.setIcon(Icons.DISCORD_ICON);
-            discordInviteButton.setBackground(Color.blue.darker().darker());
-            discordInviteButton.addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mousePressed(MouseEvent e)
-                {
-                    LinkBrowser.browse(invite);
-                }
-            });
-
-            usersPanel.add(discordInviteButton, c);
-            c.gridy+=1;
-        }
-
-        for (MatchInformation partner : matchInformationArrayList){
-            JPanel userPanel = new JPanel();
-            userPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-            userPanel.setBackground(BACKGROUND_COLOR);
-            userPanel.setLayout(new GridBagLayout());
-
-            GridBagConstraints userC = new GridBagConstraints();
-            userC.weightx = 1;
-            userC.fill = GridBagConstraints.HORIZONTAL;
-            userC.anchor = GridBagConstraints.CENTER;
-
-            userC.gridx = 0;
-            userC.gridy = 0;
-
-            JLabel partner_name = new JLabel(partner.login);
-            partner_name.setFont(FontManager.getRunescapeBoldFont());
-            if (partner.verified){
-                partner_name.setIcon(Icons.VERIFIED_ICON);
-                partner_name.setToolTipText("Player is verified.");
-            } else {
-                partner_name.setIcon(Icons.UNVERIFIED_ICON);
-                partner_name.setToolTipText("Player is unverified.");
-            }
-
-            userPanel.add(partner_name, userC);
-
-            userC.anchor = GridBagConstraints.WEST;
-
-            // RuneWatch
-            if (!partner.runewatch.equals("NONE")){
-                userC.gridy += 1;
-                JLabel runeWatch = new JLabel(partner.runewatch);
-                runeWatch.setFont(FontManager.getRunescapeBoldFont());
-                runeWatch.setForeground(Color.red.darker());
-                runeWatch.setIcon(Icons.RUNEWATCH_ICON);
-                runeWatch.setToolTipText("RuneWatch alerts!");
-                userPanel.add(runeWatch, userC);
-            }
-
-            // WDR
-            if (!partner.wdr.equals("NONE")){
-                userC.gridy += 1;
-                JLabel weDoRaids = new JLabel(partner.wdr);
-                weDoRaids.setFont(FontManager.getRunescapeBoldFont());
-                weDoRaids.setForeground(Color.red.darker());
-                weDoRaids.setIcon(Icons.WDR_ICON);
-                weDoRaids.setToolTipText("WeDoRaids alerts!");
-                userPanel.add(weDoRaids, userC);
-            }
-
-            // Discord
-            if (!partner.discord.equals("NONE")){
-                userC.gridy += 1;
-                JLabel discord = new JLabel(partner.discord);
-                discord.setFont(FontManager.getRunescapeFont());
-                discord.setIcon(Icons.DISCORD_ICON);
-                discord.setToolTipText("Player's discord");
-                userPanel.add(discord, userC);
-            }
-
-            if (partner.has_accepted) {
-                userPanel.setBackground(Color.GREEN.darker().darker().darker());
-            } else {
-                userPanel.setBackground(Color.ORANGE.darker().darker());
-            }
-
-            // add UserPanel to UsersPanel
-            usersPanel.add(Box.createVerticalStrut(2), c);
-            c.gridy+=1;
-            usersPanel.add(userPanel, c);
-            c.gridy+=1;
-        }
-
-        usersPanel.revalidate();
-        usersPanel.repaint();
-
-        GridBagConstraints c_panel = new GridBagConstraints();
-        c_panel.weightx = 1;
-        c_panel.fill = GridBagConstraints.HORIZONTAL;
-        c_panel.anchor = GridBagConstraints.WEST;
-        partnerPanel.add(usersPanel, c_panel);
+        serverWarningPanel.add(add(Box.createVerticalStrut(3)), c);
+        return serverWarningPanel;
     }
-
-    public void setPartnerPanelVisible(Boolean tf){
-        partnerPanelSeperator.setVisible(tf);
-        partnerPanel.setVisible(tf);
+    private void setServerWarningPanel(String message, boolean b){
+        JLabel label = (JLabel) serverWarningPanel.getComponent(1);
+        label.setFont(FontManager.getRunescapeBoldFont());
+        label.setToolTipText("Message from the server!");
+        label.setIcon(Icons.NSA_ICON);
+        label.setText(message);
+        label.setForeground(Color.YELLOW);
+        serverWarningPanel.setVisible(b);
     }
-
-    public void setMatchPanelVisible(Boolean tf){
-        matchPanelSeperator.setVisible(tf);
-        matchPanel.setVisible(tf);
-    }
-
-    public void setButtonPanelVisible(Boolean tf){
-        skillPanelSeperator.setVisible(tf);
-        skillPanelTitle.setVisible(tf);
-        skillPanel.setVisible(tf);
-
-        bossPanelSeperator.setVisible(tf);
-        bossPanelTitle.setVisible(tf);
-        bossPanel.setVisible(tf);
-
-        raidPanelSeperator.setVisible(tf);
-        raidPanelTitle.setVisible(tf);
-        raidPanel.setVisible(tf);
-
-        minigamePanelSeperator.setVisible(tf);
-        minigamePanelTitle.setVisible(tf);
-        minigamePanel.setVisible(tf);
-
-        miscPanelSeperator.setVisible(tf);
-        miscPanelTitle.setVisible(tf);
-        miscPanel.setVisible(tf);
-    }
-
-    private JPanel linksPanel()
-    {
+    private JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         linksPanel.setBackground(SUB_BACKGROUND_COLOR);
-        for (WebLink w : WebLink.values())
-        {
+        for (WebLink w : WebLink.values()) {
             JLabel link = new JLabel(w.getImage());
             link.setToolTipText(w.getTooltip());
-            link.addMouseListener(new MouseAdapter()
-            {
+            link.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e)
-                {
+                public void mousePressed(MouseEvent e) {
                     LinkBrowser.browse(w.getLink());
                 }
             });
@@ -464,396 +288,496 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
         return linksPanel;
     }
-
-    private JPanel serverPanel()
-    {
-        JPanel serverPanel = new JPanel();
-        serverPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        serverPanel.add(new JLabel());
-        return serverPanel;
-    }
-
-    public void setServerPanel(String display_text, String tool_tip, Color background){
-        JLabel label = (JLabel) (serverPanel.getComponent(0));
-        serverPanel.setBackground(background);
-        label.setText(display_text);
-        serverPanel.setToolTipText(tool_tip);
-    }
-
-    public JPanel matchPanel(){
-        JPanel matchPanel = new JPanel();
-        matchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        matchPanel.setBackground(SUB_BACKGROUND_COLOR);
-
-        // border for Match Panel
-        Border border = BorderFactory.createBevelBorder(1);
-        String header = "Queue Progress";
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(border,header,TitledBorder.CENTER, TitledBorder.TOP);
-        matchPanel.setBorder(titledBorder);
-        matchPanel.setLayout(new GridBagLayout());
-
-        // left panel
+    private JPanel switchMenuPanel() {
+        JPanel switchMenuPanel = new JPanel();
+        switchMenuPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        switchMenuPanel.setBackground(SUB_BACKGROUND_COLOR);
+        switchMenuPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.WEST;
-        c.weightx = 1;
 
-        c.gridx=0;
-        c.gridy=0;
-        matchPanel.add(new JLabel("Queue Time: 00:00:00"), c);
-        return matchPanel;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        quickMatchPanelButton.setText("Quick");
+        quickMatchPanelButton.setToolTipText("Quickly find a match");
+        quickMatchPanelButton.addActionListener(this::quickPanelManager);
+        switchMenuPanel.add(quickMatchPanelButton, c);
+        c.gridx += 1;
+
+        createMatchPanelButton.setText("Create");
+        createMatchPanelButton.setToolTipText("Create a new match");
+        createMatchPanelButton.addActionListener(this::createPanelManager);
+        switchMenuPanel.add(createMatchPanelButton, c);
+        c.gridx += 1;
+
+        searchMatchPanelButton.setText("Search");
+        searchMatchPanelButton.setToolTipText("Search for active matches");
+        searchMatchPanelButton.addActionListener(this::searchPanelManager);
+        switchMenuPanel.add(searchMatchPanelButton, c);
+
+        return switchMenuPanel;
     }
+    private void setMatchPanel(MatchData matchdata){
+        matchPanelManager(); // switch to match panel
+        JPanel mp = (JPanel) matchPanel.getComponent(1);
+        mp.removeAll();
 
-    public void setMatchPanelQueueTime(String display_text){
-        JLabel label = (JLabel) (matchPanel.getComponent(0));
-        label.setText(display_text);
-    }
-
-    private JPanel queuePanel(int row, int column){
-        if (row==0 || column==0){
-            row=5;
-            column=5;
-        }
-        JPanel queuePanel = new JPanel();
-        queuePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        queuePanel.setBackground(SUB_BACKGROUND_COLOR);
-        queuePanel.setLayout(new GridLayout(row, column));
-        return queuePanel;
-    }
-
-    private JPanel activityOptionPanelMaker(){
-        //init activity bar
-        JPanel activityOptionPanelMaker = new JPanel();
-
-        activityOptionPanelMaker.setBorder(new EmptyBorder(0, 0, 0, 0));
-        activityOptionPanelMaker.setBackground(SUB_BACKGROUND_COLOR);
-        activityOptionPanelMaker.setLayout(new GridBagLayout());
+        mp.setBorder(new EmptyBorder(0, 0, 0, 0));
+        mp.setBackground(BACKGROUND_COLOR);
+        mp.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-
-        // init accept/exit  buttons
-        JPanel buttonHolder = new JPanel();
-        buttonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
-        buttonHolder.setBackground(SUB_BACKGROUND_COLOR);
-        buttonHolder.setLayout(new GridLayout(1,2));
-
-        button_accept.setEnabled(false);
-        button_accept.setToolTipText("Accept current choice");
-        button_exit.setEnabled(false);
-        button_exit.setToolTipText("Cancel current choice");
-
-        button_exit.setIcon(Icons.CANCEL_ICON);
-        button_exit.addActionListener(e -> activityPanelCancel(e));
-        buttonHolder.add(button_exit);
-
-        button_accept.setIcon(Icons.ACCEPT_ICON);
-        button_accept.addActionListener(e -> activityPanelAccept(e));
-        buttonHolder.add(button_accept);
-
-        // init
-        JPanel reverseButtonHolder = new JPanel();
-        reverseButtonHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
-        reverseButtonHolder.setBackground(SUB_BACKGROUND_COLOR);
-        reverseButtonHolder.setLayout(new GridLayout(1,2));
-
-        button_reset.setEnabled(false);
-        button_reset.setToolTipText("Reset all choices");
-        button_undo.setEnabled(false);
-        button_undo.setToolTipText("Undo last choice");
-
-        button_reset.setIcon(Icons.RESET_ICON);
-        button_reset.addActionListener(e -> activityPanelReset(e));
-        reverseButtonHolder.add(button_reset);
-
-        button_undo.setIcon(Icons.UNDO_ICON);
-        button_undo.addActionListener(e -> activityPanelUndo(e));
-        reverseButtonHolder.add(button_undo);
-
-        // init sliders
-        JPanel spinnerHolder = new JPanel();
-        spinnerHolder.setBorder(new EmptyBorder(0, 0, 0, 0));
-        spinnerHolder.setBackground(SUB_BACKGROUND_COLOR);
-        spinnerHolder.setLayout(new GridBagLayout());
-        GridBagConstraints c_spinner = new GridBagConstraints();
-
-        // add sliders
-        JLabel party_member_count_title = new JLabel("Party Size");
-        party_member_count_title.setFont(FontManager.getRunescapeSmallFont());
-        party_member_count_title.setHorizontalAlignment(SwingConstants.CENTER);
-        party_member_count.setToolTipText("Your final party size, including yourself.");
-
-        JLabel self_experience_level_title = new JLabel("Your Experience");
-        self_experience_level_title.setFont(FontManager.getRunescapeSmallFont());
-        self_experience_level_title.setHorizontalAlignment(SwingConstants.CENTER);
-        self_experience_level.setToolTipText("Your estimated experience level.");
-
-        JLabel partner_experience_level_title = new JLabel("Party's Experience");
-        partner_experience_level_title.setFont(FontManager.getRunescapeSmallFont());
-        partner_experience_level_title.setHorizontalAlignment(SwingConstants.CENTER);
-        partner_experience_level.setToolTipText("The estimated experience levels of your partners.");
-
-        // construct spinner subsection
-        c_spinner.fill = GridBagConstraints.HORIZONTAL;
-        c_spinner.anchor = GridBagConstraints.CENTER;
-        c_spinner.weightx = 1;
-
-        c_spinner.gridx=0;
-        c_spinner.gridy=0;
-        spinnerHolder.add(party_member_count_title, c_spinner);
-
-        c_spinner.gridx=1;
-        c_spinner.gridy=0;
-        spinnerHolder.add(party_member_count, c_spinner);
-
-        c_spinner.gridx=0;
-        c_spinner.gridy=1;
-        spinnerHolder.add(self_experience_level_title, c_spinner);
-
-        c_spinner.gridx=1;
-        c_spinner.gridy=1;
-        spinnerHolder.add(self_experience_level,c_spinner);
-
-        c_spinner.gridx=0;
-        c_spinner.gridy=2;
-        spinnerHolder.add(partner_experience_level_title, c_spinner);
-
-        c_spinner.gridx=1;
-        c_spinner.gridy=2;
-        spinnerHolder.add(partner_experience_level, c_spinner);
-
-        // Add sections to activity panel option maker
+        c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.CENTER;
-        c.weightx = .05;
+        c.gridx = 0;
+        c.gridy = 0;
 
-        c.gridx=0;
-        c.gridy=0;
-        activityOptionPanelMaker.add(spinnerHolder, c);
+        mp.add(Box.createVerticalStrut(5),c);
+        c.gridy += 1;
 
-        c.gridx=0;
-        c.gridy=1;
-        activityOptionPanelMaker.add(buttonHolder, c);
+        /// current activity panel
+        JPanel current_activity_panel = new JPanel();
+        current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        current_activity_panel.setBackground(SUB_BACKGROUND_COLOR);
+        current_activity_panel.setLayout(new GridBagLayout());
+        current_activity_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        GridBagConstraints ca = new GridBagConstraints();
+        ca.weightx = 1;
+        ca.fill = GridBagConstraints.HORIZONTAL;
+        ca.anchor = GridBagConstraints.CENTER;
+        ca.gridx = 0;
+        ca.gridy = 0;
 
-        c.gridx=0;
-        c.gridy=2;
-        activityOptionPanelMaker.add(reverseButtonHolder, c);
+        String activity = matchdata.getActivity();
+        ActivityReference activityReference = ActivityReference.valueOf(activity);
+        ImageIcon activity_icon = activityReference.getIcon();
+        String activity_name = activityReference.getTooltip();
 
-        return activityOptionPanelMaker;
-    }
+        JLabel match_title = new JLabel(activity_name);
+        match_title.setIcon(activity_icon);
+        match_title.setFont(FontManager.getRunescapeBoldFont());
+        current_activity_panel.add(match_title, ca);
+        ca.gridx = 1;
 
-    public void setActivityPanelVisible(Boolean tf){
-        activityOptionPanelSeperator.setVisible(tf);
-        activityPanelTitle.setVisible(tf);
-        activityOptionPanel.setVisible(tf);
-    }
+        JLabel privateLabel = new JLabel();
+        if (matchdata.getIsPrivate()){
+            privateLabel.setText("Private");
+            privateLabel.setIcon(Icons.PRIVATE_ICON);
+            privateLabel.setForeground(Color.yellow.darker().darker());
+        } else {
+            privateLabel.setText("Public");
+            privateLabel.setIcon(Icons.PUBLIC_ICON);
+            privateLabel.setForeground(Color.green.darker().darker());
+        }
+        privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        privateLabel.setToolTipText("Match ID: "+ matchdata.getId());
 
-    private void buttons_ActivityOptions(ItemEvent itemEvent){
-        Object object = itemEvent.getItem();
-        if (object instanceof JToggleButton){
+        ca.anchor = GridBagConstraints.LINE_END;
+        ca.fill = GridBagConstraints.LINE_END;
+        current_activity_panel.add(privateLabel, ca);
 
-            // opens selection choices
-            if (itemEventHx != null){
-                if (itemEventHx != itemEvent){
-                    Object objectHx = itemEventHx.getItem();
-                    JToggleButton old_button = ((JToggleButton) objectHx);
+        ca.anchor = GridBagConstraints.CENTER;
+        ca.fill = GridBagConstraints.HORIZONTAL;
+        ca.gridx = 0;
+        ca.gridy += 1;
 
-                    if (old_button.isSelected() && old_button.isEnabled()){
-                        old_button.setSelected(false);
-                    }
+        current_activity_panel.add(Box.createVerticalStrut(2), ca);
+        ca.gridy += 1;
 
+        JLabel experience_label = new JLabel(matchdata.getRequirement().getExperience());
+        experience_label.setIcon(Icons.EXPERIENCE_ICON);
+        experience_label.setToolTipText("Experience");
+        current_activity_panel.add(experience_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        JLabel split_label = new JLabel(matchdata.getRequirement().getSplitType());
+        split_label.setIcon(Icons.LOOTBAG_ICON);
+        split_label.setToolTipText("Loot Split");
+        current_activity_panel.add(split_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        String account_string = matchdata.getRequirement().getAccounts();
+        ImageIcon account_image = AccountTypeSelection.valueOf(account_string).getImage();
+        JLabel accounts_label = new JLabel(account_string);
+        accounts_label.setIcon(account_image);
+        accounts_label.setToolTipText("Accounts");
+        current_activity_panel.add(accounts_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        JLabel region_label = new JLabel(matchdata.getRequirement().getRegions());
+        region_label.setIcon(Icons.WORLD_ICON);
+        region_label.setToolTipText("Match Region");
+        current_activity_panel.add(region_label, ca);
+
+        mp.add(current_activity_panel, c);
+        c.gridy += 1;
+
+        /// end current activity panel
+        mp.add(Box.createVerticalStrut(5),c);
+        c.gridy += 1;
+
+        for (Player player : matchdata.getPlayers()){
+            JPanel player_panel = new JPanel();
+
+            player_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+            player_panel.setBackground(SUB_BACKGROUND_COLOR);
+            player_panel.setLayout(new GridBagLayout());
+            player_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            GridBagConstraints cp = new GridBagConstraints();
+            cp.weightx = 1;
+            cp.fill = GridBagConstraints.HORIZONTAL;
+            cp.anchor = GridBagConstraints.CENTER;
+            cp.gridx = 0;
+            cp.gridy = 0;
+
+            JLabel player_name = new JLabel(player.getLogin());
+            player_name.setFont(FontManager.getRunescapeBoldFont());
+            if (player.getIsPartyLeader()){
+                player_name.setIcon(Icons.YELLOW_PARTYHAT_ICON);
+            } else {
+                if (player.getVerified()){
+                    player_name.setIcon(Icons.VERIFIED_ICON);
+                } else {
+                    player_name.setIcon(Icons.UNVERIFIED_ICON);
                 }
             }
+            player_name.setToolTipText("ID: "+String.valueOf(player.getUserId()));
+            player_panel.add(player_name, cp);
+            cp.gridy += 1;
 
-            itemEventHx = itemEvent;
-            // disable button status
-            button_accept.setEnabled(true);
-            button_exit.setEnabled(true);
+            if (player.getRunewatch() != null){
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
 
-            enableDisableResetUndo();
-        }
-    }
-
-    private void enableDisableResetUndo(){
-        if (player_selections.size() == 0){
-            button_reset.setEnabled(false);
-            button_undo.setEnabled(false);
-        } else{
-            button_reset.setEnabled(true);
-            button_undo.setEnabled(true);
-        }
-    }
-
-    private void activityPanelCancel(ActionEvent actionEvent){
-        // cancels active item
-        Object objectHx = itemEventHx.getItem();
-        JToggleButton old_button = ((JToggleButton) objectHx);
-        old_button.setSelected(false);
-
-        // disable button status
-        button_accept.setEnabled(false);
-        button_exit.setEnabled(false);
-    }
-
-    private void activityPanelAccept(ActionEvent actionEvent){
-        // sets active item
-        Object objectHx = itemEventHx.getItem();
-        JToggleButton old_button = ((JToggleButton) objectHx);
-        old_button.setSelected(true);
-        old_button.setEnabled(false);
-
-        // load payloads
-        String activity_name = old_button.getName();
-        appendSelections(activity_name);
-
-        // disable button status
-        button_accept.setEnabled(false);
-        button_exit.setEnabled(false);
-
-        // change state of reset/undo buttons depending on player selections status
-        enableDisableResetUndo();
-
-        // check button status
-        matchButtonStateSwitcher(player_selections.size());
-    }
-
-    private void activityPanelReset(ActionEvent actionEvent){
-        // resets all player selections & buttons
-        while (player_selections.size()>=1){
-            int last_index = player_selections.size()-1;
-            String activity = String.valueOf(player_selections.get(last_index).getAsJsonObject().get("activity"));
-            activity = activity.replace("\"", "");
-            for (Object button : activity_buttons){
-                JToggleButton jbutton = (JToggleButton) button;
-                if (jbutton.getName().equals(activity)){
-                    jbutton.setEnabled(true);
-                    jbutton.setSelected(false);
-                }
+                JLabel runewatch_label = new JLabel(player.getRunewatch());
+                runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
+                runewatch_label.setFont(FontManager.getRunescapeFont());
+                runewatch_label.setForeground(Color.red.darker());
+                player_panel.add(runewatch_label, cp);
+                cp.gridy +=1;
             }
-            player_selections.remove(last_index);
-        }
-        button_reset.setEnabled(false);
-        button_undo.setEnabled(false);
-        matchButtonStateSwitcher(player_selections.size());
-    }
 
-    private void activityPanelUndo(ActionEvent actionEvent){
-        // removes most recently added player selection
-        if (player_selections.size()>=1){
+            if (player.getWdr() != null){
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
 
-            int last_index = player_selections.size()-1;
-            String activity = String.valueOf(player_selections.get(last_index).getAsJsonObject().get("activity"));
-            activity = activity.replace("\"", "");
-            for (Object button : activity_buttons){
-                JToggleButton jbutton = (JToggleButton) button;
-                if (jbutton.getName().equals(activity)){
-                    jbutton.setEnabled(true);
-                    jbutton.setSelected(false);
-                }
+                JLabel wdr_label = new JLabel(player.getWdr());
+                wdr_label.setIcon(Icons.RUNEWATCH_ICON);
+                wdr_label.setFont(FontManager.getRunescapeFont());
+                wdr_label.setForeground(Color.red.darker());
+                player_panel.add(wdr_label, cp);
+                cp.gridy +=1;
             }
-            player_selections.remove(last_index);
+
+            if (player.getDiscord() != null) {
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
+
+                JLabel discord_label = new JLabel(player.getDiscord());
+                discord_label.setIcon(Icons.DISCORD_ICON);
+                discord_label.setFont(FontManager.getRunescapeFont());
+                player_panel.add(discord_label, cp);
+                cp.gridy += 1;
+            }
+            if (player.getStatus() != null){
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy+=1;
+
+                JPanel player_status = new JPanel();
+                player_status.setBorder(new EmptyBorder(5, 0, 5, 0));
+                player_status.setBackground(SUB_BACKGROUND_COLOR);
+                player_status.setLayout(new GridBagLayout());
+                player_status.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+                GridBagConstraints cs = new GridBagConstraints();
+                cs.weightx = 1;
+                cs.fill = GridBagConstraints.HORIZONTAL;
+                cs.anchor = GridBagConstraints.CENTER;
+                cs.gridx = 0;
+                cs.gridy = 0;
+
+                Integer base_hitpoints =  player.getStatus().getBaseHp();
+                Integer hitpoints = player.getStatus().getHp();
+                Integer prayer = player.getStatus().getPrayer();
+                Integer base_prayer = player.getStatus().getBasePrayer();
+                Integer run_energy = player.getStatus().getRunEnergy();
+
+                JLabel hitpoint_label = new JLabel(hitpoints+"/"+base_hitpoints);
+                hitpoint_label.setIcon(Icons.HITPOINTS);
+                player_status.add(hitpoint_label, cs);
+
+                cs.gridx=1;
+                JLabel prayer_label = new JLabel(prayer+"/"+base_prayer);
+                prayer_label.setIcon(Icons.PRAYER);
+                player_status.add(prayer_label, cs);
+
+                cs.gridx=2;
+                JLabel run_label = new JLabel(run_energy+"/100");
+                run_label.setIcon(Icons.AGILITY);
+                player_status.add(run_label, cs);
+
+                player_panel.add(player_status, cp);
+                cp.gridy+=1;
+            }
+
+            mp.add(player_panel, c);
+            c.gridy += 1;
+            mp.add(Box.createVerticalStrut(5), c);
+            c.gridy += 1;
         }
 
-        if (player_selections.size()==0){
-            button_reset.setEnabled(false);
-            button_undo.setEnabled(false);
+        mp.revalidate();
+        mp.repaint();
+    }
+    private JPanel matchPanel() {
+        JPanel matchPanel = new JPanel();
+        matchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        matchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+        c.fill = GridBagConstraints.LINE_END;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        JButton escape = new JButton();
+        escape.setIcon(Icons.LOGOUT_ICON);
+        escape.setToolTipText("Exit");
+        escape.setSize(20, 20);
+        escape.setBorderPainted(false);
+        escape.setFocusPainted(false);
+        escape.setContentAreaFilled(false);
+        escape.addActionListener(this::leaveMatch);
+        matchPanel.add(escape, c);
+
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridy += 1;
+
+        matchPanel.add(new JPanel(), c);
+        return matchPanel;
+    }
+    private void leaveMatch(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Object[] options = {"Leave",
+                            "Stay"};
+        int n = JOptionPane.showOptionDialog(frame,
+                "Would you like to leave this match?",
+                "Match Logout",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);
+        if (n == 0){
+            websocket.logoff("Exiting match");
+            quickPanelManager(actionEvent);
         }
-        matchButtonStateSwitcher(player_selections.size());
     }
+    private JPanel connectingPanel(){
+        JPanel connectingPanel = new JPanel();
+        connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        connectingPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
 
-    private void appendSelections(String activity_name){
-        /** player_selections Layout
-         *  [
-         *   {
-         *     "activity": "string",
-         *     "configuration": {
-         *       "party_member_count": int,
-         *       "self_experience_level": int,
-         *       "partner_experience_level": int
-         *     }
-         *   }
-         * ]
-         */
+        c.weightx = 1;
+        c.weighty = 1;
+        c.anchor = GridBagConstraints.FIRST_LINE_END;
+        c.gridx = 0;
+        c.gridy = 0;
+        JButton escape = new JButton();
+        escape.setIcon(Icons.CANCEL_ICON);
+        escape.setToolTipText("Exit");
+        escape.setSize(20,20);
+        escape.setBorderPainted(false);
+        escape.setFocusPainted(false);
+        escape.setContentAreaFilled(false);
+        escape.addActionListener(this::quickPanelManager);
+        connectingPanel.add(escape, c);
 
-        // json put goes here
-        party_member_count_payload = (Integer) party_member_count.getValue();
-        self_experience_payload = ExperienceLevel.valueOf((String) self_experience_level.getValue()).ordinal();
-        partner_experience_payload = ExperienceLevel.valueOf((String) partner_experience_level.getValue()).ordinal();
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridy += 1;
+        connectingPanel.add(title("Connecting..."), c);
+        c.gridy += 1;
+        connectingPanel.add(new JLabel("Queue Time: 00:00:00"), c);
 
-        JsonObject payload = new JsonObject();
-        JsonObject sub_payload = new JsonObject();
+        return connectingPanel;
+    }
+    public void setConnectingPanelQueueTime(String display_text){
+        JLabel label = (JLabel) (connectingPanel.getComponent(2));
+        label.setText(display_text);
+    }
+    public void connectingPanelManager(ActionEvent actionEvent){
+        connectingPanelManager();
+    }
+    public void matchPanelManager() {
+        matchPanel.setVisible(true);
 
-        sub_payload.addProperty("party_member_count", party_member_count_payload);
-        sub_payload.addProperty("self_experience_level", self_experience_payload);
-        sub_payload.addProperty("partner_experience_level", partner_experience_payload);
-        sub_payload.addProperty("us", config.us());
-        sub_payload.addProperty("eu_west", config.euWest());
-        sub_payload.addProperty("eu_central", config.euCentral());
-        sub_payload.addProperty("oceania", config.oceania());
+        switchMenuPanel.setVisible(false);
+        isConnecting = false;
+        plugin.timer = 0;
 
-        boolean f2p = true;
-        boolean p2p = true;
-        switch(config.worldTypeSelection()){
-            case F2P:
-                p2p = false;
-                break;
-            case P2P:
-                f2p = false;
-                break;
+        connectingPanel.setVisible(false);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(false);
+        searchPanel.setVisible(false);
+
+        quickMatchPanelButton.setSelected(false);
+        createMatchPanelButton.setSelected(false);
+    }
+    public void connectingPanelManager() {
+        matchPanel.setVisible(false);
+
+        switchMenuPanel.setVisible(false);
+        isConnecting = true;
+
+        connectingPanel.setVisible(true);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(false);
+        searchPanel.setVisible(false);
+
+        quickMatchPanelButton.setSelected(false);
+        createMatchPanelButton.setSelected(false);
+    }
+    private void quickPanelManager(ActionEvent actionEvent) {
+        matchPanel.setVisible(false);
+
+        switchMenuPanel.setVisible(true);
+        isConnecting = false;
+        plugin.timer = 0;
+
+        connectingPanel.setVisible(false);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(true);
+        searchPanel.setVisible(false);
+
+        searchMatchPanelButton.setSelected(false);
+        createMatchPanelButton.setSelected(false);
+    }
+    private void createPanelManager(ActionEvent actionEvent) {
+        matchPanel.setVisible(false);
+
+        switchMenuPanel.setVisible(true);
+        isConnecting = false;
+
+        connectingPanel.setVisible(false);
+        createPanel.setVisible(true);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(false);
+        searchPanel.setVisible(false);
+
+        quickMatchPanelButton.setSelected(false);
+        searchMatchPanelButton.setSelected(false);
+    }
+    private void searchPanelManager(ActionEvent actionEvent) {
+        matchPanel.setVisible(false);
+
+        switchMenuPanel.setVisible(true);
+        isConnecting = false;
+
+        connectingPanel.setVisible(false);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        quickPanel.setVisible(false);
+        searchPanel.setVisible(true);
+
+        quickMatchPanelButton.setSelected(false);
+        createMatchPanelButton.setSelected(false);
+    }
+    private JPanel quickPanel() {
+        JPanel quickPanel = new JPanel();
+        quickPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        quickPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        quickMatchButton.setText("Select Activities");
+        quickMatchButton.setToolTipText("Choose activities to play!");
+        quickMatchButton.setBackground(COLOR_INPROGRESS);
+        quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
+        quickPanel.add(quickMatchButton, c);
+        c.gridy += 1;
+
+        quickPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        quickPanel.add(title("Skills"), c);
+        c.gridy += 1;
+        quickPanel.add(skillPanel, c);
+        c.gridy += 1;
+
+        quickPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        quickPanel.add(title("Bosses"), c);
+        c.gridy += 1;
+        quickPanel.add(bossPanel, c);
+        c.gridy += 1;
+
+        quickPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        quickPanel.add(title("Raids"), c);
+        c.gridy += 1;
+        quickPanel.add(raidPanel, c);
+        c.gridy += 1;
+
+        quickPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        quickPanel.add(title("Mini-games"), c);
+        c.gridy += 1;
+        quickPanel.add(minigamePanel, c);
+        c.gridy += 1;
+
+        quickPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        quickPanel.add(title("Miscellaneous"), c);
+        c.gridy += 1;
+        quickPanel.add(miscPanel, c);
+        return quickPanel;
+    }
+    private JPanel subActivityPanel(int row, int column) {
+        if (row == 0 || column == 0) {
+            row = 5;
+            column = 5;
         }
-
-        sub_payload.addProperty("f2p", f2p);
-        sub_payload.addProperty("p2p", p2p);
-
-        payload.addProperty("activity", activity_name);
-        payload.add("configuration", sub_payload);
-
-        player_selections.add(payload);
+        JPanel subActivityPanel = new JPanel();
+        subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        subActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        subActivityPanel.setLayout(new GridLayout(row, column));
+        return subActivityPanel;
     }
-
-    private JPanel matchButton(){
-        JPanel matchButton = new JPanel();
-        matchButton.setBorder(new EmptyBorder(0, 0, 0, 0));
-        matchButton.setBackground(SUB_BACKGROUND_COLOR);
-        matchButton.setLayout(new GridLayout(1,1));
-
-        matchingButton.setText("Offline");
-        matchingButton.setBackground(COLOR_DISABLED);
-        matchingButton.addActionListener(plugin::matchClickManager);
-        matchButton.add(matchingButton);
-        return matchButton;
-    }
-
-    private JPanel acceptOrDeclineButtons(){
-        JPanel acceptOrDeclinePanel = new JPanel();
-        acceptOrDeclinePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        acceptOrDeclinePanel.setBackground(SUB_BACKGROUND_COLOR);
-        acceptOrDeclinePanel.setLayout(new GridLayout(1,2));
-
-        acceptButton.setBackground(Color.green.darker().darker().darker());
-        acceptButton.setText(QueueButtonStatus.ACCEPT.getName());
-        acceptButton.addActionListener(plugin::matchClickManager);
-
-        declineButton.setBackground(Color.red.darker().darker().darker());
-        declineButton.setText(QueueButtonStatus.DENY.getName());
-        declineButton.addActionListener(plugin::matchClickManager);
-
-        acceptOrDeclinePanel.add(declineButton);
-        acceptOrDeclinePanel.add(acceptButton);
-        return acceptOrDeclinePanel;
-    }
-
-    private void addQueueButtons(){
+    private void addQueueButtons() {
         ActivityReference[] values = ActivityReference.values();
-        for(ActivityReference value: values) {
-            // button construction
+        for (ActivityReference value : values) {
             JToggleButton button = new JToggleButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getTooltip());
             button.setName(value.getLabel());
-            button.addItemListener(e -> buttons_ActivityOptions(e));
+            button.addItemListener(this::activityButtonManager); // add function here
             activity_buttons.add(button);
 
-            switch(value.getActivity()){
+            switch (value.getActivity()) {
                 case "skill":
                     skillPanel.add(button);
                     break;
@@ -871,84 +795,596 @@ public class NeverScapeAlonePanel extends PluginPanel {
             }
         }
     }
+    private void activityButtonManager(ItemEvent itemEvent) {
+        JToggleButton button = (JToggleButton) itemEvent.getItem();
+        String selection = button.getName();
 
-    private void matchButtonStateSwitcher(int config_counter){
-        // switches match button state
-        switch(NeverScapeAlonePlugin.serverStatusState.getStatus()) {
-            case ALIVE:
-            case REGISTERED:
-            case QUEUE_CANCELED:
-                if ((config_counter == 0)) {
-                    matchButtonManager(QueueButtonStatus.SELECT_ACTIVITY_MATCH);
-                } else if (config_counter > 0) {
-                    matchButtonManager(QueueButtonStatus.START_QUEUE);
+        if (button.isSelected()){
+            queue_list.add(selection);
+        } else {
+            queue_list.remove(selection);
+        }
+
+        if (queue_list.size() > 0){
+            quickMatchButton.setText("Start Queue");
+            quickMatchButton.setBackground(COLOR_COMPLETED);
+        } else {
+            quickMatchButton.setText("Select Activities");
+            quickMatchButton.setBackground(COLOR_INPROGRESS);
+        }
+    }
+    private void constructQueuePanels() {
+        skillPanel = subActivityPanel(4, 6);
+        bossPanel = subActivityPanel(7, 6);
+        raidPanel = subActivityPanel(2, 2);
+        minigamePanel = subActivityPanel(6, 6);
+        miscPanel = subActivityPanel(3, 5);
+    }
+    private JPanel createPanel() {
+        JPanel createPanel = new JPanel();
+        createPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        createPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        createPanel.add(instructionTitle("Step 1: Select an Activity"), c);
+        c.gridy += 1;
+
+        createPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        createPanel.add(title("Skills"), c);
+        c.gridy += 1;
+        createPanel.add(createskillPanel, c);
+        c.gridy += 1;
+
+        createPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        createPanel.add(title("Bosses"), c);
+        c.gridy += 1;
+        createPanel.add(createbossPanel, c);
+        c.gridy += 1;
+
+        createPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        createPanel.add(title("Raids"), c);
+        c.gridy += 1;
+        createPanel.add(createraidPanel, c);
+        c.gridy += 1;
+
+        createPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        createPanel.add(title("Mini-games"), c);
+        c.gridy += 1;
+        createPanel.add(createminigamePanel, c);
+        c.gridy += 1;
+
+        createPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        createPanel.add(title("Miscellaneous"), c);
+        c.gridy += 1;
+        createPanel.add(createmiscPanel, c);
+
+        return createPanel;
+    }
+    private void addCreateButtons() {
+        ActivityReference[] values = ActivityReference.values();
+        for (ActivityReference value : values) {
+            JButton button = new JButton();
+            button.setIcon(value.getIcon());
+            button.setPreferredSize(new Dimension(25, 25));
+            button.setToolTipText(value.getTooltip());
+            button.setName(value.getLabel());
+            button.addActionListener(this::create_activityButtonManager); // add function here
+            create_activity_buttons.add(button);
+
+            switch (value.getActivity()) {
+                case "skill":
+                    createskillPanel.add(button);
+                    break;
+                case "boss":
+                    createbossPanel.add(button);
+                    break;
+                case "minigame":
+                    createminigamePanel.add(button);
+                    break;
+                case "raid":
+                    createraidPanel.add(button);
+                    break;
+                case "misc":
+                    createmiscPanel.add(button);
+            }
+        }
+    }
+    private void constructCreatePanels() {
+        createskillPanel = subActivityPanel(4, 6);
+        createbossPanel = subActivityPanel(7, 6);
+        createraidPanel = subActivityPanel(2, 2);
+        createminigamePanel = subActivityPanel(6, 6);
+        createmiscPanel = subActivityPanel(3, 5);
+    }
+    private void create_activityButtonManager(ActionEvent actionEvent) {
+        Object object = actionEvent.getSource();
+        if (object instanceof JButton) {
+            step1_activity = ((JButton) object).getName();
+            createPanel.setVisible(false);
+            createPanel2.setVisible(true);
+        }
+    }
+    private JPanel createPanel2() {
+        JPanel createPanel2 = new JPanel();
+        createPanel2.setBorder(new EmptyBorder(0, 0, 0, 0));
+        createPanel2.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridy = 0;
+        c.gridx = 0;
+
+        createPanel2.add(instructionTitle("Step 2: Choose Requirements"), c);
+
+        c.gridy += 1;
+        JPanel createSelectionPanel = createSelectionPanel();
+        createPanel2.add(createSelectionPanel, c);
+
+        c.gridy += 1;
+        createPanel2.add(Box.createVerticalStrut(6), c);
+
+        c.gridy += 1;
+        JButton button_confirm = new JButton();
+        button_confirm.setBackground(Color.green.darker().darker());
+        button_confirm.setText("Create Group");
+        button_confirm.setToolTipText("Click here to create a group with your current configuration!");
+        button_confirm.setIcon(Icons.NSA_ICON);
+        button_confirm.addActionListener(plugin::createMatchStart);
+        createPanel2.add(button_confirm, c);
+
+        return createPanel2;
+    }
+    private JPanel createSelectionPanel() {
+        JPanel createSelectionPanel = new JPanel();
+        createSelectionPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        createSelectionPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridy = 0;
+        c.gridx = 0;
+
+        createSelectionPanel.add(header("Group Size"), c);
+        c.gridx = 1;
+
+        party_member_count.setFont(FontManager.getRunescapeSmallFont());
+        party_member_count.setText("2+");
+        party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
+        createSelectionPanel.add(party_member_count, c);
+
+        c.gridx = 2;
+        c.weightx = 0;
+        member_count_help_button.setIcon(Icons.HELP_ICON);
+        member_count_help_button.setSize(16, 16);
+        member_count_help_button.setToolTipText("Click here for help!");
+        member_count_help_button.addActionListener(this::count_help_button_panel);
+        member_count_help_button.setBorderPainted(false);
+        member_count_help_button.setFocusPainted(false);
+        member_count_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(member_count_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Experience"), c);
+        c.gridx = 1;
+        ((JLabel)experience_level.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        createSelectionPanel.add(experience_level, c);
+
+        c.gridx = 2;
+        c.weightx = 0;
+        experience_help_button.setIcon(Icons.EXPERIENCE_ICON);
+        experience_help_button.setSize(16, 16);
+        experience_help_button.setToolTipText("Click here for help!");
+        experience_help_button.addActionListener(this::experience_help_button_panel);
+        experience_help_button.setBorderPainted(false);
+        experience_help_button.setFocusPainted(false);
+        experience_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(experience_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Split Type"), c);
+        c.gridx = 1;
+        ((JLabel)party_loot.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        createSelectionPanel.add(party_loot, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        split_help_button.setIcon(Icons.LOOTBAG_ICON);
+        split_help_button.setSize(16, 16);
+        split_help_button.setToolTipText("Click here for help!");
+        split_help_button.addActionListener(this::split_help_button_panel);
+        split_help_button.setBorderPainted(false);
+        split_help_button.setFocusPainted(false);
+        split_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(split_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Accounts"), c);
+        c.gridx = 1;
+        ((JLabel)account_type.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        createSelectionPanel.add(account_type, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        accounts_help_button.setIcon(Icons.NSA_ICON);
+        accounts_help_button.setSize(16, 16);
+        accounts_help_button.setToolTipText("Click here for help!");
+        accounts_help_button.addActionListener(this::accounts_help_button_panel);
+        accounts_help_button.setBorderPainted(false);
+        accounts_help_button.setFocusPainted(false);
+        accounts_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(accounts_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Region"), c);
+        c.gridx = 1;
+        ((JLabel)region.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        createSelectionPanel.add(region, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        region_help_button.setIcon(Icons.WORLD_ICON);
+        region_help_button.setSize(16, 16);
+        region_help_button.setToolTipText("Click here for help!");
+        region_help_button.addActionListener(this::region_help_button_panel);
+        region_help_button.setBorderPainted(false);
+        region_help_button.setFocusPainted(false);
+        region_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(region_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Passcode"), c);
+        c.gridx = 1;
+        passcode.setToolTipText("Leave blank for a Public match");
+        createSelectionPanel.add(passcode, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        passcode_help_button.setIcon(Icons.PRIVATE_ICON);
+        passcode_help_button.setSize(16, 16);
+        passcode_help_button.setToolTipText("Click here for help!");
+        passcode_help_button.addActionListener(this::passcode_help_button_panel);
+        passcode_help_button.setBorderPainted(false);
+        passcode_help_button.setFocusPainted(false);
+        passcode_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(passcode_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        return createSelectionPanel;
+    }
+    private void count_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Group Size Help"+"\n"+
+                "The group size string indicates how many players your party should have."+"\n"+
+                "The input can be quite dynamic. This allows extensive flexibility when creating a group."+"\n"+
+                "--- Examples ---"+"\n"+
+                "5 -> 'Group size of 5.'"+"\n"+
+                "5+ -> 'Group size greater than 5 inclusive.'"+"\n"+
+                "5-10 -> 'Group size between 5 and 10 inclusive.'"+"\n"+
+                "[2,5] -> 'Group size greater than 2 inclusive, and less than 5 inclusive. This is the same as 2-5.'"+"\n"+
+                "(2,5] -> 'Group size greater than 2 exclusive, and less than 5 inclusive.'"+"\n"+
+                "[2,5) -> 'Group size greater than 2 inclusive, and less than 5 exclusive.'"+"\n"+
+                "(2,5) -> 'Group size greater than 2 exclusive and less than 5 exclusive.'"+"\n"+
+                "between 100 and|&|to|- 145 -> 'Group size greater than 100 inclusive, and less than 145 inclusive'"+"\n"+
+                "less than 4|lt 4|-lt 4|<4 -> 'Group size smaller than 4 exclusive.'"+"\n"+
+                "max 10|maximum 10|le 10|-le 10|<=10 -> 'Group size less than or equal to 10.'" +"\n"+
+                "greater than 50|gt 50|-gt 50|>50 -> 'Group size greater than 50 exclusive.'"+"\n"+
+                "min 99|minimum 99|ge 99|-ge 99|>=99 -> 'Group size greater than or equal to 99 inclusive.'"+"\n"+
+                "-- Chaining Group Sizes --"+"\n"+
+                "Sometimes, you would like to have a group of 5, or a group between 10-20, this can be done easily:"+"\n"+
+                "5 or 10-20"+"\n"+
+                "Add 'or' between groups, in order to create explicit group sizes."+"\n"+
+                "5+ or 7-10 -> Group size greater than 5, or between 7 inclusive and 10 inclusive."+"\n"+
+                "min 5 or [2,3) or max 50 or lt4 -> Group size at minimum 5 players, or between 2 inclusive and 3 exclusive, or max 50, or less than 4."+"\n"+
+                "Please visit our discord if you have any further questions!";
+        JOptionPane.showMessageDialog(frame, message);
+    }
+    private void experience_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Experience Help"+"\n"+
+                "Different experience values can be used to indicate how competent your party is."+"\n"+
+                "Note: Anyone can join a party, regardless of the designation."+"\n"+
+                "1. Flexible - Anyone, of any experience level, can join."+"\n"+
+                "2. Novice - Those with some experience in the activity should join."+"\n"+
+                "3. Average - Those that see themselves as average in the activity, should join."+"\n"+
+                "4. Experienced - Those with plenty of experience should join in this activity.";
+        JOptionPane.showMessageDialog(frame, message);
+    }
+    private void split_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Split Help"+"\n"+
+                "How you would like to split your loot."+"\n"+
+                "This can be ignored if you're doing an activity which doesn't require loot splitting."+"\n"+
+                "1. FFA - Free for all, everyone picks up their own loot."+"\n"+
+                "2. Splits - Everyone splits the loot evenly at the end.";
+        JOptionPane.showMessageDialog(frame, message);
+    }
+    private void accounts_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Account Help"+"\n"+
+                "The types of accounts that you would like to have in your party"+"\n"+
+                "Note: Anyone can join a party, regardless of the designation."+"\n"+
+                "1. All Accounts - Every account type should join."+"\n"+
+                "2. Normal - Accounts without special designations should join."+"\n"+
+                "3. IM - Regular Ironmen should join."+"\n"+
+                "4. HCIM - Hardcore Ironmen should join."+"\n"+
+                "5. UIM - Ultimate Ironmen should join.."+"\n"+
+                "6. GIM - Group Ironmen should join."+"\n"+
+                "7. HCGIM - Hardcore Group Ironmen should join."+"\n"+
+                "8. UGIM - Unranked Group Ironmen should join.";
+        JOptionPane.showMessageDialog(frame, message);
+    }
+    private void region_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Region Help"+"\n"+
+                "What region would like to set the group in."+"\n"+
+                "Note: Anyone can join a party, regardless of the designation.";
+        JOptionPane.showMessageDialog(frame, message);
+    }
+    private void passcode_help_button_panel(ActionEvent actionEvent){
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Passcode Help"+"\n"+
+                "Passcode to set for a private match."+"\n"+
+                "Leave the passcode field blank in order for your match to be public."+"\n"+
+                "-- Rules --"+"\n"+
+                "Any string of size <64 characters is allowed, with permitted characters: [A-Za-z0-9_- ]";
+        JOptionPane.showMessageDialog(frame, message);
+    }
+    private JPanel searchPanel() {
+        JPanel searchPanel = new JPanel();
+        searchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        searchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridy = 0;
+        c.gridx = 0;
+
+        JPanel activitySearchBar = activitySearchBar();
+        searchPanel.add(activitySearchBar, c);
+        c.gridy += 1;
+        searchPanel.add(new JPanel(), c);
+        return searchPanel;
+    }
+    public void setSearchPanel(SearchMatches searchMatches){
+        JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
+        searchMatchPanel.removeAll();
+
+        searchMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        searchMatchPanel.setBackground(BACKGROUND_COLOR);
+        searchMatchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        searchMatchPanel.add(Box.createVerticalStrut(5),c);
+        c.gridy += 1;
+
+        if (searchMatches.getSearchMatches().size() == 0){
+            JPanel sMatch = new JPanel();
+            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
+            sMatch.setBackground(SUB_BACKGROUND_COLOR);
+            sMatch.setLayout(new GridBagLayout());
+            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            GridBagConstraints cMatch = new GridBagConstraints();
+            cMatch.weightx = 1;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.gridx = 0;
+            cMatch.gridy = 0;
+
+            JLabel no_matches_label = new JLabel("No Matches Found");
+            no_matches_label.setForeground(Color.red.darker().darker());
+            no_matches_label.setIcon(Icons.CANCEL_ICON);
+            no_matches_label.setToolTipText("No matches found with this current search, try again!");
+            no_matches_label.setFont(FontManager.getRunescapeBoldFont());
+
+            searchMatchPanel.add(no_matches_label, c);
+            return;
+        }
+
+        for (SearchMatchData match : searchMatches.getSearchMatches()){
+            JPanel sMatch = new JPanel();
+            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
+            sMatch.setBackground(SUB_BACKGROUND_COLOR);
+            sMatch.setLayout(new GridBagLayout());
+            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            GridBagConstraints cMatch = new GridBagConstraints();
+            cMatch.weightx = 1;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.gridx = 0;
+            cMatch.gridy = 0;
+
+            /// start match block
+            String activity = match.getActivity();
+            ActivityReference activityReference = ActivityReference.valueOf(activity);
+            ImageIcon activity_icon = activityReference.getIcon();
+            String activity_name = activityReference.getTooltip();
+
+            JLabel match_title = new JLabel(activity_name);
+            match_title.setIcon(activity_icon);
+            match_title.setFont(FontManager.getRunescapeBoldFont());
+            sMatch.add(match_title, cMatch);
+            cMatch.gridx = 1;
+
+            JLabel privateLabel = new JLabel();
+            if (match.getIsPrivate()){
+                privateLabel.setText("Private");
+                privateLabel.setIcon(Icons.PRIVATE_ICON);
+                privateLabel.setForeground(Color.yellow.darker().darker());
+            } else {
+                privateLabel.setText("Public");
+                privateLabel.setIcon(Icons.PUBLIC_ICON);
+                privateLabel.setForeground(Color.green.darker().darker());
+            }
+            privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+            privateLabel.setToolTipText("Match ID: "+ match.getId());
+            cMatch.anchor = GridBagConstraints.LINE_END;
+            cMatch.fill = GridBagConstraints.LINE_END;
+            sMatch.add(privateLabel,cMatch);
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.gridx = 0;
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(2), cMatch);
+            cMatch.gridy += 1;
+
+            String party_leader = match.getPartyLeader();
+            JLabel partyLeader_label = new JLabel(party_leader);
+            partyLeader_label.setIcon(Icons.YELLOW_PARTYHAT_ICON);
+            partyLeader_label.setToolTipText("The party leader");
+            sMatch.add(partyLeader_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            JLabel experience_label = new JLabel(match.getExperience());
+            experience_label.setIcon(Icons.EXPERIENCE_ICON);
+            experience_label.setToolTipText("Experience");
+            sMatch.add(experience_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            JLabel split_label = new JLabel(match.getSplitType());
+            split_label.setIcon(Icons.LOOTBAG_ICON);
+            split_label.setToolTipText("Loot Split");
+            sMatch.add(split_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            String account_string = match.getAccounts();
+            ImageIcon account_image = AccountTypeSelection.valueOf(account_string).getImage();
+            JLabel accounts_label = new JLabel(account_string);
+            accounts_label.setIcon(account_image);
+            accounts_label.setToolTipText("Accounts");
+            sMatch.add(accounts_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
+            cMatch.gridy += 1;
+
+            JLabel region_label = new JLabel(match.getRegions());
+            region_label.setIcon(Icons.WORLD_ICON);
+            region_label.setToolTipText("Match Region");
+            sMatch.add(region_label, cMatch);
+            cMatch.gridy += 1;
+
+            /// end match code
+            c.gridy += 1;
+            searchMatchPanel.add(Box.createVerticalStrut(5),c);
+            c.gridy += 1;
+
+            int v = 0;
+            if (match.getIsPrivate()){
+                v = 1;
+            }
+            sMatch.setName(match.getId()+":"+ v);
+            sMatch.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    JPanel panel = (JPanel) e.getSource();
+                    String name = panel.getName();
+                    String[] name_split = name.split(":");
+                    if (Objects.equals(name_split[1], "1")){
+                        plugin.privateMatchPasscode(name_split[0]);
+                    } else {
+                        plugin.publicMatchJoin(name_split[0]);
+                    }
                 }
-                break;
-            case BAD_RSN:
-            case BAD_DISCORD:
-            case BAD_TOKEN:
-            case BAD_HEADER:
-            case MAINTENANCE:
-            case REGISTERING:
-            case UNREACHABLE:
-            case AUTH_FAILURE:
-            case REGISTRATION_FAILURE:
-            case QUEUE_STARTED_FAILURE:
-            case QUEUE_CANCELED_FAILURE:
-                matchButtonManager(QueueButtonStatus.OFFLINE);
-                break;
-            case QUEUE_STARTED:
-                matchButtonManager(QueueButtonStatus.CANCEL_QUEUE);
-                break;
+            });
+            searchMatchPanel.add(sMatch, c);
         }
-    }
 
-    public void matchButtonManager(QueueButtonStatus state){
-        switch (state) {
-            case OFFLINE:
-                matchingButton.setText(state.getName());
-                matchingButton.setBackground(COLOR_DISABLED);
-                matchButton.setVisible(true);
-                acceptOrDeclineButtons.setVisible(false);
-                break;
-            case ONLINE:
-            case END_SESSION:
-                matchingButton.setText(state.getName());
-                matchingButton.setBackground(COLOR_INFO);
-                matchButton.setVisible(true);
-                acceptOrDeclineButtons.setVisible(false);
-                break;
-            case SELECT_ACTIVITY_MATCH:
-                matchingButton.setText(state.getName());
-                matchingButton.setBackground(COLOR_INPROGRESS);
-                matchButton.setVisible(true);
-                acceptOrDeclineButtons.setVisible(false);
-                break;
-            case START_QUEUE:
-                matchingButton.setText(state.getName());
-                matchingButton.setBackground(COLOR_COMPLETED);
-                matchButton.setVisible(true);
-                acceptOrDeclineButtons.setVisible(false);
-                break;
-            case CANCEL_QUEUE:
-                matchingButton.setText(state.getName());
-                matchingButton.setBackground(COLOR_WARNING);
-                matchButton.setVisible(true);
-                acceptOrDeclineButtons.setVisible(false);
-                break;
-            case ACCEPT_OR_DECLINE:
-                matchingButton.setText(state.getName());
-                matchingButton.setBackground(COLOR_INPROGRESS);
-                matchButton.setVisible(false);
-                acceptOrDeclineButtons.setVisible(true);
-                break;
-        }
+        searchMatchPanel.revalidate();
+        searchMatchPanel.repaint();
     }
-    private JPanel title(String title_text){
+    private JPanel activitySearchBar() {
+        JPanel searchbar_panel = new JPanel();
+        searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        searchbar_panel.setBackground(BACKGROUND_COLOR);
+        searchbar_panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        IconTextField searchBar = new IconTextField();
+        searchBar.setIcon(IconTextField.Icon.SEARCH);
+        searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
+        searchBar.setBackground(SUB_BACKGROUND_COLOR);
+        searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
+        searchBar.setText("*");
+        searchBar.addActionListener(plugin::searchActiveMatches);
+        searchbar_panel.add(searchBar, c);
+
+        return searchbar_panel;
+    }
+    private JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setFont(FontManager.getRunescapeBoldFont());
+        label_holder.add(label);
+        return label_holder;
+    }
+    private JPanel header(String title_text) {
+        JPanel label_holder = new JPanel();
+        JLabel label = new JLabel(title_text);
+        label.setHorizontalAlignment(JLabel.LEFT);
+        label.setFont(FontManager.getRunescapeSmallFont());
+        label_holder.add(label);
+        return label_holder;
+    }
+    private JPanel instructionTitle(String title_text) {
+        JPanel label_holder = new JPanel();
+        JLabel label = new JLabel(title_text);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setFont(FontManager.getRunescapeBoldFont());
+        label.setForeground(Color.green.darker());
         label_holder.add(label);
         return label_holder;
     }

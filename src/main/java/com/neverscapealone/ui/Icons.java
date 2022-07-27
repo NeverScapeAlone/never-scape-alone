@@ -1,18 +1,21 @@
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
+
 import javax.swing.ImageIcon;
+
 import net.runelite.client.util.ImageUtil;
 
 import java.util.Objects;
 
-public class Icons
-{
+public class Icons {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
 
     // web links and references
-
+    public static final ImageIcon WORLD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/world.png"));
+    public static final ImageIcon HELP_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/help.png"));
     public static final ImageIcon ACCEPT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Checkmark.png"));
+    public static final ImageIcon LOGOUT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/logout.png"));
     public static final ImageIcon CANCEL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Xmark.png"));
     public static final ImageIcon UNDO_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/undo.png"));
     public static final ImageIcon RESET_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/reset.png"));
@@ -31,6 +34,15 @@ public class Icons
     public static final ImageIcon RUNEWATCH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runewatch.png"));
     public static final ImageIcon WDR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/wdr_symbol.png"));
 
+    // account flags
+    public static final ImageIcon IM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/IM.png"));
+    public static final ImageIcon HCIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/HCIM.png"));
+    public static final ImageIcon UIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/UIM.png"));
+    public static final ImageIcon GIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/GIM.png"));
+    public static final ImageIcon HCGIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/HCGIM.png"));
+    public static final ImageIcon UGIM_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/UGIM.png"));
+
+
     // region flags
 
     public static final ImageIcon US_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/us.png"));
@@ -44,6 +56,17 @@ public class Icons
     public static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/error.png"));
     public static final ImageIcon SPINNER_GIF = new ImageIcon("/loading_spinner_darker.gif");
     public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
+
+    // other
+
+    public static final ImageIcon FILTER_FULL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/filter_full.png"));
+    public static final ImageIcon FILTER_EMPTY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/filter_empty.png"));
+    public static final ImageIcon PRIVATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/private.png"));
+    public static final ImageIcon PUBLIC_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/public.png"));
+    public static final ImageIcon EXPERIENCE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/experience.png"));
+    public static final ImageIcon LIGHTBULB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/lightbulb.png"));
+    public static final ImageIcon LOOTBAG_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/lootbag.png"));
+    public static final ImageIcon YELLOW_PARTYHAT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/yellow_partyhat.png"));
 
     // "skill", "boss", "minigame", "misc", "solo", "raids"
     // SKILLS
@@ -70,7 +93,7 @@ public class Icons
     public static final ImageIcon RUNECRAFTING = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runecrafting.png"));
     public static final ImageIcon HUNTER = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/hunter.png"));
     public static final ImageIcon CONSTRUCTION = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/construction.png"));
-    public static final ImageIcon ALL_SKILLS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS,"/all_skills.png"));
+    public static final ImageIcon ALL_SKILLS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/all_skills.png"));
 
     // SOLO
     public static final ImageIcon ABYSSAL_SIRE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/abyssalsire.png"));
@@ -166,4 +189,17 @@ public class Icons
     public static final ImageIcon CLUES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/cluescrollsall.png"));
     public static final ImageIcon FALADOR_PARTY_ROOM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/faladorpartyroom.png"));
     public static final ImageIcon PVP_GENERIC = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/wilderness.png"));
+    public static final ImageIcon CHAT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/chat.png"));
+    public static final ImageIcon QUEST = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/quest.png"));
+    public static final ImageIcon DIARY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/diary.png"));
+    public static final ImageIcon FAVOR = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/favor.png"));
+    public static final ImageIcon CA1 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca1.png"));
+    public static final ImageIcon CA2 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca2.png"));
+    public static final ImageIcon CA3 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca3.png"));
+    public static final ImageIcon CA4 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca4.png"));
+    public static final ImageIcon CA5 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca5.png"));
+    public static final ImageIcon CA6 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca6.png"));
+    public static final ImageIcon ALL_COMBAT_ACHIEVEMENTS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/combat_achievements.png"));
+    public static final ImageIcon F2P = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/f2p.png"));
+
 }
