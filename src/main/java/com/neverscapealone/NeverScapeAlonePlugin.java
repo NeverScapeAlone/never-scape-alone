@@ -7,8 +7,10 @@ import com.neverscapealone.ui.NeverScapeAlonePanel;
 import jdk.nashorn.internal.runtime.JSONListAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -128,6 +130,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent){
+        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
             return;
@@ -140,14 +143,12 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonObject create_request = new JsonObject();
         create_request.addProperty("detail","quick_match");
         create_request.add("match_list", jsonArray);
-        System.out.println(create_request);
-        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         websocket.send(create_request);
         panel.connectingPanelManager();
     }
-
     @Subscribe
     public void onGameTick(GameTick gameTick){
+
         switch (client.getGameState()){
             case LOGGED_IN:
                 username = client.getLocalPlayer().getName();

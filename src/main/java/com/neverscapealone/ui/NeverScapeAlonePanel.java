@@ -500,7 +500,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 player_status.setBorder(new EmptyBorder(5, 0, 5, 0));
                 player_status.setBackground(SUB_BACKGROUND_COLOR);
                 player_status.setLayout(new GridBagLayout());
-                player_status.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
                 GridBagConstraints cs = new GridBagConstraints();
                 cs.weightx = 1;
                 cs.fill = GridBagConstraints.HORIZONTAL;
