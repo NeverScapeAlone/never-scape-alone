@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 public class NeverScapeAloneWebsocket extends WebSocketListener {
     private static final int NORMAL_CLOSURE = 1000;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final HttpUrl BASE_HTTP = HttpUrl.parse(System.getProperty("NeverScapeAloneAPIPath", "ws://touchgrass.online:5000/V2/lobby"));
+    private static final HttpUrl BASE_HTTP = HttpUrl.parse(System.getProperty("NeverScapeAloneAPIPath", "http://touchgrass.online:5500/V2/lobby"));
     private static final Supplier<String> CURRENT_EPOCH_SUPPLIER = () -> String.valueOf(Instant.now().getEpochSecond());
     @Inject
     private OkHttpClient okHttpClient;
@@ -128,7 +128,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     @Override
     public void onClosing(WebSocket webSocket, int code, String reason) {
         webSocket.close(NORMAL_CLOSURE, null);
-        System.out.println("Closing: " + code + " " + reason);
     }
 
     @Override

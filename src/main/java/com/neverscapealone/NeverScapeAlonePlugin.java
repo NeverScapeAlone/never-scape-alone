@@ -3,11 +3,14 @@ package com.neverscapealone;
 import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.ui.Icons;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -17,6 +20,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,7 +53,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     private ChatMessageManager chatMessageManager;
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
-    public String username = "Ferrariic";
+    public String username = "";
     public Integer timer = 0;
 
     // garbage variable dump
@@ -127,6 +131,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent){
+        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
             return;
@@ -139,14 +144,12 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonObject create_request = new JsonObject();
         create_request.addProperty("detail","quick_match");
         create_request.add("match_list", jsonArray);
-        System.out.println(create_request);
-        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         websocket.send(create_request);
         panel.connectingPanelManager();
     }
-
     @Subscribe
     public void onGameTick(GameTick gameTick){
+
         switch (client.getGameState()){
             case LOGGED_IN:
                 username = client.getLocalPlayer().getName();
@@ -299,10 +302,14 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void searchActiveMatches(ActionEvent actionEvent){
+        panel.searchBar.setEditable(false);
+        panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
         websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0)
         {
+            panel.searchBar.setEditable(true);
+            panel.searchBar.setIcon(IconTextField.Icon.SEARCH);
             return;
         }
         JsonObject search_request = new JsonObject();

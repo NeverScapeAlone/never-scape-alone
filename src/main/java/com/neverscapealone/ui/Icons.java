@@ -51,7 +51,6 @@ public class Icons {
     // status icons
     public static final ImageIcon WARNING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/warning.png"));
     public static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/error.png"));
-    public static final ImageIcon SPINNER_GIF = new ImageIcon("/loading_spinner_darker.gif");
     public static final ImageIcon WAITING_ICON = new ImageIcon("/waiting.png");
 
     // other
