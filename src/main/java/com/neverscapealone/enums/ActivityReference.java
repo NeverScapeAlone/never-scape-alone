@@ -3,7 +3,6 @@ package com.neverscapealone.enums;
 import com.neverscapealone.ui.Icons;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.runelite.client.util.ImageUtil;
 
 import javax.swing.*;
 

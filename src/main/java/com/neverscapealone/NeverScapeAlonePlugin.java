@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
-import jdk.nashorn.internal.runtime.JSONListAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;

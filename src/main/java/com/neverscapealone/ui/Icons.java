@@ -1,12 +1,9 @@
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-
-import javax.swing.ImageIcon;
-
 import net.runelite.client.util.ImageUtil;
 
-import java.util.Objects;
+import javax.swing.*;
 
 public class Icons {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
