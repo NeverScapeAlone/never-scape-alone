@@ -96,9 +96,8 @@ public class NeverScapeAlonePlugin extends Plugin {
         log.info("NeverScapeAlone stopped!");
     }
 
-
-    @Schedule(period=1, unit=ChronoUnit.SECONDS, asynchronous=true)
-    public void timer(){
+    @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void timer() {
         if (!panel.isConnecting) {
             timer = 0;
             return;
@@ -127,7 +126,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         return formattedTime;
     }
 
-    public void quickMatchQueueStart(ActionEvent actionEvent){
+    public void quickMatchQueueStart(ActionEvent actionEvent) {
         websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
@@ -139,15 +138,16 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonArray jsonArray = (JsonArray) jsonElement;
 
         JsonObject create_request = new JsonObject();
-        create_request.addProperty("detail","quick_match");
+        create_request.addProperty("detail", "quick_match");
         create_request.add("match_list", jsonArray);
         websocket.send(create_request);
         panel.connectingPanelManager();
     }
-    @Subscribe
-    public void onGameTick(GameTick gameTick){
 
-        switch (client.getGameState()){
+    @Subscribe
+    public void onGameTick(GameTick gameTick) {
+
+        switch (client.getGameState()) {
             case LOGGED_IN:
                 username = client.getLocalPlayer().getName();
                 Integer health = client.getBoostedSkillLevel(Skill.HITPOINTS);
@@ -156,12 +156,12 @@ public class NeverScapeAlonePlugin extends Plugin {
                 Integer base_prayer = client.getRealSkillLevel(Skill.PRAYER);
                 Integer run_energy = client.getEnergy();
 
-                if (username.equals(old_username)&
-                    health.equals(old_health)&
-                    base_health.equals(old_base_health)&
-                    prayer.equals(old_prayer)&
-                    base_prayer.equals(old_base_prayer)&
-                    run_energy.equals(old_run_energy)) {
+                if (username.equals(old_username) &
+                        health.equals(old_health) &
+                        base_health.equals(old_base_health) &
+                        prayer.equals(old_prayer) &
+                        base_prayer.equals(old_base_prayer) &
+                        run_energy.equals(old_run_energy)) {
                     return;
                 }
 
@@ -172,9 +172,9 @@ public class NeverScapeAlonePlugin extends Plugin {
                 old_base_prayer = base_prayer;
                 old_run_energy = run_energy;
 
-                if (websocket.getGroupID().equals("0")){
+                if (websocket.getGroupID().equals("0")) {
                     return;
-                };
+                }
 
                 JsonObject status_payload = new JsonObject();
                 status_payload.addProperty("username", username);
@@ -182,10 +182,10 @@ public class NeverScapeAlonePlugin extends Plugin {
                 status_payload.addProperty("base_hp", base_health);
                 status_payload.addProperty("prayer", prayer);
                 status_payload.addProperty("base_prayer", base_prayer);
-                status_payload.addProperty("run_energy",run_energy);
+                status_payload.addProperty("run_energy", run_energy);
 
                 JsonObject create_request = new JsonObject();
-                create_request.addProperty("detail","set_status");
+                create_request.addProperty("detail", "set_status");
                 create_request.add("status", status_payload);
 
                 websocket.send(create_request);
@@ -193,39 +193,39 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
-    public void privateMatchPasscode(String matchID){
+    public void privateMatchPasscode(String matchID) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "ID: "+matchID+"\n"+"Enter passcode for Private Match:";
+        String message = "ID: " + matchID + "\n" + "Enter passcode for Private Match:";
         String passcode = JOptionPane.showInputDialog(frame, message);
-        if (passcode.length() > 0){
+        if (passcode.length() > 0) {
             privateMatchJoin(matchID, passcode);
         }
     }
 
-    public void privateMatchJoin(String matchID, String passcode){
+    public void privateMatchJoin(String matchID, String passcode) {
         websocket.connect(username, config.discordUsername(), config.authToken(), matchID, passcode);
         panel.connectingPanelManager();
     }
 
-    public void publicMatchJoin(String matchID){
+    public void publicMatchJoin(String matchID) {
         websocket.connect(username, config.discordUsername(), config.authToken(), matchID, null);
         panel.connectingPanelManager();
     }
 
-    public void createMatchStart(ActionEvent actionEvent){
+    public void createMatchStart(ActionEvent actionEvent) {
         String activity = panel.step1_activity;
         String party_members = panel.party_member_count.getText();
         String experience = panel.experience_level.getSelectedItem().toString();
-        String split_type =  panel.party_loot.getSelectedItem().toString();
-        String accounts =  panel.account_type.getSelectedItem().toString();
+        String split_type = panel.party_loot.getSelectedItem().toString();
+        String accounts = panel.account_type.getSelectedItem().toString();
         String regions = panel.region.getSelectedItem().toString();
         String group_passcode = panel.passcode.getText();
 
         String converted_party_size = convertInput(party_members);
         Pattern p = Pattern.compile("[0-9<>=&|]*");
         Matcher m = p.matcher(converted_party_size);
-        if (m.matches()){
+        if (m.matches()) {
             panel.party_member_count.setBackground(Color.green.darker().darker().darker());
             panel.party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
         } else {
@@ -234,7 +234,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
 
-        if (checkPasscode(group_passcode)){
+        if (checkPasscode(group_passcode)) {
             panel.passcode.setBackground(Color.green.darker().darker().darker());
             panel.passcode.setToolTipText("Input your group passcode here.");
         } else {
@@ -250,67 +250,66 @@ public class NeverScapeAlonePlugin extends Plugin {
         sub_request.addProperty("party_members", party_members);
         sub_request.addProperty("experience", experience);
         sub_request.addProperty("split_type", split_type);
-        sub_request.addProperty("accounts",accounts);
-        sub_request.addProperty("regions",regions);
+        sub_request.addProperty("accounts", accounts);
+        sub_request.addProperty("regions", regions);
         sub_request.addProperty("group_passcode", group_passcode);
 
         JsonObject create_request = new JsonObject();
-        create_request.addProperty("detail","create_match");
+        create_request.addProperty("detail", "create_match");
         create_request.add("create_match", sub_request);
 
         websocket.send(create_request);
     }
 
-    public Boolean checkPasscode(String group_passcode){
+    public Boolean checkPasscode(String group_passcode) {
         Pattern p = Pattern.compile("^[A-Za-z0-9-_ ]{0,64}$");
         Matcher m = p.matcher(group_passcode);
         return m.matches();
     }
 
-    public String convertInput(String text){
+    public String convertInput(String text) {
         text = text.replaceAll("\\s", "");
         text = text.toLowerCase();
         // ex. [2,5] -> >=2&<=5
-        text = text.replaceAll("(\\[)([0-9]{1,3})(,)([0-9]{1,3})(])",">=$2&<=$4");
+        text = text.replaceAll("(\\[)([0-9]{1,3})(,)([0-9]{1,3})(])", ">=$2&<=$4");
         // ex. (2,5] -> >2&<=5
-        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\])",">$2&<=$4");
+        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\])", ">$2&<=$4");
         // ex. [2,5) -> >=2&<5
-        text = text.replaceAll("(\\[){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))",">=$2&<$4");
+        text = text.replaceAll("(\\[){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))", ">=$2&<$4");
         // ex. (2,5) -> >2&<5
-        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))",">$2&<$4");
+        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))", ">$2&<$4");
         // ex. (between*) 100 and 145 -> >=100&<=145
-        text = text.replaceAll("(between){0,1}([0-9]{1,3})(to|-|&|and)([0-9]{1,3})",">=$2&<=$4");
+        text = text.replaceAll("(between){0,1}([0-9]{1,3})(to|-|&|and)([0-9]{1,3})", ">=$2&<=$4");
         // ex. lt4 -> <4
-        text = text.replaceAll("(lessthan|lt|-lt|<){1}([0-9]{1,3})","<$2");
+        text = text.replaceAll("(lessthan|lt|-lt|<){1}([0-9]{1,3})", "<$2");
         // ex. max5 -> <=5
-        text = text.replaceAll("(max|maximum|le|-le|<=){1}([0-9]{1,3})","<=$2");
+        text = text.replaceAll("(max|maximum|le|-le|<=){1}([0-9]{1,3})", "<=$2");
         // ex. greaterthan20 -> >20
-        text = text.replaceAll("(greaterthan|gt|-gt|>){1}([0-9]{1,3})",">$2");
+        text = text.replaceAll("(greaterthan|gt|-gt|>){1}([0-9]{1,3})", ">$2");
         // ex. min50 -> >=50
-        text = text.replaceAll("(min|minimum|ge|-ge|>=){1}([0-9]{1,3})",">=$2");
+        text = text.replaceAll("(min|minimum|ge|-ge|>=){1}([0-9]{1,3})", ">=$2");
         // ex. 5+ -> >=5
-        text = text.replaceAll("([0-9]{1,3})([+]{1})",">=$1");
+        text = text.replaceAll("([0-9]{1,3})([+]{1})", ">=$1");
         // ex. 'and' -> &
-        text = text.replaceAll("(and){1}","&");
+        text = text.replaceAll("(and){1}", "&");
         // ex. 'or' -> ||
-        text = text.replaceAll("(or){1}","||");
+        text = text.replaceAll("(or){1}", "||");
 
         return text;
     }
 
-    public void searchActiveMatches(ActionEvent actionEvent){
+    public void searchActiveMatches(ActionEvent actionEvent) {
         panel.searchBar.setEditable(false);
         panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
         websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
-        if (target.length() <= 0)
-        {
+        if (target.length() <= 0) {
             panel.searchBar.setEditable(true);
             panel.searchBar.setIcon(IconTextField.Icon.SEARCH);
             return;
         }
         JsonObject search_request = new JsonObject();
-        search_request.addProperty("detail","search_match");
+        search_request.addProperty("detail", "search_match");
         search_request.addProperty("search", target);
         websocket.send(search_request);
     }
