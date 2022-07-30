@@ -36,15 +36,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.discord.DiscordPresence;
+import net.runelite.client.discord.DiscordService;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.WorldClient;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
+import net.runelite.client.ui.components.colorpicker.RuneliteColorPicker;
 import net.runelite.client.util.LinkBrowser;
+import net.runelite.http.api.worlds.World;
+import net.runelite.http.api.worlds.WorldRegion;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -478,12 +485,47 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 player_panel.add(discord_label, cp);
                 cp.gridy += 1;
             }
+
+            if (player.getLocation() != null) {
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy += 1;
+
+                JPanel player_location = new JPanel();
+                player_location.setBorder(new EmptyBorder(0, 0, 0, 0));
+                player_location.setBackground(SUB_BACKGROUND_COLOR);
+                player_location.setLayout(new GridBagLayout());
+                GridBagConstraints cs = new GridBagConstraints();
+                cs.weightx = 1;
+                cs.fill = GridBagConstraints.HORIZONTAL;
+                cs.anchor = GridBagConstraints.CENTER;
+                cs.gridx = 0;
+                cs.gridy = 0;
+
+                int world = player.getLocation().getWorld();
+                int x = player.getLocation().getX();
+                int y = player.getLocation().getY();
+                int regionX = player.getLocation().getRegionX();
+                int regionY = player.getLocation().getRegionY();
+                int regionID = player.getLocation().getRegionID();
+                int plane = player.getLocation().getPlane();
+
+                JLabel world_label = new JLabel();
+                world_label.setText(String.valueOf(world));
+                world_label.setToolTipText("Player's current world.");
+                world_label.setIcon(Icons.WORLD_ICON);
+                cs.gridx = 1;
+                player_location.add(world_label, cs);
+
+                player_panel.add(player_location, cp);
+                cp.gridy += 1;
+            }
+
             if (player.getStatus() != null) {
                 player_panel.add(Box.createVerticalStrut(3));
                 cp.gridy += 1;
 
                 JPanel player_status = new JPanel();
-                player_status.setBorder(new EmptyBorder(5, 0, 5, 0));
+                player_status.setBorder(new EmptyBorder(0, 0, 0, 0));
                 player_status.setBackground(SUB_BACKGROUND_COLOR);
                 player_status.setLayout(new GridBagLayout());
                 GridBagConstraints cs = new GridBagConstraints();

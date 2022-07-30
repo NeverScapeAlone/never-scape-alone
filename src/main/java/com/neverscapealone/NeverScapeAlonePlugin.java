@@ -8,6 +8,7 @@ import com.neverscapealone.enums.SoundPing;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
+import com.sun.jna.Structure;
 import jdk.vm.ci.meta.Local;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -20,12 +21,14 @@ import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.discord.DiscordService;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.discord.DiscordPlugin;
 import net.runelite.client.plugins.party.messages.TilePing;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
@@ -33,6 +36,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.discord.DiscordUser;
 import net.runelite.http.api.worlds.World;
 import org.apache.commons.lang3.StringUtils;
 
@@ -78,13 +82,15 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Notifier notifier;
     @Inject
     private KeyManager keyManager;
-
     @Inject
     private EventBus eventBus;
+    @Inject
+    DiscordService discordService;
     public static NeverScapeAlonePanel panel;
     public static Boolean HotKeyPressed = false;
     private NavigationButton navButton;
     public String username = "";
+    public static String discordUsername = null;
     public Integer timer = 0;
     private static Integer old_x = 0;
     private static Integer old_y = 0;
@@ -120,6 +126,9 @@ public class NeverScapeAlonePlugin extends Plugin {
             configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.AUTH_TOKEN_KEY, USER_GENERATED_TOKEN);
         }
 
+        DiscordUser discordUser = discordService.getCurrentUser();
+        NeverScapeAlonePlugin.discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
+
         panel = injector.getInstance(NeverScapeAlonePanel.class);
         final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/tri-icon.png");
         navButton = NavigationButton.builder()
@@ -129,6 +138,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                 .priority(90)
                 .build();
         clientToolbar.addNavigation(navButton);
+
     }
 
     @Override
@@ -136,6 +146,8 @@ public class NeverScapeAlonePlugin extends Plugin {
         overlayManager.remove(overlay);
         mouseManager.unregisterMouseListener(mouseAdapter);
         keyManager.unregisterKeyListener(hotkeyListener);
+        clientToolbar.removeNavigation(navButton);
+
         log.info("NeverScapeAlone stopped!");
     }
 
@@ -241,7 +253,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent) {
-        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
             return;
@@ -357,12 +369,12 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void privateMatchJoin(String matchID, String passcode) {
-        websocket.connect(username, config.discordUsername(), config.authToken(), matchID, passcode);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), matchID, passcode);
         panel.connectingPanelManager();
     }
 
     public void publicMatchJoin(String matchID) {
-        websocket.connect(username, config.discordUsername(), config.authToken(), matchID, null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), matchID, null);
         panel.connectingPanelManager();
     }
 
@@ -396,7 +408,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         panel.connectingPanelManager();
-        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), "0", null);
 
         JsonObject sub_request = new JsonObject();
         sub_request.addProperty("activity", activity);
@@ -454,7 +466,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void searchActiveMatches(ActionEvent actionEvent) {
         panel.searchBar.setEditable(false);
         panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
-        websocket.connect(username, config.discordUsername(), config.authToken(), "0", null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0) {
             panel.searchBar.setEditable(true);

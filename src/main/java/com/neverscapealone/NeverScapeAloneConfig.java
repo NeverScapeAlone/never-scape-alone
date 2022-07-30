@@ -31,17 +31,6 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigItem(
             position = 1,
-            keyName = "discordUsername",
-            name = "Discord Username",
-            description = "Set your discord username here, this will allow you to be verified through the system.<br>You don't need to verify your discord,<br> however by doing so you will prevent scammers from using your ID.",
-            section = authSection
-    )
-    default String discordUsername() {
-        return "@UserName#0000";
-    }
-
-    @ConfigItem(
-            position = 2,
             keyName = AUTH_TOKEN_KEY,
             name = "Authentication Token",
             description = "Your authentication token for the plugin. Length 32 characters - automatically generated if cleared and the plugin is restarted.",
