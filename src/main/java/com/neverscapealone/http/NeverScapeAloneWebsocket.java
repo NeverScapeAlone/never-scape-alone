@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.enums.ServerMessage;
+import com.neverscapealone.enums.SoundPing;
+import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.model.Payload;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
@@ -84,6 +86,9 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     }
 
     public void send(JsonObject jsonObject){
+        if (socket == null){
+            return;
+        }
         socket.send(jsonObject.toString());
     }
 
@@ -106,13 +111,19 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 socket.close(1000, "Ending connection to join a new match");
                 connect(username, discord, token, groupID, passcode);
                 break;
+            case INCOMING_PING:
+                this.eventBus.post(payload.getPingData());
+                break;
             case DISCONNECTED:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
                 this.eventBus.post(new ServerMessage().buildServerMessage("You Were Disconnected"));
                 break;
             case BAD_PASSCODE:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
                 this.eventBus.post(new ServerMessage().buildServerMessage("Bad Match Passcode"));
                 break;
             case SUCCESSFUL_CONNECTION:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_JOIN));
             case MATCH_UPDATE:
                 this.eventBus.post(payload.getMatchData());
                 break;

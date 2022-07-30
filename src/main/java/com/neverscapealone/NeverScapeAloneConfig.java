@@ -1,9 +1,7 @@
 package com.neverscapealone;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
+import com.neverscapealone.enums.SoundEffectSelection;
+import net.runelite.client.config.*;
 
 @ConfigGroup(NeverScapeAloneConfig.CONFIG_GROUP)
 public interface NeverScapeAloneConfig extends Config {
@@ -19,15 +17,17 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigSection(
             position = 2,
-            name = "Match Settings",
-            description = "Select match up settings here."
+            name = "Interactive Settings",
+            description = "Select the interactive settings for the plugin."
     )
-    String matchSection = "matchSection";
+    String interactiveSettings = "interactiveSettings";
 
-
-	/*
-	Configuration items for each section
-	 */
+    @ConfigSection(
+            position = 2,
+            name = "Sound Settings",
+            description = "Plugin Sound Settings"
+    )
+    String soundSelection = "soundSelection";
 
     @ConfigItem(
             position = 1,
@@ -52,17 +52,90 @@ public interface NeverScapeAloneConfig extends Config {
     default String authToken() {
         return "";
     }
-//	@ConfigItem(
-//			position = 1,
-//			keyName = "verifiedUsers",
-//			name = "Verified Users",
-//			description = "Allow strict matching with Verified users of the plugin.",
-//			section = matchSection
-//	)
-//	default boolean verifiedPartners()
-//	{
-//		return false;
-//	}
+
+    @ConfigItem(
+            position = 1,
+            keyName = "hotkey",
+            name = "Ping Hotkey",
+            description = "Configures the Ping selection Hotkey",
+            section = interactiveSettings
+    )
+    default Keybind hotkey()
+    {
+        return Keybind.CTRL;
+    }
+
+    @ConfigItem(
+            position = 1,
+            keyName = "pingSoundEffect",
+            name = "Ping",
+            description = "The normal 'ping' sound effect.",
+            section = soundSelection
+    )
+    default SoundEffectSelection soundEffectPing()
+    {
+        return SoundEffectSelection.BELL_DING;
+    }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "alertPingSoundEffect",
+            name = "Ping Alert",
+            description = "The alert 'ping' sound effect.",
+            section = soundSelection
+    )
+    default SoundEffectSelection soundEffectAlertPing()
+    {
+        return SoundEffectSelection.BELL_DONG;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "matchJoinSound",
+            name = "Match Join",
+            description = "The sound when you join a match",
+            section = soundSelection
+    )
+    default SoundEffectSelection soundEffectMatchJoin()
+    {
+        return SoundEffectSelection.OPEN_DOOR;
+    }
+
+    @ConfigItem(
+            position = 4,
+            keyName = "matchCloseSound",
+            name = "Match Leave",
+            description = "The sound when you leave a match",
+            section = soundSelection
+    )
+    default SoundEffectSelection soundEffectMatchLeave()
+    {
+        return SoundEffectSelection.CLOSE_DOOR;
+    }
+
+    @ConfigItem(
+            position = 5,
+            keyName = "playerJoinSound",
+            name = "Player Join",
+            description = "The sound of a player joining the match",
+            section = soundSelection
+    )
+    default SoundEffectSelection soundEffectPlayerJoin()
+    {
+        return SoundEffectSelection.GE_INCREMENT;
+    }
+
+    @ConfigItem(
+            position = 6,
+            keyName = "playerLeaveSound",
+            name = "Player Leave",
+            description = "The sound of a player leaving the match",
+            section = soundSelection
+    )
+    default SoundEffectSelection soundEffectPlayerLeave()
+    {
+        return SoundEffectSelection.GE_DECREMENT;
+    }
 
 }
 

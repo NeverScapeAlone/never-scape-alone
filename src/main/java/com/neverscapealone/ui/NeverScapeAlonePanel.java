@@ -571,6 +571,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 options,
                 options[1]);
         if (n == 0) {
+            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
             websocket.logoff("Exiting match");
             quickPanelManager(actionEvent);
         }

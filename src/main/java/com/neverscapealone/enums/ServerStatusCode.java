@@ -16,6 +16,8 @@ public enum ServerStatusCode {
     @SerializedName("global message")
     GLOBAL_MESSAGE,
     @SerializedName("search match data")
-    SEARCH_MATCH_DATA;
+    SEARCH_MATCH_DATA,
+    @SerializedName("incoming ping")
+    INCOMING_PING;
 }
 

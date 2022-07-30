@@ -2,23 +2,38 @@ package com.neverscapealone;
 
 import com.google.gson.*;
 import com.google.inject.Provides;
+import com.neverscapealone.enums.AccountTypeSelection;
+import com.neverscapealone.enums.PingData;
+import com.neverscapealone.enums.SoundPing;
+import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
+import jdk.vm.ci.meta.Local;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.Skill;
+import net.runelite.api.*;
+import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.vars.AccountType;
+import net.runelite.client.Notifier;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.input.KeyManager;
+import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.party.messages.TilePing;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.components.IconTextField;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.http.api.worlds.World;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -30,6 +45,7 @@ import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +55,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private Client client;
     @Inject
+    private ClientThread clientThread;
+    @Inject
     private ConfigManager configManager;
     @Inject
     private ClientToolbar clientToolbar;
@@ -46,12 +64,30 @@ public class NeverScapeAlonePlugin extends Plugin {
     private NeverScapeAloneConfig config;
     @Inject
     private NeverScapeAloneWebsocket websocket;
+    @Inject
+    private NeverScapeAloneOverlay overlay;
+    @Inject
+    private NeverScapeAloneHotkeyListener hotkeyListener;
+    @Inject
+    private NeverScapeAloneMouseAdapter mouseAdapter;
+    @Inject
+    private OverlayManager overlayManager;
+    @Inject
+    private MouseManager mouseManager;
+    @Inject
+    private Notifier notifier;
+    @Inject
+    private KeyManager keyManager;
+
+    @Inject
     private EventBus eventBus;
-    private ChatMessageManager chatMessageManager;
     public static NeverScapeAlonePanel panel;
+    public static Boolean HotKeyPressed = false;
     private NavigationButton navButton;
     public String username = "";
     public Integer timer = 0;
+    private static Integer old_x = 0;
+    private static Integer old_y = 0;
 
     // garbage variable dump
     private String old_username = "";
@@ -75,6 +111,10 @@ public class NeverScapeAlonePlugin extends Plugin {
 
         log.info("NeverScapeAlone started!");
 
+        overlayManager.add(overlay);
+        mouseManager.registerMouseListener(mouseAdapter);
+        keyManager.registerKeyListener(hotkeyListener);
+
         if (StringUtils.isBlank(config.authToken())) {
             String USER_GENERATED_TOKEN = generateNewToken();
             configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.AUTH_TOKEN_KEY, USER_GENERATED_TOKEN);
@@ -93,7 +133,45 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Override
     protected void shutDown() throws Exception {
+        overlayManager.remove(overlay);
+        mouseManager.unregisterMouseListener(mouseAdapter);
+        keyManager.unregisterKeyListener(hotkeyListener);
         log.info("NeverScapeAlone stopped!");
+    }
+
+    @Subscribe
+    public void onPingData(PingData pingdata){
+        pingTile(pingdata);
+    }
+
+    @Subscribe
+    public void onSoundPing(SoundPing soundPing) {
+        switch(soundPing.getSound()){
+            case NORMAL_PING:
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPing().getID()));
+                break;
+            case HEAVY_PING:
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectAlertPing().getID()));
+                break;
+            case MATCH_JOIN:
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchJoin().getID()));
+                break;
+            case MATCH_LEAVE:
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchLeave().getID()));
+                break;
+            case PLAYER_JOIN:
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerJoin().getID()));
+                break;
+            case PLAYER_LEAVE:
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerLeave().getID()));
+                break;
+        }
+    }
+
+    private void pingTile(PingData pingData){
+        WorldPoint point = WorldPoint.fromRegion(pingData.getRegionID(), pingData.getRegionX(), pingData.getRegionY(), pingData.getPlane());
+        client.setHintArrow(point);
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.NORMAL_PING));
     }
 
     @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
@@ -105,6 +183,42 @@ public class NeverScapeAlonePlugin extends Plugin {
         String timer_string = "Queue Time: " + formatSeconds(timer);
         panel.setConnectingPanelQueueTime(timer_string);
         timer += 1;
+    }
+
+    public void Ping(){
+        if (websocket == null){
+            return; // return if no websocket
+        }
+        Tile ping_tile = client.getSelectedSceneTile();
+        if (ping_tile == null){
+            return; // return if no tile selected
+        }
+        WorldPoint wp = ping_tile.getWorldLocation();
+        Integer x = wp.getX();
+        Integer y = wp.getY();
+        Integer regionX = wp.getRegionX();
+        Integer regionY = wp.getRegionY();
+        Integer regionID = wp.getRegionID();
+        Integer plane = wp.getPlane();
+
+        if ((Objects.equals(NeverScapeAlonePlugin.old_x, x)) & (Objects.equals(NeverScapeAlonePlugin.old_y, y))){
+            return;
+        }
+        NeverScapeAlonePlugin.old_x = x;
+        NeverScapeAlonePlugin.old_y = y;
+
+        JsonObject create_request = new JsonObject();
+        JsonObject ping_payload = new JsonObject();
+        ping_payload.addProperty("username",username);
+        ping_payload.addProperty("x", x);
+        ping_payload.addProperty("y", y);
+        ping_payload.addProperty("regionX", regionX);
+        ping_payload.addProperty("regionY", regionY);
+        ping_payload.addProperty("regionID", regionID);
+        ping_payload.addProperty("plane", plane);
+        create_request.addProperty("detail","ping");
+        create_request.add("ping_payload",ping_payload);
+        websocket.send(create_request);
     }
 
     public static String formatSeconds(int timeInSeconds) {
@@ -142,6 +256,45 @@ public class NeverScapeAlonePlugin extends Plugin {
         create_request.add("match_list", jsonArray);
         websocket.send(create_request);
         panel.connectingPanelManager();
+    }
+
+    @Schedule(period = 10, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void playerLocationUpdate(){
+        if (client.getGameState() != GameState.LOGGED_IN){
+            return;
+        }
+        if (websocket == null){
+            return;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+
+        Player player = client.getLocalPlayer();
+        int world = client.getWorld();
+
+        WorldPoint wp = player.getWorldLocation();
+        int y = wp.getY();
+        int x = wp.getX();
+        int regionX = wp.getRegionX();
+        int regionY = wp.getRegionY();
+        int regionID = wp.getRegionID();
+        int plane = wp.getPlane();
+
+        JsonObject sub_payload = new JsonObject();
+        sub_payload.addProperty("y", y);
+        sub_payload.addProperty("x", x);
+        sub_payload.addProperty("regionX", regionX);
+        sub_payload.addProperty("regionY", regionY);
+        sub_payload.addProperty("regionID", regionID);
+        sub_payload.addProperty("plane", plane);
+        sub_payload.addProperty("world", world);
+
+        JsonObject location_payload = new JsonObject();
+        location_payload.addProperty("detail","player_location");
+        location_payload.add("location", sub_payload);
+
+        websocket.send(location_payload);
     }
 
     @Subscribe

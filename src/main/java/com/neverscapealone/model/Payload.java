@@ -1,10 +1,7 @@
 package com.neverscapealone.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.neverscapealone.enums.MatchData;
-import com.neverscapealone.enums.SearchMatches;
-import com.neverscapealone.enums.ServerMessage;
-import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.enums.*;
 import lombok.Builder;
 import lombok.Value;
 
@@ -23,5 +20,7 @@ public class Payload {
     SearchMatches search;
     @SerializedName("match_data") // data regarding the match itself
     MatchData matchData;
+    @SerializedName("ping_data") // incoming ping data
+    PingData pingData;
 }
 

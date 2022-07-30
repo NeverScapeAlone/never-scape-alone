@@ -10,6 +10,9 @@ public class Player {
     @SerializedName("stats")
     @Expose
     private Stats stats;
+    @SerializedName("location")
+    @Expose
+    private Location location;
     @SerializedName("status")
     @Expose
     private Status status;
@@ -57,6 +60,20 @@ public class Player {
         this.stats = stats;
         return this;
     }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Player withLocation(Location location) {
+        this.location = location;
+        return this;
+    }
+
 
     public Status getStatus() {
         return status;
