@@ -32,20 +32,21 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import com.neverscapealone.enums.PingData;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import net.runelite.api.Client;
-import net.runelite.api.Perspective;
-import net.runelite.api.Player;
-import net.runelite.api.Point;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.eventbus.EventBus;
@@ -110,8 +111,7 @@ public class NeverScapeAloneOverlay extends Overlay
         return null;
     }
 
-    private void renderPing(final Graphics2D graphics, PingData pingData)
-    {
+    private void renderPing(final Graphics2D graphics, PingData pingData) {
         final LocalPoint localPoint = LocalPoint.fromWorld(client, pingData.getX(), pingData.getY());
 
         if (localPoint == null)
@@ -127,6 +127,10 @@ public class NeverScapeAloneOverlay extends Overlay
         }
 
         Color color = new Color(pingData.getColorR(), pingData.getColorG(), pingData.getColorB(), pingData.getColorAlpha());
+        String ping_user = pingData.getUsername();
+
         OverlayUtil.renderPolygon(graphics, poly, color);
+        Point p = Perspective.getCanvasTextLocation(client, graphics, localPoint, ping_user, 1);
+        OverlayUtil.renderTextLocation(graphics, p, ping_user, color);
     }
 }

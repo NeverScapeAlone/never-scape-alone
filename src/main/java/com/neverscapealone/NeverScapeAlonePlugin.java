@@ -179,13 +179,18 @@ public class NeverScapeAlonePlugin extends Plugin {
         overlayManager.remove(overlay);
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
-
+        client.clearHintArrow();
         log.info("NeverScapeAlone stopped!");
     }
 
     @Subscribe
     public void onPingData(PingData pingdata){
         NeverScapeAlonePlugin.pingDataArrayList.add(pingdata);
+        for(int x = NeverScapeAlonePlugin.pingDataArrayList.size(); x > config.maxPingCount(); x--)
+        {
+            NeverScapeAlonePlugin.pingDataArrayList.remove(0);
+        }
+
         if(pingdata.getIsAlert()){
             pingTile(pingdata);
         } else {
@@ -220,6 +225,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             case MATCH_LEAVE:
                 if (config.soundEffectMatchLeaveBool()){
                     clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchLeave().getID()));
+                    client.clearHintArrow();
                 }
                 break;
             case PLAYER_JOIN:
