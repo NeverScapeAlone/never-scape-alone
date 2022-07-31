@@ -444,6 +444,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
             player_panel.add(player_name, cp);
             cp.gridy += 1;
 
+            if (player.getDiscord() != null) {
+                player_panel.add(Box.createVerticalStrut(3));
+                cp.gridy += 1;
+
+                JLabel discord_label = new JLabel(player.getDiscord());
+                discord_label.setIcon(Icons.DISCORD_ICON);
+                discord_label.setFont(FontManager.getRunescapeFont());
+                player_panel.add(discord_label, cp);
+                cp.gridy += 1;
+            }
+
             if (player.getRunewatch() != null) {
                 player_panel.add(Box.createVerticalStrut(3));
                 cp.gridy += 1;
@@ -465,17 +476,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 wdr_label.setFont(FontManager.getRunescapeFont());
                 wdr_label.setForeground(Color.red.darker());
                 player_panel.add(wdr_label, cp);
-                cp.gridy += 1;
-            }
-
-            if (player.getDiscord() != null) {
-                player_panel.add(Box.createVerticalStrut(3));
-                cp.gridy += 1;
-
-                JLabel discord_label = new JLabel(player.getDiscord());
-                discord_label.setIcon(Icons.DISCORD_ICON);
-                discord_label.setFont(FontManager.getRunescapeFont());
-                player_panel.add(discord_label, cp);
                 cp.gridy += 1;
             }
 
