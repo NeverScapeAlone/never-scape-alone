@@ -36,22 +36,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.discord.DiscordPresence;
-import net.runelite.client.discord.DiscordService;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.WorldClient;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
-import net.runelite.client.ui.components.colorpicker.RuneliteColorPicker;
 import net.runelite.client.util.LinkBrowser;
-import net.runelite.http.api.worlds.World;
-import net.runelite.http.api.worlds.WorldRegion;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -511,10 +504,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
                 JLabel world_label = new JLabel();
                 world_label.setText(String.valueOf(world));
-                world_label.setToolTipText("Player's current world.");
+                world_label.setToolTipText("Player's current world");
                 world_label.setIcon(Icons.WORLD_ICON);
                 cs.gridx = 1;
                 player_location.add(world_label, cs);
+
+                JLabel coordinate_label = new JLabel();
+                coordinate_label.setText("("+String.valueOf(x)+", "+String.valueOf(y)+")");
+                coordinate_label.setToolTipText("Player's current coordinate");
+                coordinate_label.setIcon(Icons.COORDINATE_ICON);
+                cs.gridx = 2;
+                player_location.add(coordinate_label, cs);
 
                 player_panel.add(player_location, cp);
                 cp.gridy += 1;

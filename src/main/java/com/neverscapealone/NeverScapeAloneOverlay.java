@@ -32,23 +32,24 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import javax.inject.Inject;
 
 import com.neverscapealone.enums.PingData;
+import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.grounditems.config.DespawnTimerMode;
 import static net.runelite.client.plugins.grounditems.config.ItemHighlightMode.MENU;
 import static net.runelite.client.plugins.grounditems.config.ItemHighlightMode.NONE;
@@ -68,20 +69,44 @@ public class NeverScapeAloneOverlay extends Overlay
     private final Client client;
     private final NeverScapeAlonePlugin plugin;
     private final NeverScapeAloneConfig config;
+    private final NeverScapeAloneWebsocket websocket;
 
     @Inject
-    private NeverScapeAloneOverlay(Client client, NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config)
+    private EventBus eventBus;
+
+    @Inject
+    private NeverScapeAloneOverlay(Client client, NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config, NeverScapeAloneWebsocket websocket)
     {
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
         this.client = client;
         this.plugin = plugin;
         this.config = config;
+        this.websocket = websocket;
     }
+
 
     @Override
     public Dimension render(Graphics2D graphics)
     {
+        if (!NeverScapeAloneWebsocket.isSocketConnected){
+            NeverScapeAlonePlugin.pingDataArrayList = new ArrayList<>();
+            // if the socket isn't connected, don't draw anything
+            return null;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            // if we're only connected to main lobby, don't draw anything
+            return null;
+        }
+        ArrayList<PingData> pingDataArrayList = NeverScapeAlonePlugin.pingDataArrayList;
+        if (pingDataArrayList == null || pingDataArrayList.size() == 0){
+            return null;
+        }
+
+        for (PingData pingData : pingDataArrayList){
+            renderPing(graphics, pingData);
+        }
+
         return null;
     }
 
@@ -101,7 +126,7 @@ public class NeverScapeAloneOverlay extends Overlay
             return;
         }
 
-        final Color color = Color.CYAN;
+        Color color = new Color(pingData.getColorR(), pingData.getColorG(), pingData.getColorB(), pingData.getColorAlpha());
         OverlayUtil.renderPolygon(graphics, poly, color);
     }
 }

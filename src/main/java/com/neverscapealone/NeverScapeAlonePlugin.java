@@ -1,3 +1,28 @@
+/*
+ * Copyright (c) 2022, Ferrariic <ferrariictweet@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.neverscapealone;
 
 import com.google.gson.*;
@@ -29,7 +54,9 @@ import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.discord.DiscordPlugin;
+import net.runelite.client.plugins.party.data.PartyData;
 import net.runelite.client.plugins.party.messages.TilePing;
+import net.runelite.client.plugins.worldhopper.ping.Ping;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -49,6 +76,7 @@ import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,8 +101,6 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private NeverScapeAloneHotkeyListener hotkeyListener;
     @Inject
-    private NeverScapeAloneMouseAdapter mouseAdapter;
-    @Inject
     private OverlayManager overlayManager;
     @Inject
     private MouseManager mouseManager;
@@ -87,10 +113,10 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     DiscordService discordService;
     public static NeverScapeAlonePanel panel;
-    public static Boolean HotKeyPressed = false;
     private NavigationButton navButton;
     public String username = "";
     public static String discordUsername = null;
+    public static String discord_id = null;
     public Integer timer = 0;
     private static Integer old_x = 0;
     private static Integer old_y = 0;
@@ -103,6 +129,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Integer old_base_prayer = 0;
     private Integer old_run_energy = 0;
 
+    //
+    public static ArrayList<PingData> pingDataArrayList = new ArrayList<PingData>();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -118,7 +146,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         log.info("NeverScapeAlone started!");
 
         overlayManager.add(overlay);
-        mouseManager.registerMouseListener(mouseAdapter);
         keyManager.registerKeyListener(hotkeyListener);
 
         if (StringUtils.isBlank(config.authToken())) {
@@ -127,7 +154,13 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
 
         DiscordUser discordUser = discordService.getCurrentUser();
-        NeverScapeAlonePlugin.discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
+        if (discordUser == null){
+            NeverScapeAlonePlugin.discordUsername = "NULL";
+            NeverScapeAlonePlugin.discord_id = "NULL";
+        } else {
+            NeverScapeAlonePlugin.discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
+            NeverScapeAlonePlugin.discord_id = discordService.getCurrentUser().userId;
+        }
 
         panel = injector.getInstance(NeverScapeAlonePanel.class);
         final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/tri-icon.png");
@@ -144,7 +177,6 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Override
     protected void shutDown() throws Exception {
         overlayManager.remove(overlay);
-        mouseManager.unregisterMouseListener(mouseAdapter);
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
 
@@ -153,37 +185,59 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Subscribe
     public void onPingData(PingData pingdata){
-        pingTile(pingdata);
-    }
-
-    @Subscribe
-    public void onSoundPing(SoundPing soundPing) {
-        switch(soundPing.getSound()){
-            case NORMAL_PING:
-                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPing().getID()));
-                break;
-            case HEAVY_PING:
-                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectAlertPing().getID()));
-                break;
-            case MATCH_JOIN:
-                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchJoin().getID()));
-                break;
-            case MATCH_LEAVE:
-                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchLeave().getID()));
-                break;
-            case PLAYER_JOIN:
-                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerJoin().getID()));
-                break;
-            case PLAYER_LEAVE:
-                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerLeave().getID()));
-                break;
+        NeverScapeAlonePlugin.pingDataArrayList.add(pingdata);
+        if(pingdata.getIsAlert()){
+            pingTile(pingdata);
+        } else {
+            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.NORMAL_PING));
         }
     }
 
     private void pingTile(PingData pingData){
         WorldPoint point = WorldPoint.fromRegion(pingData.getRegionID(), pingData.getRegionX(), pingData.getRegionY(), pingData.getPlane());
         client.setHintArrow(point);
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.NORMAL_PING));
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ALERT_PING));
+    }
+
+    @Subscribe
+    public void onSoundPing(SoundPing soundPing) {
+        switch(soundPing.getSound()){
+            case NORMAL_PING:
+                if (config.soundEffectPingBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPing().getID()));
+                }
+                break;
+            case ALERT_PING:
+                if (config.soundEffectAlertBool()){
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectAlertPing().getID()));
+                }
+                break;
+            case MATCH_JOIN:
+                if (config.soundEffectMatchJoinBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchJoin().getID()));
+                }
+                break;
+            case MATCH_LEAVE:
+                if (config.soundEffectMatchLeaveBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(config.soundEffectMatchLeave().getID()));
+                }
+                break;
+            case PLAYER_JOIN:
+                if (config.soundEffectTeamJoinBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerJoin().getID()));
+                }
+                break;
+            case PLAYER_LEAVE:
+                if (config.soundEffectTeamLeaveBool()){
+                clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerLeave().getID()));
+                }
+                break;
+            case ERROR:
+                if (config.soundEffectErrorBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(config.soundEffectError().getID()));
+                }
+                break;
+        }
     }
 
     @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
@@ -197,7 +251,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         timer += 1;
     }
 
-    public void Ping(){
+    public void Ping(boolean isAlert){
         if (websocket == null){
             return; // return if no websocket
         }
@@ -228,6 +282,12 @@ public class NeverScapeAlonePlugin extends Plugin {
         ping_payload.addProperty("regionY", regionY);
         ping_payload.addProperty("regionID", regionID);
         ping_payload.addProperty("plane", plane);
+        ping_payload.addProperty("color_r", config.pingColor().getRed());
+        ping_payload.addProperty("color_g", config.pingColor().getGreen());
+        ping_payload.addProperty("color_b", config.pingColor().getBlue());
+        ping_payload.addProperty("color_alpha", config.pingColor().getAlpha());
+        ping_payload.addProperty("isAlert", isAlert);
+
         create_request.addProperty("detail","ping");
         create_request.add("ping_payload",ping_payload);
         websocket.send(create_request);
@@ -253,7 +313,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent) {
-        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), "0", null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id, config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
             return;
@@ -369,12 +429,12 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void privateMatchJoin(String matchID, String passcode) {
-        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), matchID, passcode);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, passcode);
         panel.connectingPanelManager();
     }
 
     public void publicMatchJoin(String matchID) {
-        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), matchID, null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, null);
         panel.connectingPanelManager();
     }
 
@@ -408,7 +468,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         panel.connectingPanelManager();
-        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), "0", null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
 
         JsonObject sub_request = new JsonObject();
         sub_request.addProperty("activity", activity);
@@ -466,7 +526,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void searchActiveMatches(ActionEvent actionEvent) {
         panel.searchBar.setEditable(false);
         panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
-        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, config.authToken(), "0", null);
+        websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0) {
             panel.searchBar.setEditable(true);
