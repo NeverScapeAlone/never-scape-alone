@@ -53,6 +53,12 @@ public class Icons {
     public static final ImageIcon UNVERIFIED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/unverified.png"));
     public static final ImageIcon VERIFIED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/generic_player.png"));
     public static final ImageIcon NSA_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/NeverScapeAloneVersion.png"));
+    public static final ImageIcon KICK_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/kick.png"));
+    public static final ImageIcon FAVORITE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/rating.png"));
+    public static final ImageIcon LIKE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/like.png"));
+    public static final ImageIcon CROWN_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/crown.png"));
+    public static final ImageIcon DISLIKE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/dislike.png"));
+
     public static final ImageIcon BUG_REPORT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bug_report.png"));
     public static final ImageIcon RUNEWATCH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runewatch.png"));
     public static final ImageIcon WDR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/wdr_symbol.png"));

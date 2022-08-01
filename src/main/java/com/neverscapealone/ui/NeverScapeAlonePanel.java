@@ -75,6 +75,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
     public static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
+
+    public JButton chat_player = new JButton();
+    public JButton promote_party_leader = new JButton();;
+    public JButton favorite = new JButton();;
+    public JButton dislike_button = new JButton();;
+    public JButton like_button = new JButton();;
+    public JButton kick = new JButton();;
     public final JButton member_count_help_button = new JButton();
     public final JButton experience_help_button = new JButton();
     public final JButton split_help_button = new JButton();
@@ -198,6 +205,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(connectingPanel);
         add(matchPanel);
 
+        // toss other builders here
         addQueueButtons();
         addCreateButtons();
     }
@@ -417,7 +425,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         for (Player player : matchdata.getPlayers()) {
             JPanel player_panel = new JPanel();
-
             player_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
             player_panel.setBackground(SUB_BACKGROUND_COLOR);
             player_panel.setLayout(new GridBagLayout());
@@ -428,6 +435,83 @@ public class NeverScapeAlonePanel extends PluginPanel {
             cp.anchor = GridBagConstraints.CENTER;
             cp.gridx = 0;
             cp.gridy = 0;
+
+
+            //////////////////// player name button panel
+            JPanel player_name_button_panel = new JPanel();
+            player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+            player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
+            player_name_button_panel.setLayout(new GridBagLayout());
+            GridBagConstraints pnbp = new GridBagConstraints();
+            pnbp.anchor = GridBagConstraints.LINE_END;
+            pnbp.gridx = 0;
+            pnbp.gridy = 0;
+
+            JButton chat_player = new JButton();
+            chat_player.setIcon(Icons.CHAT);
+            chat_player.setToolTipText("Chat "+player.getLogin());
+            chat_player.setName(String.valueOf(player.getUserId()));
+            player_name_button_panel.add(chat_player, pnbp);
+            pnbp.gridx+=1;
+
+            JButton promote_party_leader = new JButton();
+            promote_party_leader.setIcon(Icons.CROWN_ICON);
+            promote_party_leader.setToolTipText("Promote "+player.getLogin());
+            promote_party_leader.setName(String.valueOf(player.getUserId()));
+            player_name_button_panel.add(promote_party_leader, pnbp);
+            pnbp.gridx+=1;
+
+            JButton favorite = new JButton();
+            favorite.setIcon(Icons.FAVORITE_ICON);
+            favorite.setToolTipText("Favorite "+player.getLogin());
+            favorite.setName(String.valueOf(player.getUserId()));
+            player_name_button_panel.add(favorite, pnbp);
+            pnbp.gridx+=1;
+
+            JButton like_button = new JButton();
+            like_button.setIcon(Icons.LIKE_ICON);
+            like_button.setToolTipText("Like "+player.getLogin());
+            like_button.setName(String.valueOf(player.getUserId()));
+            player_name_button_panel.add(like_button, pnbp);
+            pnbp.gridx+=1;
+
+            JButton dislike_button = new JButton();
+            dislike_button.setIcon(Icons.DISLIKE_ICON);
+            dislike_button.setToolTipText("Dislike "+player.getLogin());
+            dislike_button.setName(String.valueOf(player.getUserId()));
+            player_name_button_panel.add(dislike_button, pnbp);
+            pnbp.gridx+=1;
+
+            JButton kick = new JButton();
+            kick.setIcon(Icons.KICK_ICON);
+            kick.setToolTipText("Kick "+player.getLogin());
+            kick.setName(String.valueOf(player.getUserId()));
+            player_name_button_panel.add(kick, pnbp);
+            pnbp.gridx+=1;
+
+            // IDK FIGURE THIS OUT
+            chat_player.addActionListener(plugin::Chat_Player);
+            promote_party_leader.addActionListener(plugin::Promote_Party_Leader);
+            favorite.addActionListener(plugin::Favorite_Player);
+            dislike_button.addActionListener(plugin::Dislike_Player);
+            like_button.addActionListener(plugin::Like_Player);
+            kick.addActionListener(plugin::Kick_Player);
+
+            player_panel.add(player_name_button_panel, cp);
+            cp.gridy += 1;
+            //////////////////// end player name button panel
+
+            //////////////////// start name panel
+            JPanel player_name_panel = new JPanel();
+            player_name_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+            player_name_panel.setBackground(SUB_BACKGROUND_COLOR);
+            player_name_panel.setLayout(new GridBagLayout());
+            GridBagConstraints pnp = new GridBagConstraints();
+            pnp.weightx = 1;
+            pnp.fill = GridBagConstraints.HORIZONTAL;
+            pnp.anchor = GridBagConstraints.CENTER;
+            pnp.gridx = 0;
+            pnp.gridy = 0;
 
             JLabel player_name = new JLabel(player.getLogin());
             player_name.setFont(FontManager.getRunescapeBoldFont());
@@ -441,8 +525,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 }
             }
             player_name.setToolTipText("ID: " + String.valueOf(player.getUserId()));
-            player_panel.add(player_name, cp);
+            player_name_panel.add(player_name, pnp);
+            player_panel.add(player_name_panel, cp);
             cp.gridy += 1;
+            //////////////////// end name panel
 
             if (player.getDiscord() != null) {
                 player_panel.add(Box.createVerticalStrut(3));
@@ -459,9 +545,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 player_panel.add(Box.createVerticalStrut(3));
                 cp.gridy += 1;
 
-                JLabel runewatch_label = new JLabel(player.getRunewatch());
+                JLabel runewatch_label = new JLabel("RUNEWATCH ALERT");
+                runewatch_label.setToolTipText(player.getRunewatch());
                 runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
-                runewatch_label.setFont(FontManager.getRunescapeFont());
+                runewatch_label.setFont(FontManager.getRunescapeBoldFont());
                 runewatch_label.setForeground(Color.red.darker());
                 player_panel.add(runewatch_label, cp);
                 cp.gridy += 1;
@@ -471,9 +558,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 player_panel.add(Box.createVerticalStrut(3));
                 cp.gridy += 1;
 
-                JLabel wdr_label = new JLabel(player.getWdr());
-                wdr_label.setIcon(Icons.RUNEWATCH_ICON);
-                wdr_label.setFont(FontManager.getRunescapeFont());
+                JLabel wdr_label = new JLabel("WDR ALERT");
+                wdr_label.setToolTipText(player.getWdr());
+                wdr_label.setIcon(Icons.WDR_ICON);
+                wdr_label.setFont(FontManager.getRunescapeBoldFont());
                 wdr_label.setForeground(Color.red.darker());
                 player_panel.add(wdr_label, cp);
                 cp.gridy += 1;

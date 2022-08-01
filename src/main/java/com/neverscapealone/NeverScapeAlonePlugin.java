@@ -32,6 +32,7 @@ import com.neverscapealone.enums.PingData;
 import com.neverscapealone.enums.SoundPing;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.ui.Icons;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.sun.jna.Structure;
 import jdk.vm.ci.meta.Local;
@@ -244,6 +245,36 @@ public class NeverScapeAlonePlugin extends Plugin {
                 }
                 break;
         }
+    }
+
+    public void Chat_Player(ActionEvent actionEvent){
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        System.out.println(actionEvent);
+    }
+
+    public void Promote_Party_Leader(ActionEvent actionEvent){
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        System.out.println(actionEvent);
+    }
+
+    public void Favorite_Player(ActionEvent actionEvent){
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        System.out.println(actionEvent);
+    }
+
+    public void Dislike_Player(ActionEvent actionEvent){
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        System.out.println(actionEvent);
+    }
+
+    public void Like_Player(ActionEvent actionEvent){
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        System.out.println(actionEvent);
+    }
+
+    public void Kick_Player(ActionEvent actionEvent){
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        System.out.println(actionEvent);
     }
 
     @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
