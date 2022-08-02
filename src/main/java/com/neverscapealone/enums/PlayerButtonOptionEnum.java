@@ -23,25 +23,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 package com.neverscapealone.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 @Getter
 @RequiredArgsConstructor
-
-public enum SoundPingEnum {
-
-    MATCH_JOIN(0),
-    MATCH_LEAVE(1),
-    NORMAL_PING(2),
-    ALERT_PING(3),
-    PLAYER_JOIN(4),
-    PLAYER_LEAVE(5),
-    ERROR(6),
-    BUTTON_PRESS(6)
+public enum PlayerButtonOptionEnum {
+    CHAT("chat"),
+    DISLIKE("dislike"),
+    LIKE("like"),
+    KICK("kick"),
+    PROMOTE("promote"),
+    FAVORITE("favorite");
     ;
 
-    private final Integer ID;
+    private final String detail;
 }

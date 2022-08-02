@@ -284,6 +284,18 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
+            position = 15,
+            keyName = "ButtonBool",
+            name = "Button Sound",
+            description = "Enable or disable the Button sound effect",
+            section = soundSelection
+    )
+    default boolean soundEffectButtonBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
             position = 1,
             keyName = "pingColor",
             name = "Ping Color",

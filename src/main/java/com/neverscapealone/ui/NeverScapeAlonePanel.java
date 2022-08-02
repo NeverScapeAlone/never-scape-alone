@@ -450,52 +450,50 @@ public class NeverScapeAlonePanel extends PluginPanel {
             JButton chat_player = new JButton();
             chat_player.setIcon(Icons.CHAT);
             chat_player.setToolTipText("Chat "+player.getLogin());
-            chat_player.setName(String.valueOf(player.getUserId()));
+            chat_player.setActionCommand(String.valueOf(player.getUserId()));
+            chat_player.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.CHAT));
             player_name_button_panel.add(chat_player, pnbp);
             pnbp.gridx+=1;
 
             JButton promote_party_leader = new JButton();
             promote_party_leader.setIcon(Icons.CROWN_ICON);
             promote_party_leader.setToolTipText("Promote "+player.getLogin());
-            promote_party_leader.setName(String.valueOf(player.getUserId()));
+            promote_party_leader.setActionCommand(String.valueOf(player.getUserId()));
+            promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
             player_name_button_panel.add(promote_party_leader, pnbp);
             pnbp.gridx+=1;
 
             JButton favorite = new JButton();
             favorite.setIcon(Icons.FAVORITE_ICON);
             favorite.setToolTipText("Favorite "+player.getLogin());
-            favorite.setName(String.valueOf(player.getUserId()));
+            favorite.setActionCommand(String.valueOf(player.getUserId()));
+            favorite.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.FAVORITE));
             player_name_button_panel.add(favorite, pnbp);
             pnbp.gridx+=1;
 
             JButton like_button = new JButton();
             like_button.setIcon(Icons.LIKE_ICON);
             like_button.setToolTipText("Like "+player.getLogin());
-            like_button.setName(String.valueOf(player.getUserId()));
+            like_button.setActionCommand(String.valueOf(player.getUserId()));;
+            like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
             player_name_button_panel.add(like_button, pnbp);
             pnbp.gridx+=1;
 
             JButton dislike_button = new JButton();
             dislike_button.setIcon(Icons.DISLIKE_ICON);
             dislike_button.setToolTipText("Dislike "+player.getLogin());
-            dislike_button.setName(String.valueOf(player.getUserId()));
+            dislike_button.setActionCommand(String.valueOf(player.getUserId()));
+            dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
             player_name_button_panel.add(dislike_button, pnbp);
             pnbp.gridx+=1;
 
             JButton kick = new JButton();
             kick.setIcon(Icons.KICK_ICON);
             kick.setToolTipText("Kick "+player.getLogin());
-            kick.setName(String.valueOf(player.getUserId()));
+            kick.setActionCommand(String.valueOf(player.getUserId()));
+            kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
             player_name_button_panel.add(kick, pnbp);
             pnbp.gridx+=1;
-
-            // IDK FIGURE THIS OUT
-            chat_player.addActionListener(plugin::Chat_Player);
-            promote_party_leader.addActionListener(plugin::Promote_Party_Leader);
-            favorite.addActionListener(plugin::Favorite_Player);
-            dislike_button.addActionListener(plugin::Dislike_Player);
-            like_button.addActionListener(plugin::Like_Player);
-            kick.addActionListener(plugin::Kick_Player);
 
             player_panel.add(player_name_button_panel, cp);
             cp.gridy += 1;

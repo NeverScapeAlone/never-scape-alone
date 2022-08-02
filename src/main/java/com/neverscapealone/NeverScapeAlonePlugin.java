@@ -27,10 +27,7 @@ package com.neverscapealone;
 
 import com.google.gson.*;
 import com.google.inject.Provides;
-import com.neverscapealone.enums.AccountTypeSelection;
-import com.neverscapealone.enums.PingData;
-import com.neverscapealone.enums.SoundPing;
-import com.neverscapealone.enums.SoundPingEnum;
+import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.Icons;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
@@ -38,6 +35,7 @@ import com.sun.jna.Structure;
 import jdk.vm.ci.meta.Local;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -244,37 +242,24 @@ public class NeverScapeAlonePlugin extends Plugin {
                     clientThread.invoke(() -> client.playSoundEffect(config.soundEffectError().getID()));
                 }
                 break;
+            case BUTTON_PRESS:
+                if (config.soundEffectButtonBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(SoundEffectSelection.UI_BOOP.getID()));
+                }
+                break;
         }
     }
 
-    public void Chat_Player(ActionEvent actionEvent){
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        System.out.println(actionEvent);
-    }
 
-    public void Promote_Party_Leader(ActionEvent actionEvent){
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        System.out.println(actionEvent);
-    }
-
-    public void Favorite_Player(ActionEvent actionEvent){
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        System.out.println(actionEvent);
-    }
-
-    public void Dislike_Player(ActionEvent actionEvent){
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        System.out.println(actionEvent);
-    }
-
-    public void Like_Player(ActionEvent actionEvent){
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        System.out.println(actionEvent);
-    }
-
-    public void Kick_Player(ActionEvent actionEvent){
-        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        System.out.println(actionEvent);
+    public void playerOptionAction(ActionEvent actionEvent, PlayerButtonOptionEnum playerButtonOptionEnum){
+        if (!NeverScapeAloneWebsocket.isSocketConnected){
+            return;
+        }
+        this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.BUTTON_PRESS));
+        JsonObject payload = new JsonObject();
+        payload.addProperty("detail",playerButtonOptionEnum.getDetail());
+        payload.addProperty(playerButtonOptionEnum.getDetail(), actionEvent.getActionCommand());
+        websocket.send(payload);
     }
 
     @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
