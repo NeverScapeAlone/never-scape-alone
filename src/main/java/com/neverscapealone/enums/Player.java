@@ -50,6 +50,9 @@ public class Player {
     @SerializedName("verified")
     @Expose
     private Boolean verified;
+    @SerializedName("rating")
+    @Expose
+    private Integer rating;
     @SerializedName("user_id")
     @Expose
     private Integer userId;
@@ -151,6 +154,21 @@ public class Player {
         this.verified = verified;
         return this;
     }
+
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public Player withRating(Integer rating) {
+        this.rating = rating;
+        return this;
+    }
+
 
     public Integer getUserId() {
         return userId;

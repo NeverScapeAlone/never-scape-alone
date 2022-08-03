@@ -31,12 +31,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PlayerButtonOptionEnum {
-    CHAT("chat"),
     DISLIKE("dislike"),
     LIKE("like"),
     KICK("kick"),
-    PROMOTE("promote"),
-    FAVORITE("favorite");
+    PROMOTE("promote")
     ;
 
     private final String detail;

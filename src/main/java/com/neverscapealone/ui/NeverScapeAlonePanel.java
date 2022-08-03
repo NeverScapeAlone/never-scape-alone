@@ -76,7 +76,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
     public static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
 
-    public JButton chat_player = new JButton();
+    public JButton profile_player = new JButton();
     public JButton promote_party_leader = new JButton();;
     public JButton favorite = new JButton();;
     public JButton dislike_button = new JButton();;
@@ -120,6 +120,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
     // GLOBAL VARIABLES
     public String step1_activity = "";
+
+    private static boolean rating_selected = true;
+    private static boolean discord_selected = true;
+    private static boolean location_selected = true;
+    private static boolean safety_selected = true;
+    private static boolean stats_selected = true;
     public ArrayList<String> queue_list = new ArrayList<String>();
     public boolean isConnecting = false;
     @Inject
@@ -436,67 +442,54 @@ public class NeverScapeAlonePanel extends PluginPanel {
             cp.gridx = 0;
             cp.gridy = 0;
 
+            if (!Objects.equals(player.getLogin(), plugin.username)) {
+                /// if the panel drawn player is not the current player, draw buttons
 
-            //////////////////// player name button panel
-            JPanel player_name_button_panel = new JPanel();
-            player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-            player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
-            player_name_button_panel.setLayout(new GridBagLayout());
-            GridBagConstraints pnbp = new GridBagConstraints();
-            pnbp.anchor = GridBagConstraints.LINE_END;
-            pnbp.gridx = 0;
-            pnbp.gridy = 0;
+                JPanel player_name_button_panel = new JPanel();
+                player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+                player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
+                player_name_button_panel.setLayout(new GridBagLayout());
+                GridBagConstraints pnbp = new GridBagConstraints();
+                pnbp.anchor = GridBagConstraints.LINE_END;
+                pnbp.gridx = 0;
+                pnbp.gridy = 0;
 
-            JButton chat_player = new JButton();
-            chat_player.setIcon(Icons.CHAT);
-            chat_player.setToolTipText("Chat "+player.getLogin());
-            chat_player.setActionCommand(String.valueOf(player.getUserId()));
-            chat_player.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.CHAT));
-            player_name_button_panel.add(chat_player, pnbp);
-            pnbp.gridx+=1;
+                JButton promote_party_leader = new JButton();
+                promote_party_leader.setIcon(Icons.CROWN_ICON);
+                promote_party_leader.setToolTipText("Promote " + player.getLogin());
+                promote_party_leader.setActionCommand(String.valueOf(player.getUserId()));
+                promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
+                player_name_button_panel.add(promote_party_leader, pnbp);
+                pnbp.gridx += 1;
 
-            JButton promote_party_leader = new JButton();
-            promote_party_leader.setIcon(Icons.CROWN_ICON);
-            promote_party_leader.setToolTipText("Promote "+player.getLogin());
-            promote_party_leader.setActionCommand(String.valueOf(player.getUserId()));
-            promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
-            player_name_button_panel.add(promote_party_leader, pnbp);
-            pnbp.gridx+=1;
+                JButton like_button = new JButton();
+                like_button.setIcon(Icons.LIKE_ICON);
+                like_button.setToolTipText("Like " + player.getLogin());
+                like_button.setActionCommand(String.valueOf(player.getUserId()));
+                ;
+                like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
+                player_name_button_panel.add(like_button, pnbp);
+                pnbp.gridx += 1;
 
-            JButton favorite = new JButton();
-            favorite.setIcon(Icons.FAVORITE_ICON);
-            favorite.setToolTipText("Favorite "+player.getLogin());
-            favorite.setActionCommand(String.valueOf(player.getUserId()));
-            favorite.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.FAVORITE));
-            player_name_button_panel.add(favorite, pnbp);
-            pnbp.gridx+=1;
+                JButton dislike_button = new JButton();
+                dislike_button.setIcon(Icons.DISLIKE_ICON);
+                dislike_button.setToolTipText("Dislike " + player.getLogin());
+                dislike_button.setActionCommand(String.valueOf(player.getUserId()));
+                dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
+                player_name_button_panel.add(dislike_button, pnbp);
+                pnbp.gridx += 1;
 
-            JButton like_button = new JButton();
-            like_button.setIcon(Icons.LIKE_ICON);
-            like_button.setToolTipText("Like "+player.getLogin());
-            like_button.setActionCommand(String.valueOf(player.getUserId()));;
-            like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
-            player_name_button_panel.add(like_button, pnbp);
-            pnbp.gridx+=1;
+                JButton kick = new JButton();
+                kick.setIcon(Icons.KICK_ICON);
+                kick.setToolTipText("Kick " + player.getLogin());
+                kick.setActionCommand(String.valueOf(player.getUserId()));
+                kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
+                player_name_button_panel.add(kick, pnbp);
+                pnbp.gridx += 1;
 
-            JButton dislike_button = new JButton();
-            dislike_button.setIcon(Icons.DISLIKE_ICON);
-            dislike_button.setToolTipText("Dislike "+player.getLogin());
-            dislike_button.setActionCommand(String.valueOf(player.getUserId()));
-            dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
-            player_name_button_panel.add(dislike_button, pnbp);
-            pnbp.gridx+=1;
-
-            JButton kick = new JButton();
-            kick.setIcon(Icons.KICK_ICON);
-            kick.setToolTipText("Kick "+player.getLogin());
-            kick.setActionCommand(String.valueOf(player.getUserId()));
-            kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
-            player_name_button_panel.add(kick, pnbp);
-            pnbp.gridx+=1;
-
-            player_panel.add(player_name_button_panel, cp);
-            cp.gridy += 1;
+                player_panel.add(player_name_button_panel, cp);
+                cp.gridy += 1;
+            }
             //////////////////// end player name button panel
 
             //////////////////// start name panel
@@ -528,121 +521,144 @@ public class NeverScapeAlonePanel extends PluginPanel {
             cp.gridy += 1;
             //////////////////// end name panel
 
-            if (player.getDiscord() != null) {
-                player_panel.add(Box.createVerticalStrut(3));
-                cp.gridy += 1;
+            if (rating_selected){
+                if (player.getRating() != -1){
+                    player_panel.add(Box.createVerticalStrut(3));
+                    cp.gridy += 1;
 
-                JLabel discord_label = new JLabel(player.getDiscord());
-                discord_label.setIcon(Icons.DISCORD_ICON);
-                discord_label.setFont(FontManager.getRunescapeFont());
-                player_panel.add(discord_label, cp);
-                cp.gridy += 1;
+                    Float aFloat = (float)(player.getRating()/10);
+                    JLabel rating_label = new JLabel(String.valueOf(aFloat)+"/5.0");
+                    rating_label.setIcon(Icons.RATING_ICON);
+                    rating_label.setToolTipText("User rating");
+                    rating_label.setFont(FontManager.getRunescapeFont());
+                    player_panel.add(rating_label, cp);
+                    cp.gridy += 1;
+                }
             }
 
-            if (player.getRunewatch() != null) {
-                player_panel.add(Box.createVerticalStrut(3));
-                cp.gridy += 1;
+            if (discord_selected){
+                if (player.getDiscord() != null) {
+                    player_panel.add(Box.createVerticalStrut(3));
+                    cp.gridy += 1;
 
-                JLabel runewatch_label = new JLabel("RUNEWATCH ALERT");
-                runewatch_label.setToolTipText(player.getRunewatch());
-                runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
-                runewatch_label.setFont(FontManager.getRunescapeBoldFont());
-                runewatch_label.setForeground(Color.red.darker());
-                player_panel.add(runewatch_label, cp);
-                cp.gridy += 1;
+                    JLabel discord_label = new JLabel(player.getDiscord());
+                    discord_label.setIcon(Icons.DISCORD_ICON);
+                    discord_label.setFont(FontManager.getRunescapeFont());
+                    player_panel.add(discord_label, cp);
+                    cp.gridy += 1;
+                }
             }
 
-            if (player.getWdr() != null) {
-                player_panel.add(Box.createVerticalStrut(3));
-                cp.gridy += 1;
+            if (safety_selected){
+                if (player.getRunewatch() != null) {
+                    player_panel.add(Box.createVerticalStrut(3));
+                    cp.gridy += 1;
 
-                JLabel wdr_label = new JLabel("WDR ALERT");
-                wdr_label.setToolTipText(player.getWdr());
-                wdr_label.setIcon(Icons.WDR_ICON);
-                wdr_label.setFont(FontManager.getRunescapeBoldFont());
-                wdr_label.setForeground(Color.red.darker());
-                player_panel.add(wdr_label, cp);
-                cp.gridy += 1;
+                    JLabel runewatch_label = new JLabel("RUNEWATCH ALERT");
+                    runewatch_label.setToolTipText(player.getRunewatch());
+                    runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
+                    runewatch_label.setFont(FontManager.getRunescapeFont());
+                    runewatch_label.setForeground(Color.red.darker());
+                    player_panel.add(runewatch_label, cp);
+                    cp.gridy += 1;
+                }
+
+                if (player.getWdr() != null) {
+                    player_panel.add(Box.createVerticalStrut(3));
+                    cp.gridy += 1;
+
+                    JLabel wdr_label = new JLabel("WDR ALERT");
+                    wdr_label.setToolTipText(player.getWdr());
+                    wdr_label.setIcon(Icons.WDR_ICON);
+                    wdr_label.setFont(FontManager.getRunescapeFont());
+                    wdr_label.setForeground(Color.red.darker());
+                    player_panel.add(wdr_label, cp);
+                    cp.gridy += 1;
+                }
             }
 
-            if (player.getLocation() != null) {
-                player_panel.add(Box.createVerticalStrut(3));
-                cp.gridy += 1;
+            if (location_selected){
+                if (player.getLocation() != null) {
+                    player_panel.add(Box.createVerticalStrut(3));
+                    cp.gridy += 1;
 
-                JPanel player_location = new JPanel();
-                player_location.setBorder(new EmptyBorder(0, 0, 0, 0));
-                player_location.setBackground(SUB_BACKGROUND_COLOR);
-                player_location.setLayout(new GridBagLayout());
-                GridBagConstraints cs = new GridBagConstraints();
-                cs.weightx = 1;
-                cs.fill = GridBagConstraints.HORIZONTAL;
-                cs.anchor = GridBagConstraints.CENTER;
-                cs.gridx = 0;
-                cs.gridy = 0;
+                    JPanel player_location = new JPanel();
+                    player_location.setBorder(new EmptyBorder(0, 0, 0, 0));
+                    player_location.setBackground(SUB_BACKGROUND_COLOR);
+                    player_location.setLayout(new GridBagLayout());
+                    GridBagConstraints cs = new GridBagConstraints();
+                    cs.weightx = 1;
+                    cs.fill = GridBagConstraints.HORIZONTAL;
+                    cs.anchor = GridBagConstraints.CENTER;
+                    cs.gridx = 0;
+                    cs.gridy = 0;
 
-                int world = player.getLocation().getWorld();
-                int x = player.getLocation().getX();
-                int y = player.getLocation().getY();
-                int regionX = player.getLocation().getRegionX();
-                int regionY = player.getLocation().getRegionY();
-                int regionID = player.getLocation().getRegionID();
-                int plane = player.getLocation().getPlane();
+                    int world = player.getLocation().getWorld();
+                    int x = player.getLocation().getX();
+                    int y = player.getLocation().getY();
+                    int regionX = player.getLocation().getRegionX();
+                    int regionY = player.getLocation().getRegionY();
+                    int regionID = player.getLocation().getRegionID();
+                    int plane = player.getLocation().getPlane();
 
-                JLabel world_label = new JLabel();
-                world_label.setText(String.valueOf(world));
-                world_label.setToolTipText("Player's current world");
-                world_label.setIcon(Icons.WORLD_ICON);
-                cs.gridx = 1;
-                player_location.add(world_label, cs);
+                    JLabel world_label = new JLabel();
+                    world_label.setText(String.valueOf(world));
+                    world_label.setToolTipText("Player's current world");
+                    world_label.setIcon(Icons.WORLD_ICON);
+                    cs.gridx = 1;
+                    player_location.add(world_label, cs);
 
-                JLabel coordinate_label = new JLabel();
-                coordinate_label.setText("("+String.valueOf(x)+", "+String.valueOf(y)+")");
-                coordinate_label.setToolTipText("Player's current coordinate");
-                coordinate_label.setIcon(Icons.COORDINATE_ICON);
-                cs.gridx = 2;
-                player_location.add(coordinate_label, cs);
+                    JLabel coordinate_label = new JLabel();
+                    coordinate_label.setText("("+String.valueOf(x)+", "+String.valueOf(y)+")");
+                    coordinate_label.setToolTipText("Player's current coordinate");
+                    coordinate_label.setIcon(Icons.COORDINATE_ICON);
+                    cs.gridx = 2;
+                    player_location.add(coordinate_label, cs);
 
-                player_panel.add(player_location, cp);
-                cp.gridy += 1;
+                    player_panel.add(player_location, cp);
+                    cp.gridy += 1;
+                }
             }
 
-            if (player.getStatus() != null) {
-                player_panel.add(Box.createVerticalStrut(3));
-                cp.gridy += 1;
+            if (stats_selected){
+                if (player.getStatus() != null) {
+                    player_panel.add(Box.createVerticalStrut(3));
+                    cp.gridy += 1;
 
-                JPanel player_status = new JPanel();
-                player_status.setBorder(new EmptyBorder(0, 0, 0, 0));
-                player_status.setBackground(SUB_BACKGROUND_COLOR);
-                player_status.setLayout(new GridBagLayout());
-                GridBagConstraints cs = new GridBagConstraints();
-                cs.weightx = 1;
-                cs.fill = GridBagConstraints.HORIZONTAL;
-                cs.anchor = GridBagConstraints.CENTER;
-                cs.gridx = 0;
-                cs.gridy = 0;
+                    JPanel player_status = new JPanel();
+                    player_status.setBorder(new EmptyBorder(0, 0, 0, 0));
+                    player_status.setBackground(SUB_BACKGROUND_COLOR);
+                    player_status.setLayout(new GridBagLayout());
+                    GridBagConstraints cs = new GridBagConstraints();
+                    cs.weightx = 1;
+                    cs.fill = GridBagConstraints.HORIZONTAL;
+                    cs.anchor = GridBagConstraints.CENTER;
+                    cs.gridx = 0;
+                    cs.gridy = 0;
 
-                Integer base_hitpoints = player.getStatus().getBaseHp();
-                Integer hitpoints = player.getStatus().getHp();
-                Integer prayer = player.getStatus().getPrayer();
-                Integer base_prayer = player.getStatus().getBasePrayer();
-                Integer run_energy = player.getStatus().getRunEnergy();
+                    Integer base_hitpoints = player.getStatus().getBaseHp();
+                    Integer hitpoints = player.getStatus().getHp();
+                    Integer prayer = player.getStatus().getPrayer();
+                    Integer base_prayer = player.getStatus().getBasePrayer();
+                    Integer run_energy = player.getStatus().getRunEnergy();
 
-                JLabel hitpoint_label = new JLabel(hitpoints + "/" + base_hitpoints);
-                hitpoint_label.setIcon(Icons.HITPOINTS);
-                player_status.add(hitpoint_label, cs);
+                    JLabel hitpoint_label = new JLabel(hitpoints + "/" + base_hitpoints);
+                    hitpoint_label.setIcon(Icons.HITPOINTS);
+                    player_status.add(hitpoint_label, cs);
 
-                cs.gridx = 1;
-                JLabel prayer_label = new JLabel(prayer + "/" + base_prayer);
-                prayer_label.setIcon(Icons.PRAYER);
-                player_status.add(prayer_label, cs);
+                    cs.gridx = 1;
+                    JLabel prayer_label = new JLabel(prayer + "/" + base_prayer);
+                    prayer_label.setIcon(Icons.PRAYER);
+                    player_status.add(prayer_label, cs);
 
-                cs.gridx = 2;
-                JLabel run_label = new JLabel(run_energy + "/100");
-                run_label.setIcon(Icons.AGILITY);
-                player_status.add(run_label, cs);
+                    cs.gridx = 2;
+                    JLabel run_label = new JLabel(run_energy + "/100");
+                    run_label.setIcon(Icons.AGILITY);
+                    player_status.add(run_label, cs);
 
-                player_panel.add(player_status, cp);
-                cp.gridy += 1;
+                    player_panel.add(player_status, cp);
+                    cp.gridy += 1;
+                }
             }
 
             mp.add(player_panel, c);
@@ -662,27 +678,146 @@ public class NeverScapeAlonePanel extends PluginPanel {
         GridBagConstraints c = new GridBagConstraints();
 
         c.weightx = 1;
-        c.anchor = GridBagConstraints.LINE_END;
-        c.fill = GridBagConstraints.LINE_END;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
 
+        /// match header
+        JPanel headermatchPanel = new JPanel();
+        headermatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        headermatchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints sc = new GridBagConstraints();
+
+        sc.weightx = 1;
+        sc.anchor = GridBagConstraints.LINE_END;
+        sc.fill = GridBagConstraints.LINE_END;
+        sc.gridx = 0;
+        sc.gridy = 0;
+
+        JToggleButton rating_button = new JToggleButton();
+        rating_button.setIcon(Icons.RATING_ICON);
+        rating_button.setToolTipText("Ratings");
+        rating_button.setSelected(true);
+        rating_button.setBackground(Color.green.darker().darker());
+        rating_button.addActionListener(this::ratingButtonListener);
+        rating_button.setSize(30, 30);
+        headermatchPanel.add(rating_button, sc);
+
+        sc.gridx +=1;
+
+        JToggleButton discord_button = new JToggleButton();
+        discord_button.setIcon(Icons.DISCORD_ICON);
+        discord_button.setToolTipText("Discord");
+        discord_button.setSelected(true);
+        discord_button.setBackground(Color.green.darker().darker());
+        discord_button.addActionListener(this::discordButtonListener);
+        discord_button.setSize(30, 30);
+        headermatchPanel.add(discord_button, sc);
+
+        sc.gridx +=1;
+
+        JToggleButton location_button = new JToggleButton();
+        location_button.setIcon(Icons.WORLD_ICON);
+        location_button.setToolTipText("Location");
+        location_button.setSelected(true);
+        location_button.setBackground(Color.green.darker().darker());
+        location_button.addActionListener(this::locationButtonListener);
+        location_button.setSize(30, 30);
+        headermatchPanel.add(location_button, sc);
+
+        sc.gridx +=1;
+
+        JToggleButton safety_button = new JToggleButton();
+        safety_button.setIcon(Icons.SAFETY_ICON);
+        safety_button.setToolTipText("Safety");
+        safety_button.setSelected(true);
+        safety_button.setBackground(Color.green.darker().darker());
+        safety_button.addActionListener(this::safetyButtonListener);
+        safety_button.setSize(30, 30);
+        headermatchPanel.add(safety_button, sc);
+
+        sc.gridx +=1;
+
+        JToggleButton stats_button = new JToggleButton();
+        stats_button.setIcon(Icons.HITPOINTS);
+        stats_button.setToolTipText("Stats");
+        stats_button.setSelected(true);
+        stats_button.setBackground(Color.green.darker().darker());
+        stats_button.addActionListener(this::statsButtonListener);
+        stats_button.setSize(30, 30);
+        headermatchPanel.add(stats_button, sc);
+
+        sc.gridx +=1;
         JButton escape = new JButton();
         escape.setIcon(Icons.LOGOUT_ICON);
         escape.setToolTipText("Exit");
-        escape.setSize(20, 20);
+        escape.setSize(30, 30);
         escape.setBorderPainted(false);
         escape.setFocusPainted(false);
         escape.setContentAreaFilled(false);
         escape.addActionListener(this::leaveMatch);
-        matchPanel.add(escape, c);
+        headermatchPanel.add(escape, sc);
 
-        c.anchor = GridBagConstraints.CENTER;
-        c.fill = GridBagConstraints.HORIZONTAL;
+        matchPanel.add(headermatchPanel, c);
         c.gridy += 1;
-
         matchPanel.add(new JPanel(), c);
         return matchPanel;
+    }
+
+    private void ratingButtonListener(ActionEvent actionEvent){
+        JToggleButton button = (JToggleButton) actionEvent.getSource();
+        if (button.isSelected()){
+            rating_selected = true;
+            button.setBackground(Color.green.darker().darker());
+        } else {
+            rating_selected = false;
+            button.setBackground(Color.red.darker());
+        }
+    }
+
+    private void discordButtonListener(ActionEvent actionEvent){
+        JToggleButton button = (JToggleButton) actionEvent.getSource();
+        if (button.isSelected()){
+            discord_selected = true;
+            button.setBackground(Color.green.darker().darker());
+        } else {
+            discord_selected = false;
+            button.setBackground(Color.red.darker());
+        }
+    }
+
+    private void locationButtonListener(ActionEvent actionEvent){
+        JToggleButton button = (JToggleButton) actionEvent.getSource();
+        if (button.isSelected()){
+            location_selected = true;
+            button.setBackground(Color.green.darker().darker());
+        } else {
+            location_selected = false;
+            button.setBackground(Color.red.darker());
+        }
+    }
+
+    private void safetyButtonListener(ActionEvent actionEvent){
+        JToggleButton button = (JToggleButton) actionEvent.getSource();
+        if (button.isSelected()){
+            safety_selected = true;
+            button.setBackground(Color.green.darker().darker());
+        } else {
+            safety_selected = false;
+            button.setBackground(Color.red.darker());
+        }
+    }
+
+    private void statsButtonListener(ActionEvent actionEvent){
+        JToggleButton button = (JToggleButton) actionEvent.getSource();
+        if (button.isSelected()){
+            stats_selected = true;
+            button.setBackground(Color.green.darker().darker());
+        } else {
+            stats_selected = false;
+            button.setBackground(Color.red.darker());
+        }
     }
 
     private void leaveMatch(ActionEvent actionEvent) {
