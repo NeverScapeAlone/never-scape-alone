@@ -23,15 +23,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.http;
+package com.neverscapealone;
+import javax.inject.Inject;
+import net.runelite.client.util.HotkeyListener;
 
-import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
-/**
- * Exception for when a tokenized route in {@link NeverScapeAloneWebsocket} fails due to using a bad or unauthorized token.
- */
-public class UnauthorizedTokenException extends IOException {
-    public UnauthorizedTokenException(String message) {
-        super(message);
+class NeverScapeAloneHotkeyListener extends HotkeyListener
+{
+    private final NeverScapeAlonePlugin plugin;
+    private final NeverScapeAloneConfig config;
+    private long time_duration = 0;
+    private long time_start = 0;
+    private long time_end = 0;
+
+    @Inject
+    private NeverScapeAloneHotkeyListener(NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config)
+    {
+        super(config::hotkey);
+        this.plugin = plugin;
+        this.config = config;
+    }
+
+    @Override
+    public void hotkeyPressed()
+    {
+
+        time_start = System.currentTimeMillis();
+    }
+
+    @Override
+    public void hotkeyReleased()
+    {
+        time_end = System.currentTimeMillis();
+        time_duration = time_end - time_start;
+        if (time_duration >= config.alertDelay()){
+            plugin.Ping(true);
+        } else {
+            plugin.Ping(false);
+        }
     }
 }

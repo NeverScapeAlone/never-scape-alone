@@ -23,15 +23,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.http;
+package com.neverscapealone.enums;
 
-import java.io.IOException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Exception for when a tokenized route in {@link NeverScapeAloneWebsocket} fails due to using a bad or unauthorized token.
- */
-public class UnauthorizedTokenException extends IOException {
-    public UnauthorizedTokenException(String message) {
-        super(message);
-    }
+@Getter
+@RequiredArgsConstructor
+
+public enum SoundPingEnum {
+
+    MATCH_JOIN(0),
+    MATCH_LEAVE(1),
+    NORMAL_PING(2),
+    ALERT_PING(3),
+    PLAYER_JOIN(4),
+    PLAYER_LEAVE(5),
+    ERROR(6),
+    BUTTON_PRESS(6)
+    ;
+
+    private final Integer ID;
 }

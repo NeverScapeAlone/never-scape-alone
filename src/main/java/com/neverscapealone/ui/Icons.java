@@ -1,3 +1,28 @@
+/*
+ * Copyright (c) 2022, Ferrariic <ferrariictweet@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
@@ -9,7 +34,10 @@ public class Icons {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
 
     // web links and references
+    public static final ImageIcon COORDINATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/coordinate.png"));
     public static final ImageIcon WORLD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/world.png"));
+    public static final ImageIcon SAFETY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/safety.png"));
+    public static final ImageIcon PROFILE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/profile.png"));
     public static final ImageIcon HELP_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/help.png"));
     public static final ImageIcon ACCEPT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Checkmark.png"));
     public static final ImageIcon LOGOUT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/logout.png"));
@@ -27,6 +55,12 @@ public class Icons {
     public static final ImageIcon UNVERIFIED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/unverified.png"));
     public static final ImageIcon VERIFIED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/generic_player.png"));
     public static final ImageIcon NSA_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/NeverScapeAloneVersion.png"));
+    public static final ImageIcon KICK_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/kick.png"));
+    public static final ImageIcon RATING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/rating.png"));
+    public static final ImageIcon LIKE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/like.png"));
+    public static final ImageIcon CROWN_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/crown.png"));
+    public static final ImageIcon DISLIKE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/dislike.png"));
+
     public static final ImageIcon BUG_REPORT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bug_report.png"));
     public static final ImageIcon RUNEWATCH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/runewatch.png"));
     public static final ImageIcon WDR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/wdr_symbol.png"));
@@ -65,6 +99,7 @@ public class Icons {
     public static final ImageIcon YELLOW_PARTYHAT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/yellow_partyhat.png"));
 
     // "skill", "boss", "minigame", "misc", "solo", "raids"
+    public static final ImageIcon RANDOM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/random.png"));
     // SKILLS
     public static final ImageIcon ATTACK = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/attack.png"));
     public static final ImageIcon DEFENCE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/defence.png"));

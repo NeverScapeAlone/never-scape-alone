@@ -23,15 +23,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.http;
+package com.neverscapealone.enums;
 
-import java.io.IOException;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-/**
- * Exception for when a tokenized route in {@link NeverScapeAloneWebsocket} fails due to using a bad or unauthorized token.
- */
-public class UnauthorizedTokenException extends IOException {
-    public UnauthorizedTokenException(String message) {
-        super(message);
+public class SoundPing {
+    @SerializedName("sound")
+    @Expose
+    private SoundPingEnum sound = null;
+
+    public SoundPingEnum getSound() {
+        return sound;
     }
+
+    public SoundPing buildSound(SoundPingEnum sound) {
+        this.sound = sound;
+        return this;
+    }
+
 }

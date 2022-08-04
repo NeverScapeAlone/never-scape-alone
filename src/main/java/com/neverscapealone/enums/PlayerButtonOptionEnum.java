@@ -23,15 +23,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.http;
 
-import java.io.IOException;
+package com.neverscapealone.enums;
 
-/**
- * Exception for when a tokenized route in {@link NeverScapeAloneWebsocket} fails due to using a bad or unauthorized token.
- */
-public class UnauthorizedTokenException extends IOException {
-    public UnauthorizedTokenException(String message) {
-        super(message);
-    }
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+@Getter
+@RequiredArgsConstructor
+public enum PlayerButtonOptionEnum {
+    DISLIKE("dislike"),
+    LIKE("like"),
+    KICK("kick"),
+    PROMOTE("promote")
+    ;
+
+    private final String detail;
 }

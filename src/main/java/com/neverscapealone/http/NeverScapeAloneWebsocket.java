@@ -1,3 +1,28 @@
+/*
+ * Copyright (c) 2022, Ferrariic <ferrariictweet@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.neverscapealone.http;
 
 import com.google.gson.Gson;
@@ -5,6 +30,8 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.enums.ServerMessage;
+import com.neverscapealone.enums.SoundPing;
+import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.model.Payload;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
@@ -30,9 +57,11 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private Gson gson;
     private static String username;
     private static String discord;
+    private static String discord_id;
     private static String token;
     private static String groupID = "0";
     private static String passcode;
+    public static boolean isSocketConnected = false;
     private WebSocket socket;
     private final EventBus eventBus;
     @Inject
@@ -42,7 +71,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
         this.gson = new Gson();
         this.okHttpClient = new OkHttpClient();
     }
-    public void connect(String username, String discord, String token, String groupID, String passcode) {
+    public void connect(String username, String discord, String discord_id, String token, String groupID, String passcode) {
         if (username.equals("")){
             this.eventBus.post(new ServerMessage().buildServerMessage("Please Login"));
             return;
@@ -55,6 +84,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
 
         NeverScapeAloneWebsocket.username = username;
         NeverScapeAloneWebsocket.discord = discord;
+        NeverScapeAloneWebsocket.discord_id = discord_id;
         NeverScapeAloneWebsocket.token = token;
         NeverScapeAloneWebsocket.groupID = groupID;
 
@@ -72,6 +102,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 .addHeader("User-Agent", RuneLite.USER_AGENT)
                 .addHeader("Login", username)
                 .addHeader("Discord", discord)
+                .addHeader("Discord_ID", discord_id)
                 .addHeader("Token", token)
                 .addHeader("Time", Instant.now().toString())
                 .build();
@@ -84,6 +115,9 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     }
 
     public void send(JsonObject jsonObject){
+        if (socket == null){
+            return;
+        }
         socket.send(jsonObject.toString());
     }
 
@@ -91,6 +125,12 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
         return NeverScapeAloneWebsocket.groupID;
     }
     public void logoff(String reason){socket.close(1000, reason);}
+
+    @Override
+    public void onOpen(WebSocket webSocket, okhttp3.Response response) {
+        isSocketConnected = true;
+    }
+
 
     @Override
     public void onMessage(WebSocket socket, String text) {
@@ -104,15 +144,21 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                     passcode = payload.getPasscode();
                 }
                 socket.close(1000, "Ending connection to join a new match");
-                connect(username, discord, token, groupID, passcode);
+                connect(username, discord, discord_id, token, groupID, passcode);
+                break;
+            case INCOMING_PING:
+                this.eventBus.post(payload.getPingData());
                 break;
             case DISCONNECTED:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
                 this.eventBus.post(new ServerMessage().buildServerMessage("You Were Disconnected"));
                 break;
             case BAD_PASSCODE:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
                 this.eventBus.post(new ServerMessage().buildServerMessage("Bad Match Passcode"));
                 break;
             case SUCCESSFUL_CONNECTION:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_JOIN));
             case MATCH_UPDATE:
                 this.eventBus.post(payload.getMatchData());
                 break;
@@ -131,13 +177,21 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     }
 
     @Override
+    public void onClosed(WebSocket webSocket, int code, String reason) {
+        isSocketConnected = false;
+    }
+
+    @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         if (t instanceof ConnectException) {
             this.eventBus.post(new ServerMessage().buildServerMessage("No Server Connection"));
+            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
         } else if (t instanceof SocketException || t instanceof EOFException) {
             this.eventBus.post(new ServerMessage().buildServerMessage("Connection Reset"));
+            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
         } else {
             this.eventBus.post(new ServerMessage().buildServerMessage("Unknown Error"));
+            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
             t.printStackTrace();
         }
     }
