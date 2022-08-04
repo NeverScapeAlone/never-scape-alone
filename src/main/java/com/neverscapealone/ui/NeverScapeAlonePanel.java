@@ -431,6 +431,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridy += 1;
 
         for (Player player : matchdata.getPlayers()) {
+            Integer matchPlayerSize = matchdata.getPlayers().size();
+            if (matchPlayerSize > NeverScapeAlonePlugin.matchSize){
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_JOIN));
+            } else if (matchPlayerSize < NeverScapeAlonePlugin.matchSize) {
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_LEAVE));
+            };
+            NeverScapeAlonePlugin.matchSize = matchPlayerSize;
+
             JPanel player_panel = new JPanel();
             player_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
             player_panel.setBackground(SUB_BACKGROUND_COLOR);

@@ -117,6 +117,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static String discordUsername = null;
     public static String discord_id = null;
     public Integer timer = 0;
+    public static Integer matchSize = 0;
     private static Integer old_x = 0;
     private static Integer old_y = 0;
     public static boolean cycleQueue = false;
@@ -353,11 +354,21 @@ public class NeverScapeAlonePlugin extends Plugin {
         NeverScapeAlonePlugin.cycleQueue = true;
     }
 
-    @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
+    @Schedule(period = 3, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void sendQueueRequest() {
-        if (NeverScapeAlonePlugin.cycleQueue & NeverScapeAlonePlugin.queuePayload != null){
-            websocket.send(NeverScapeAlonePlugin.queuePayload);
+        if (!NeverScapeAloneWebsocket.isSocketConnected){
+            return;
         }
+        if (!Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+        if (!NeverScapeAlonePlugin.cycleQueue){
+            return;
+        }
+        if (NeverScapeAlonePlugin.queuePayload == null){
+            return;
+        }
+        websocket.send(NeverScapeAlonePlugin.queuePayload);
     }
 
     @Schedule(period = 10, unit = ChronoUnit.SECONDS, asynchronous = true)
