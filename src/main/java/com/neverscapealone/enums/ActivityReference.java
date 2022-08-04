@@ -34,8 +34,10 @@ import javax.swing.*;
 @Getter
 @RequiredArgsConstructor
 public enum ActivityReference
-// "skill", "boss", "minigame", "misc", "raid"
+// "random", "skill", "boss", "minigame", "misc", "raid"
 {
+    // random
+    RANDOM(Icons.RANDOM, "random", "Random Activity", "RANDOM"),
     // skill
     ATTACK(Icons.ATTACK, "skill", "Attack", "ATTACK"),
     STRENGTH(Icons.STRENGTH, "skill", "Strength", "STRENGTH"),

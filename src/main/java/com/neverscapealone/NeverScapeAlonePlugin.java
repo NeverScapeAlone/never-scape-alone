@@ -119,8 +119,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     public Integer timer = 0;
     private static Integer old_x = 0;
     private static Integer old_y = 0;
-
-    // garbage variable dump
+    public static boolean cycleQueue = false;
+    public static JsonObject queuePayload = new JsonObject();
     private String old_username = "";
     private Integer old_health = 0;
     private Integer old_base_health = 0;
@@ -348,8 +348,16 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonObject create_request = new JsonObject();
         create_request.addProperty("detail", "quick_match");
         create_request.add("match_list", jsonArray);
-        websocket.send(create_request);
         panel.connectingPanelManager();
+        NeverScapeAlonePlugin.queuePayload = create_request;
+        NeverScapeAlonePlugin.cycleQueue = true;
+    }
+
+    @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void sendQueueRequest() {
+        if (NeverScapeAlonePlugin.cycleQueue & NeverScapeAlonePlugin.queuePayload != null){
+            websocket.send(NeverScapeAlonePlugin.queuePayload);
+        }
     }
 
     @Schedule(period = 10, unit = ChronoUnit.SECONDS, asynchronous = true)

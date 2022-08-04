@@ -130,6 +130,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public boolean isConnecting = false;
     @Inject
     ConfigManager configManager;
+    private JPanel randomPanel;
     private JPanel skillPanel;
     private JPanel bossPanel;
     private JPanel raidPanel;
@@ -697,7 +698,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         JToggleButton rating_button = new JToggleButton();
         rating_button.setIcon(Icons.RATING_ICON);
-        rating_button.setToolTipText("Ratings");
+        rating_button.setToolTipText("User Ratings");
         rating_button.setSelected(true);
         rating_button.setBackground(Color.green.darker().darker());
         rating_button.addActionListener(this::ratingButtonListener);
@@ -708,7 +709,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         JToggleButton discord_button = new JToggleButton();
         discord_button.setIcon(Icons.DISCORD_ICON);
-        discord_button.setToolTipText("Discord");
+        discord_button.setToolTipText("Discord Information");
         discord_button.setSelected(true);
         discord_button.setBackground(Color.green.darker().darker());
         discord_button.addActionListener(this::discordButtonListener);
@@ -719,7 +720,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         JToggleButton location_button = new JToggleButton();
         location_button.setIcon(Icons.WORLD_ICON);
-        location_button.setToolTipText("Location");
+        location_button.setToolTipText("Location Information");
         location_button.setSelected(true);
         location_button.setBackground(Color.green.darker().darker());
         location_button.addActionListener(this::locationButtonListener);
@@ -730,7 +731,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         JToggleButton safety_button = new JToggleButton();
         safety_button.setIcon(Icons.SAFETY_ICON);
-        safety_button.setToolTipText("Safety");
+        safety_button.setToolTipText("RuneWatch and WDR Safety");
         safety_button.setSelected(true);
         safety_button.setBackground(Color.green.darker().darker());
         safety_button.addActionListener(this::safetyButtonListener);
@@ -741,7 +742,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         JToggleButton stats_button = new JToggleButton();
         stats_button.setIcon(Icons.HITPOINTS);
-        stats_button.setToolTipText("Stats");
+        stats_button.setToolTipText("User Stats");
         stats_button.setSelected(true);
         stats_button.setBackground(Color.green.darker().darker());
         stats_button.addActionListener(this::statsButtonListener);
@@ -880,83 +881,72 @@ public class NeverScapeAlonePanel extends PluginPanel {
     }
 
     public void matchPanelManager() {
-        matchPanel.setVisible(true);
-
-        switchMenuPanel.setVisible(false);
+        NeverScapeAlonePlugin.cycleQueue = false;
         isConnecting = false;
         plugin.timer = 0;
-
+        matchPanel.setVisible(true);
+        switchMenuPanel.setVisible(false);
         connectingPanel.setVisible(false);
         createPanel.setVisible(false);
         createPanel2.setVisible(false);
         quickPanel.setVisible(false);
         searchPanel.setVisible(false);
-
         quickMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
 
     public void connectingPanelManager() {
-        matchPanel.setVisible(false);
-
-        switchMenuPanel.setVisible(false);
         isConnecting = true;
-
+        matchPanel.setVisible(false);
+        switchMenuPanel.setVisible(false);
         connectingPanel.setVisible(true);
         createPanel.setVisible(false);
         createPanel2.setVisible(false);
         quickPanel.setVisible(false);
         searchPanel.setVisible(false);
-
         quickMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
 
     private void quickPanelManager(ActionEvent actionEvent) {
-        matchPanel.setVisible(false);
-
-        switchMenuPanel.setVisible(true);
+        NeverScapeAlonePlugin.cycleQueue = false;
         isConnecting = false;
         plugin.timer = 0;
-
+        matchPanel.setVisible(false);
+        switchMenuPanel.setVisible(true);
         connectingPanel.setVisible(false);
         createPanel.setVisible(false);
         createPanel2.setVisible(false);
         quickPanel.setVisible(true);
         searchPanel.setVisible(false);
-
         searchMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
 
     private void createPanelManager(ActionEvent actionEvent) {
-        matchPanel.setVisible(false);
-
-        switchMenuPanel.setVisible(true);
         isConnecting = false;
-
+        NeverScapeAlonePlugin.cycleQueue = false;
+        matchPanel.setVisible(false);
+        switchMenuPanel.setVisible(true);
         connectingPanel.setVisible(false);
         createPanel.setVisible(true);
         createPanel2.setVisible(false);
         quickPanel.setVisible(false);
         searchPanel.setVisible(false);
-
         quickMatchPanelButton.setSelected(false);
         searchMatchPanelButton.setSelected(false);
     }
 
     private void searchPanelManager(ActionEvent actionEvent) {
-        matchPanel.setVisible(false);
-
-        switchMenuPanel.setVisible(true);
         isConnecting = false;
-
+        NeverScapeAlonePlugin.cycleQueue = false;
+        matchPanel.setVisible(false);
+        switchMenuPanel.setVisible(true);
         connectingPanel.setVisible(false);
         createPanel.setVisible(false);
         createPanel2.setVisible(false);
         quickPanel.setVisible(false);
         searchPanel.setVisible(true);
-
         quickMatchPanelButton.setSelected(false);
         createMatchPanelButton.setSelected(false);
     }
@@ -978,6 +968,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
         quickMatchButton.setBackground(COLOR_INPROGRESS);
         quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
         quickPanel.add(quickMatchButton, c);
+        c.gridy += 1;
+
+        quickPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+        quickPanel.add(title("Random"), c);
+        c.gridy += 1;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.CENTER;
+        quickPanel.add(randomPanel, c);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
         c.gridy += 1;
 
         quickPanel.add(Box.createVerticalStrut(5), c);
@@ -1040,6 +1041,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
             activity_buttons.add(button);
 
             switch (value.getActivity()) {
+                case "random":
+                    randomPanel.add(button);
+                    break;
                 case "skill":
                     skillPanel.add(button);
                     break;
@@ -1078,6 +1082,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     }
 
     private void constructQueuePanels() {
+        randomPanel = subActivityPanel(1, 1);
         skillPanel = subActivityPanel(4, 6);
         bossPanel = subActivityPanel(7, 6);
         raidPanel = subActivityPanel(2, 2);

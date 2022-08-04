@@ -99,6 +99,7 @@ public class Icons {
     public static final ImageIcon YELLOW_PARTYHAT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/yellow_partyhat.png"));
 
     // "skill", "boss", "minigame", "misc", "solo", "raids"
+    public static final ImageIcon RANDOM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/random.png"));
     // SKILLS
     public static final ImageIcon ATTACK = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/attack.png"));
     public static final ImageIcon DEFENCE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/defence.png"));
