@@ -1341,7 +1341,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
         createSelectionPanel.add(header("Passcode"), c);
         c.gridx = 1;
-        passcode.setToolTipText("Leave blank for a Public match");
+        passcode.setToolTipText("Leave blank for a Public match, DO NOT USE YOUR REAL PASSWORD");
         createSelectionPanel.add(passcode, c);
         c.gridx = 2;
         c.weightx = 0;
