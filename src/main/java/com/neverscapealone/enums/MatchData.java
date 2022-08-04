@@ -50,6 +50,9 @@ public class MatchData {
     @SerializedName("isPrivate")
     @Expose
     private Boolean isPrivate;
+    @SerializedName("ban_list")
+    @Expose
+    private List<Integer> banList;
     @SerializedName("requirement")
     @Expose
     private Requirement requirement;
@@ -145,6 +148,19 @@ public class MatchData {
 
     public MatchData withRequirement(Requirement requirement) {
         this.requirement = requirement;
+        return this;
+    }
+
+    public List<Integer> getBanList() {
+        return banList;
+    }
+
+    public void setBanList(List<Integer> banList) {
+        this.banList = banList;
+    }
+
+    public MatchData withBanList(List<Integer> banList) {
+        this.banList = banList;
         return this;
     }
 

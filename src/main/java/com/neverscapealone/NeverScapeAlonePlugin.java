@@ -180,6 +180,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
         client.clearHintArrow();
+        websocket.logoff("Client closed");
         log.info("NeverScapeAlone stopped!");
     }
 
