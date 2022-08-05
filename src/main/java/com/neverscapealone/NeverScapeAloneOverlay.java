@@ -26,44 +26,22 @@
 
 package com.neverscapealone;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.AbstractMap.SimpleEntry;
-import javax.imageio.ImageIO;
-import javax.inject.Inject;
-
 import com.neverscapealone.enums.PingData;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.Perspective;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.plugins.grounditems.config.DespawnTimerMode;
-import static net.runelite.client.plugins.grounditems.config.ItemHighlightMode.MENU;
-import static net.runelite.client.plugins.grounditems.config.ItemHighlightMode.NONE;
-import net.runelite.client.plugins.grounditems.config.PriceDisplayMode;
-import net.runelite.client.plugins.party.data.PartyTilePingData;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.components.BackgroundComponent;
-import net.runelite.client.ui.overlay.components.ProgressPieComponent;
-import net.runelite.client.ui.overlay.components.TextComponent;
-import net.runelite.client.util.QuantityFormatter;
+
+import javax.inject.Inject;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class NeverScapeAloneOverlay extends Overlay
 {
