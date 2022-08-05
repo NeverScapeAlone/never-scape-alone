@@ -24,11 +24,10 @@
  */
 
 package com.neverscapealone;
-import javax.inject.Inject;
+
 import net.runelite.client.util.HotkeyListener;
 
-import java.time.Duration;
-import java.time.Instant;
+import javax.inject.Inject;
 
 class NeverScapeAloneHotkeyListener extends HotkeyListener
 {
