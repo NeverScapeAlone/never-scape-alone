@@ -340,6 +340,36 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
+        /// match ID panel
+
+        JPanel match_ID_panel = new JPanel();
+        match_ID_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        match_ID_panel.setBackground(SUB_BACKGROUND_COLOR);
+        match_ID_panel.setLayout(new GridBagLayout());
+        match_ID_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        GridBagConstraints cm = new GridBagConstraints();
+        cm.weightx = 1;
+        cm.fill = GridBagConstraints.HORIZONTAL;
+        cm.anchor = GridBagConstraints.CENTER;
+        cm.gridx = 0;
+        cm.gridy = 0;
+
+        JLabel matchID = new JLabel("ID: "+matchdata.getId());
+        matchID.setIcon(Icons.NSA_ICON);
+        matchID.setToolTipText("Your match ID");
+        if (matchdata.getIsPrivate()){
+            matchID.setForeground(Color.yellow.darker().darker());
+        } else {
+            matchID.setForeground(Color.green.darker().darker());
+        }
+
+        matchID.setFont(FontManager.getRunescapeBoldFont());
+        match_ID_panel.add(matchID, cm);
+        mp.add(match_ID_panel, c);
+
+        mp.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
+
         /// current activity panel
         JPanel current_activity_panel = new JPanel();
         current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
