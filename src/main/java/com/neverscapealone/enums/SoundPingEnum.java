@@ -40,7 +40,7 @@ public enum SoundPingEnum {
     PLAYER_JOIN(4),
     PLAYER_LEAVE(5),
     ERROR(6),
-    BUTTON_PRESS(6)
+    BUTTON_PRESS(7)
     ;
 
     private final Integer ID;

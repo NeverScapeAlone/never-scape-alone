@@ -422,10 +422,42 @@ public class NeverScapeAlonePanel extends PluginPanel {
         region_label.setIcon(Icons.WORLD_ICON);
         region_label.setToolTipText("Match Region");
         current_activity_panel.add(region_label, ca);
+        ca.gridy +=1;
 
-        mp.add(current_activity_panel, c);
         c.gridy += 1;
+        mp.add(current_activity_panel, c);
 
+        // post button below activity panel
+
+        if (matchdata.getDiscordInvite() != null){
+            JPanel discord_invite_panel = new JPanel();
+            discord_invite_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+            discord_invite_panel.setBackground(SUB_BACKGROUND_COLOR);
+            discord_invite_panel.setLayout(new GridBagLayout());
+            GridBagConstraints cd = new GridBagConstraints();
+            cd.weightx = 1;
+            cd.fill = GridBagConstraints.HORIZONTAL;
+            cd.anchor = GridBagConstraints.CENTER;
+            cd.gridx = 0;
+            cd.gridy = 0;
+            JButton discord_invite_button = new JButton();
+            discord_invite_button.setIcon(Icons.DISCORD_ICON);
+            discord_invite_button.setToolTipText("Join the group's discord!");
+            discord_invite_button.setText("Join Discord");
+            discord_invite_button.setBackground(new Color(114,137,218).darker().darker());
+            discord_invite_button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    LinkBrowser.browse(matchdata.getDiscordInvite());
+                }
+            });
+            discord_invite_panel.add(discord_invite_button, cd);
+
+            c.gridy += 1;
+            mp.add(discord_invite_panel, c);
+        }
+
+        c.gridy += 1;
         /// end current activity panel
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
