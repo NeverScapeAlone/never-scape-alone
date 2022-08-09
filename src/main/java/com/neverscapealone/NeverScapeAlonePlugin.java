@@ -39,6 +39,7 @@ import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
+import net.runelite.client.discord.events.DiscordReady;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
@@ -109,6 +110,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static String discord_id = "NULL";
     public Integer timer = 0;
     public static Integer matchSize = 0;
+    private static long last_ping = 0;
     private static Integer old_ping_x = 0;
     private static Integer old_ping_y = 0;
     private static Integer old_loc_x = 0;
@@ -168,7 +170,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         log.info("NeverScapeAlone stopped!");
     }
 
-    public void setDiscordUser(){
+    public void onDiscordReady(DiscordReady discordReady){
         DiscordUser discordUser = discordService.getCurrentUser();
         if (discordUser == null){
             NeverScapeAlonePlugin.discordUsername = "NULL";
@@ -270,7 +272,21 @@ public class NeverScapeAlonePlugin extends Plugin {
         timer += 1;
     }
 
+    public boolean pingSpeedLimit(){
+        // ~3 pings every second, to complement server-side rate-limiter
+        long currentTimeMillis = System.currentTimeMillis();
+        long gap = currentTimeMillis - NeverScapeAlonePlugin.last_ping;
+        if (gap >= 350){
+            NeverScapeAlonePlugin.last_ping = currentTimeMillis;
+            return true;
+        }
+        return false;
+    }
+
     public void Ping(boolean isAlert){
+        if (!pingSpeedLimit()){
+            return;
+        }
         if (websocket == null){
             return; // return if no websocket
         }
