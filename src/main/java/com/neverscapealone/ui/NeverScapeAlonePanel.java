@@ -88,7 +88,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public final JButton accounts_help_button = new JButton();
     public final JButton region_help_button = new JButton();
     public final JButton passcode_help_button = new JButton();
-    SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 0, 1000, 1);
+    SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
     public final JSpinner party_member_count = new JSpinner(player_size_model);
     public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
     public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
