@@ -45,6 +45,7 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -73,6 +74,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private Client client;
     @Inject
+    private PluginManager pluginManager;
+    @Inject
     private ClientThread clientThread;
     @Inject
     private ConfigManager configManager;
@@ -98,6 +101,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     private EventBus eventBus;
     @Inject
     DiscordService discordService;
+
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
     public String username = "";
