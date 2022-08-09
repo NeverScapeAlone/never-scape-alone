@@ -33,8 +33,6 @@ import com.neverscapealone.enums.ServerMessage;
 import com.neverscapealone.enums.SoundPing;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.model.Payload;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import net.runelite.client.eventbus.EventBus;
