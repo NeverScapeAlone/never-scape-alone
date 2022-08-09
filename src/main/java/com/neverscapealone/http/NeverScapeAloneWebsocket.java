@@ -33,6 +33,8 @@ import com.neverscapealone.enums.ServerMessage;
 import com.neverscapealone.enums.SoundPing;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.model.Payload;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import net.runelite.client.eventbus.EventBus;
@@ -55,6 +57,11 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private OkHttpClient okHttpClient;
     @Inject
     private Gson gson;
+    @Getter
+    @Setter
+    private String pluginVersion;
+    private final Supplier<String> pluginVersionSupplier = () ->
+            (pluginVersion != null && !pluginVersion.isEmpty()) ? pluginVersion : "UNKNOWN-VERSION";
     private static String username;
     private static String discord;
     private static String discord_id;
@@ -104,6 +111,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 .addHeader("Discord", discord)
                 .addHeader("Discord_ID", discord_id)
                 .addHeader("Token", token)
+                .addHeader("Version", pluginVersionSupplier.get())
                 .addHeader("Time", Instant.now().toString())
                 .build();
 

@@ -469,24 +469,12 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     public void createMatchStart(ActionEvent actionEvent) {
         String activity = panel.step1_activity;
-        String party_members = panel.party_member_count.getText();
+        String party_members = String.valueOf(panel.party_member_count.getValue());
         String experience = panel.experience_level.getSelectedItem().toString();
         String split_type = panel.party_loot.getSelectedItem().toString();
         String accounts = panel.account_type.getSelectedItem().toString();
         String regions = panel.region.getSelectedItem().toString();
         String group_passcode = panel.passcode.getText();
-
-        String converted_party_size = convertInput(party_members);
-        Pattern p = Pattern.compile("[0-9<>=&|]*");
-        Matcher m = p.matcher(converted_party_size);
-        if (m.matches()) {
-            panel.party_member_count.setBackground(Color.green.darker().darker().darker());
-            panel.party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
-        } else {
-            panel.party_member_count.setBackground(Color.RED.darker().darker().darker());
-            panel.party_member_count.setToolTipText("Try the help button to the right! Your input was invalid.");
-            return;
-        }
 
         if (checkPasscode(group_passcode)) {
             panel.passcode.setBackground(Color.green.darker().darker().darker());
@@ -519,37 +507,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         Pattern p = Pattern.compile("^[A-Za-z0-9-_ ]{0,64}$");
         Matcher m = p.matcher(group_passcode);
         return m.matches();
-    }
-
-    public String convertInput(String text) {
-        text = text.replaceAll("\\s", "");
-        text = text.toLowerCase();
-        // ex. [2,5] -> >=2&<=5
-        text = text.replaceAll("(\\[)([0-9]{1,3})(,)([0-9]{1,3})(])", ">=$2&<=$4");
-        // ex. (2,5] -> >2&<=5
-        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\])", ">$2&<=$4");
-        // ex. [2,5) -> >=2&<5
-        text = text.replaceAll("(\\[){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))", ">=$2&<$4");
-        // ex. (2,5) -> >2&<5
-        text = text.replaceAll("(\\(){1}([0-9]){1,3}(,){1}([0-9]{1,3})(\\))", ">$2&<$4");
-        // ex. (between*) 100 and 145 -> >=100&<=145
-        text = text.replaceAll("(between){0,1}([0-9]{1,3})(to|-|&|and)([0-9]{1,3})", ">=$2&<=$4");
-        // ex. lt4 -> <4
-        text = text.replaceAll("(lessthan|lt|-lt|<){1}([0-9]{1,3})", "<$2");
-        // ex. max5 -> <=5
-        text = text.replaceAll("(max|maximum|le|-le|<=){1}([0-9]{1,3})", "<=$2");
-        // ex. greaterthan20 -> >20
-        text = text.replaceAll("(greaterthan|gt|-gt|>){1}([0-9]{1,3})", ">$2");
-        // ex. min50 -> >=50
-        text = text.replaceAll("(min|minimum|ge|-ge|>=){1}([0-9]{1,3})", ">=$2");
-        // ex. 5+ -> >=5
-        text = text.replaceAll("([0-9]{1,3})([+]{1})", ">=$1");
-        // ex. 'and' -> &
-        text = text.replaceAll("(and){1}", "&");
-        // ex. 'or' -> ||
-        text = text.replaceAll("(or){1}", "||");
-
-        return text;
     }
 
     public void searchActiveMatches(ActionEvent actionEvent) {
