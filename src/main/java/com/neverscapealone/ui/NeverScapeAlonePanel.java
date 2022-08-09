@@ -88,7 +88,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public final JButton accounts_help_button = new JButton();
     public final JButton region_help_button = new JButton();
     public final JButton passcode_help_button = new JButton();
-    public final JTextField party_member_count = new JTextField();
+    SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 0, 1000, 1);
+    public final JSpinner party_member_count = new JSpinner(player_size_model);
     public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
     public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
     public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
@@ -1309,10 +1310,20 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(header("Group Size"), c);
         c.gridx = 1;
 
-        party_member_count.setFont(FontManager.getRunescapeSmallFont());
-        party_member_count.setText("2+");
-        party_member_count.setToolTipText("Examples: '2-3' 2 to 3 members, '2+' more than 2 members, '[1,8]' 1 to 8 members inclusive.");
-        createSelectionPanel.add(party_member_count, c);
+        JPanel spinnerPanel = new JPanel();
+        spinnerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        spinnerPanel.setLayout(new GridBagLayout());
+        GridBagConstraints sp = new GridBagConstraints();
+        sp.weightx = 1;
+        sp.fill = GridBagConstraints.HORIZONTAL;
+        sp.anchor = GridBagConstraints.WEST;
+        sp.gridy = 0;
+        sp.gridx = 0;
+        party_member_count.setFont(FontManager.getRunescapeFont());
+        party_member_count.setToolTipText("Maximum party size");
+        spinnerPanel.add(party_member_count, sp);
+
+        createSelectionPanel.add(spinnerPanel, c);
 
         c.gridx = 2;
         c.weightx = 0;
@@ -1425,28 +1436,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "Group Size Help" + "\n" +
-                "The group size string indicates how many players your party should have." + "\n" +
-                "The input can be quite dynamic. This allows extensive flexibility when creating a group." + "\n" +
-                "--- Examples ---" + "\n" +
-                "5 -> 'Group size of 5.'" + "\n" +
-                "5+ -> 'Group size greater than 5 inclusive.'" + "\n" +
-                "5-10 -> 'Group size between 5 and 10 inclusive.'" + "\n" +
-                "[2,5] -> 'Group size greater than 2 inclusive, and less than 5 inclusive. This is the same as 2-5.'" + "\n" +
-                "(2,5] -> 'Group size greater than 2 exclusive, and less than 5 inclusive.'" + "\n" +
-                "[2,5) -> 'Group size greater than 2 inclusive, and less than 5 exclusive.'" + "\n" +
-                "(2,5) -> 'Group size greater than 2 exclusive and less than 5 exclusive.'" + "\n" +
-                "between 100 and|&|to|- 145 -> 'Group size greater than 100 inclusive, and less than 145 inclusive'" + "\n" +
-                "less than 4|lt 4|-lt 4|<4 -> 'Group size smaller than 4 exclusive.'" + "\n" +
-                "max 10|maximum 10|le 10|-le 10|<=10 -> 'Group size less than or equal to 10.'" + "\n" +
-                "greater than 50|gt 50|-gt 50|>50 -> 'Group size greater than 50 exclusive.'" + "\n" +
-                "min 99|minimum 99|ge 99|-ge 99|>=99 -> 'Group size greater than or equal to 99 inclusive.'" + "\n" +
-                "-- Chaining Group Sizes --" + "\n" +
-                "Sometimes, you would like to have a group of 5, or a group between 10-20, this can be done easily:" + "\n" +
-                "5 or 10-20" + "\n" +
-                "Add 'or' between groups, in order to create explicit group sizes." + "\n" +
-                "5+ or 7-10 -> Group size greater than 5, or between 7 inclusive and 10 inclusive." + "\n" +
-                "min 5 or [2,3) or max 50 or lt4 -> Group size at minimum 5 players, or between 2 inclusive and 3 exclusive, or max 50, or less than 4." + "\n" +
-                "Please visit our discord if you have any further questions!";
+                "The group size string indicates the maximum" + "\n"+
+                "number of players that your group should have.";
         JOptionPane.showMessageDialog(frame, message);
     }
 
@@ -1624,6 +1615,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
             partyLeader_label.setIcon(Icons.YELLOW_PARTYHAT_ICON);
             partyLeader_label.setToolTipText("The party leader");
             sMatch.add(partyLeader_label, cMatch);
+            cMatch.gridy += 1;
+
+            JLabel size_label = new JLabel(match.getPartyMembers());
+            size_label.setIcon(Icons.PLAYERS_ICON);
+            size_label.setToolTipText("Max Size");
+            sMatch.add(size_label, cMatch);
+            cMatch.gridy += 1;
+
+            sMatch.add(Box.createVerticalStrut(1), cMatch);
             cMatch.gridy += 1;
 
             sMatch.add(Box.createVerticalStrut(1), cMatch);
