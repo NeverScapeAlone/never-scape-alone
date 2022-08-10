@@ -421,7 +421,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         current_activity_panel.add(Box.createVerticalStrut(2), ca);
         ca.gridy += 1;
 
-        // first player in line should be the party leader
         JLabel friends_chat_label = new JLabel("FC: \""+matchdata.getPlayers().get(0).getLogin()+"\"");
         friends_chat_label.setIcon(Icons.CHAT);
         friends_chat_label.setToolTipText("Friend's Chat");
