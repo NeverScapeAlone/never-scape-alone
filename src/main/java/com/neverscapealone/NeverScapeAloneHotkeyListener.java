@@ -48,7 +48,6 @@ class NeverScapeAloneHotkeyListener extends HotkeyListener
     @Override
     public void hotkeyPressed()
     {
-
         time_start = System.currentTimeMillis();
     }
 

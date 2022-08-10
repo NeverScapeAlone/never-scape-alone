@@ -50,6 +50,7 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -420,6 +421,24 @@ public class NeverScapeAlonePanel extends PluginPanel {
         current_activity_panel.add(Box.createVerticalStrut(2), ca);
         ca.gridy += 1;
 
+        JLabel friends_chat_label = new JLabel("FC: \""+matchdata.getPlayers().get(0).getLogin()+"\"");
+        friends_chat_label.setIcon(Icons.CHAT);
+        friends_chat_label.setToolTipText("Friend's Chat");
+        current_activity_panel.add(friends_chat_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        JLabel player_count_label = new JLabel(String.valueOf(matchdata.getPlayers().size())+"/"+matchdata.getPartyMembers());
+        player_count_label.setIcon(Icons.PLAYERS_ICON);
+        player_count_label.setToolTipText("Players");
+        current_activity_panel.add(player_count_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
         JLabel experience_label = new JLabel(matchdata.getRequirement().getExperience());
         experience_label.setIcon(Icons.EXPERIENCE_ICON);
         experience_label.setToolTipText("Experience");
@@ -479,7 +498,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
             discord_invite_button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    LinkBrowser.browse(matchdata.getDiscordInvite());
+
+                    final JFrame frame = new JFrame();
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    String message = "Your microphone will be ON at the time of arrival.\n Please mute your microphone now, prior to joining.";
+                    String title = "NeverScapeAlone Discord Match ID: "+ matchdata.getId();
+                    if (JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, Icons.DISCORD_ICON, new String[]{"JOIN","CANCEL"}, "JOIN") == JOptionPane.YES_OPTION){
+                        LinkBrowser.browse(matchdata.getDiscordInvite());
+                    };
+
                 }
             });
             discord_invite_panel.add(discord_invite_button, cd);
@@ -1617,9 +1644,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
             sMatch.add(partyLeader_label, cMatch);
             cMatch.gridy += 1;
 
-            JLabel size_label = new JLabel(match.getPartyMembers());
+            JLabel size_label = new JLabel(match.getPlayerCount()+"/"+match.getPartyMembers());
             size_label.setIcon(Icons.PLAYERS_ICON);
-            size_label.setToolTipText("Max Size");
+            size_label.setToolTipText("Players");
             sMatch.add(size_label, cMatch);
             cMatch.gridy += 1;
 

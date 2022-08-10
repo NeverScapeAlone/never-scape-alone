@@ -30,6 +30,8 @@ import com.google.inject.Provides;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Player;
 import net.runelite.api.*;
@@ -39,6 +41,7 @@ import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
+import net.runelite.client.discord.events.DiscordReady;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
@@ -105,12 +108,21 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
     public String username = "";
+
+    @Getter
+    @Setter
     public static String discordUsername = null;
+    @Getter
+    @Setter
     public static String discord_id = null;
     public Integer timer = 0;
+    public Integer tileTimer = 0;
     public static Integer matchSize = 0;
-    private static Integer old_x = 0;
-    private static Integer old_y = 0;
+    private static long last_ping = 0;
+    private static Integer old_ping_x = 0;
+    private static Integer old_ping_y = 0;
+    private static Integer old_loc_x = 0;
+    private static Integer old_loc_y = 0;
     public static boolean cycleQueue = false;
     public static JsonObject queuePayload = new JsonObject();
     private String old_username = "";
@@ -121,7 +133,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Integer old_run_energy = 0;
 
     //
-    public static ArrayList<PingData> pingDataArrayList = new ArrayList<PingData>();
+    public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -144,15 +156,6 @@ public class NeverScapeAlonePlugin extends Plugin {
             configManager.setConfiguration(NeverScapeAloneConfig.CONFIG_GROUP, NeverScapeAloneConfig.AUTH_TOKEN_KEY, USER_GENERATED_TOKEN);
         }
 
-        DiscordUser discordUser = discordService.getCurrentUser();
-        if (discordUser == null){
-            NeverScapeAlonePlugin.discordUsername = "NULL";
-            NeverScapeAlonePlugin.discord_id = "NULL";
-        } else {
-            NeverScapeAlonePlugin.discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
-            NeverScapeAlonePlugin.discord_id = discordService.getCurrentUser().userId;
-        }
-
         panel = injector.getInstance(NeverScapeAlonePanel.class);
         final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/tri-icon.png");
         navButton = NavigationButton.builder()
@@ -173,6 +176,21 @@ public class NeverScapeAlonePlugin extends Plugin {
         client.clearHintArrow();
         websocket.logoff("Client closed");
         log.info("NeverScapeAlone stopped!");
+    }
+
+    public void updateDiscordInformation(){
+        if ((NeverScapeAlonePlugin.discord_id != null) & (NeverScapeAlonePlugin.discordUsername != null)){
+            return;
+        }
+
+        DiscordUser discordUser = discordService.getCurrentUser();
+        if (discordUser == null){
+            setDiscordUsername(null);
+            setDiscord_id(null);
+        } else {
+            setDiscordUsername("@"+discordUser.username+"#"+discordUser.discriminator);
+            setDiscord_id(discordUser.userId);
+        }
     }
 
     @Subscribe
@@ -266,7 +284,34 @@ public class NeverScapeAlonePlugin extends Plugin {
         timer += 1;
     }
 
+    @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void decayTiles(){
+        if (NeverScapeAlonePlugin.pingDataArrayList.size() == 0){
+            return;
+        }
+        tileTimer +=1;
+
+        if (tileTimer>= config.pingDecay()){
+            NeverScapeAlonePlugin.pingDataArrayList.remove(0);
+            tileTimer = 0;
+        }
+    }
+
+    public boolean pingSpeedLimit(){
+        // ~3 pings every second, to complement server-side rate-limiter
+        long currentTimeMillis = System.currentTimeMillis();
+        long gap = currentTimeMillis - NeverScapeAlonePlugin.last_ping;
+        if (gap >= 350){
+            NeverScapeAlonePlugin.last_ping = currentTimeMillis;
+            return true;
+        }
+        return false;
+    }
+
     public void Ping(boolean isAlert){
+        if (!pingSpeedLimit()){
+            return;
+        }
         if (websocket == null){
             return; // return if no websocket
         }
@@ -282,11 +327,11 @@ public class NeverScapeAlonePlugin extends Plugin {
         Integer regionID = wp.getRegionID();
         Integer plane = wp.getPlane();
 
-        if ((Objects.equals(NeverScapeAlonePlugin.old_x, x)) & (Objects.equals(NeverScapeAlonePlugin.old_y, y))){
+        if ((Objects.equals(NeverScapeAlonePlugin.old_ping_x, x)) & (Objects.equals(NeverScapeAlonePlugin.old_ping_y, y))){
             return;
         }
-        NeverScapeAlonePlugin.old_x = x;
-        NeverScapeAlonePlugin.old_y = y;
+        NeverScapeAlonePlugin.old_ping_x = x;
+        NeverScapeAlonePlugin.old_ping_y = y;
 
         JsonObject create_request = new JsonObject();
         JsonObject ping_payload = new JsonObject();
@@ -328,6 +373,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent) {
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id, config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
@@ -385,6 +431,12 @@ public class NeverScapeAlonePlugin extends Plugin {
         int regionY = wp.getRegionY();
         int regionID = wp.getRegionID();
         int plane = wp.getPlane();
+
+        if ((NeverScapeAlonePlugin.old_loc_y == y) & (NeverScapeAlonePlugin.old_loc_x == x)){
+            return;
+        }
+        NeverScapeAlonePlugin.old_loc_x = x;
+        NeverScapeAlonePlugin.old_loc_y = y;
 
         JsonObject sub_payload = new JsonObject();
         sub_payload.addProperty("y", y);
@@ -462,11 +514,13 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void privateMatchJoin(String matchID, String passcode) {
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, passcode);
         panel.connectingPanelManager();
     }
 
     public void publicMatchJoin(String matchID) {
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, null);
         panel.connectingPanelManager();
     }
@@ -489,6 +543,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         panel.connectingPanelManager();
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
 
         JsonObject sub_request = new JsonObject();
@@ -516,6 +571,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void searchActiveMatches(ActionEvent actionEvent) {
         panel.searchBar.setEditable(false);
         panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0) {
