@@ -30,6 +30,8 @@ import com.google.inject.Provides;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Player;
 import net.runelite.api.*;
@@ -106,8 +108,13 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
     public String username = "";
-    public static String discordUsername = "NULL";
-    public static String discord_id = "NULL";
+
+    @Getter
+    @Setter
+    public static String discordUsername = null;
+    @Getter
+    @Setter
+    public static String discord_id = null;
     public Integer timer = 0;
     public Integer tileTimer = 0;
     public static Integer matchSize = 0;
@@ -171,14 +178,18 @@ public class NeverScapeAlonePlugin extends Plugin {
         log.info("NeverScapeAlone stopped!");
     }
 
-    public void onDiscordReady(DiscordReady discordReady){
+    public void updateDiscordInformation(){
+        if ((NeverScapeAlonePlugin.discord_id != null) & (NeverScapeAlonePlugin.discordUsername != null)){
+            return;
+        }
+
         DiscordUser discordUser = discordService.getCurrentUser();
         if (discordUser == null){
-            NeverScapeAlonePlugin.discordUsername = "NULL";
-            NeverScapeAlonePlugin.discord_id = "NULL";
+            setDiscordUsername(null);
+            setDiscord_id(null);
         } else {
-            NeverScapeAlonePlugin.discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
-            NeverScapeAlonePlugin.discord_id = discordService.getCurrentUser().userId;
+            setDiscordUsername("@"+discordUser.username+"#"+discordUser.discriminator);
+            setDiscord_id(discordUser.userId);
         }
     }
 
@@ -362,6 +373,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent) {
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id, config.authToken(), "0", null);
         ArrayList<String> queue_list = panel.queue_list;
         if (queue_list.size() == 0) {
@@ -502,11 +514,13 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void privateMatchJoin(String matchID, String passcode) {
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, passcode);
         panel.connectingPanelManager();
     }
 
     public void publicMatchJoin(String matchID) {
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, null);
         panel.connectingPanelManager();
     }
@@ -529,6 +543,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         panel.connectingPanelManager();
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
 
         JsonObject sub_request = new JsonObject();
@@ -556,6 +571,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void searchActiveMatches(ActionEvent actionEvent) {
         panel.searchBar.setEditable(false);
         panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
+        updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0) {

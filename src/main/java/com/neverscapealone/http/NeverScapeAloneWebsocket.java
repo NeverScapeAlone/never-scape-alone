@@ -83,6 +83,14 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
             return;
         }
 
+        if (discord == null){
+            discord = "NULL";
+        }
+
+        if (discord_id == null){
+            discord_id = "NULL";
+        }
+
         NeverScapeAloneWebsocket.username = username;
         NeverScapeAloneWebsocket.discord = discord;
         NeverScapeAloneWebsocket.discord_id = discord_id;
@@ -131,7 +139,6 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     public void onOpen(WebSocket webSocket, okhttp3.Response response) {
         isSocketConnected = true;
     }
-
 
     @Override
     public void onMessage(WebSocket socket, String text) {
