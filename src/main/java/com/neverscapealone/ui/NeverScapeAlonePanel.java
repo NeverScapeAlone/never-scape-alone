@@ -50,6 +50,7 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -488,7 +489,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
             discord_invite_button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    LinkBrowser.browse(matchdata.getDiscordInvite());
+
+                    final JFrame frame = new JFrame();
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    String message = "Your microphone will be ON at the time of arrival.\n Please mute your microphone now, prior to joining.";
+                    String title = "NeverScapeAlone Discord Match ID: "+ matchdata.getId();
+                    if (JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, Icons.DISCORD_ICON, new String[]{"JOIN","CANCEL"}, "JOIN") == JOptionPane.YES_OPTION){
+                        LinkBrowser.browse(matchdata.getDiscordInvite());
+                    };
+
                 }
             });
             discord_invite_panel.add(discord_invite_button, cd);
