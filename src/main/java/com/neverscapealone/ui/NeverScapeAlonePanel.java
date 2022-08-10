@@ -51,6 +51,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
@@ -369,9 +371,16 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
 
         matchID.setFont(FontManager.getRunescapeBoldFont());
+        matchID.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                StringSelection selection = new StringSelection(matchdata.getId());
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, selection);
+            }
+        });
         match_ID_panel.add(matchID, cm);
         mp.add(match_ID_panel, c);
-
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
