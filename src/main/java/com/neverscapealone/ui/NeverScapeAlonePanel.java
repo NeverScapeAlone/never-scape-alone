@@ -627,6 +627,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
                 }
             }
             player_name.setToolTipText("ID: " + String.valueOf(player.getUserId()));
+            player_name.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    StringSelection selection = new StringSelection(player.getLogin());
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(selection, selection);
+                }
+            });
             player_name_panel.add(player_name, pnp);
             player_panel.add(player_name_panel, cp);
             cp.gridy += 1;
