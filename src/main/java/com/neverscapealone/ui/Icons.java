@@ -177,14 +177,14 @@ public class Icons {
     public static final ImageIcon BLAST_FURNACE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/blast_furnace.png"));
     public static final ImageIcon BLAST_MINE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/blast_mine.png"));
     public static final ImageIcon BRIMHAVEN_AGILITY_ARENA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/brimhaven_agility_arena.png"));
-    public static final ImageIcon BOUNTY_HUNTER_HUNTER = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bountyhunterhunter.png"));
-    public static final ImageIcon BOUNTY_HUNTER_ROGUE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bountyhunterrogue.png"));
+    public static final ImageIcon BOUNTY_HUNTER = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/bountyhunterhunter.png"));
     public static final ImageIcon CAMDOZAAL_VAULT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/camdozaal_vault.png"));
     public static final ImageIcon CASTLE_WARS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/castle_wars.png"));
     public static final ImageIcon CLAN_WARS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/clan_wars.png"));
     public static final ImageIcon CREATURE_CREATION = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/creature_creation.png"));
-    public static final ImageIcon DUEL_ARENA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/duel_arena.png"));
+    public static final ImageIcon PVP_ARENA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/duel_arena.png"));
     public static final ImageIcon FISHING_TRAWLER = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/fishing_trawler.png"));
+    public static final ImageIcon GIANTS_FOUNDRY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/giants_foundry.png"));
     public static final ImageIcon GNOME_BALL = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/gnome_ball.png"));
     public static final ImageIcon GNOME_RESTAURANT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/gnome_restaurant.png"));
     public static final ImageIcon GUARDIANS_OF_THE_RIFT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/gotr.png"));
