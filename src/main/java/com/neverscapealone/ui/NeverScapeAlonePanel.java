@@ -56,6 +56,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -121,6 +122,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
     // GLOBAL VARIABLES
     public String step1_activity = "";
+
+    // region references
+    Map<Integer, String> regionReference = RegionName.regionReference();
 
     private static boolean rating_selected = true;
     private static boolean discord_selected = true;
@@ -707,8 +711,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
                     player_location.add(world_label, cs);
 
                     JLabel coordinate_label = new JLabel();
-                    coordinate_label.setText("("+String.valueOf(x)+", "+String.valueOf(y)+")");
-                    coordinate_label.setToolTipText("Player's current coordinate");
+                    String region = regionReference.get(regionID);
+                    if (region == null){
+                        region = "Unknown";
+                    }
+                    coordinate_label.setText(region);
+                    coordinate_label.setToolTipText("("+String.valueOf(x)+", "+String.valueOf(y)+")");
                     coordinate_label.setIcon(Icons.COORDINATE_ICON);
                     cs.gridx = 2;
                     player_location.add(coordinate_label, cs);
