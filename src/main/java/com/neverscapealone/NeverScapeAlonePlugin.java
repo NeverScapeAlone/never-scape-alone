@@ -109,6 +109,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static String discordUsername = "NULL";
     public static String discord_id = "NULL";
     public Integer timer = 0;
+    public Integer tileTimer = 0;
     public static Integer matchSize = 0;
     private static long last_ping = 0;
     private static Integer old_ping_x = 0;
@@ -125,7 +126,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Integer old_run_energy = 0;
 
     //
-    public static ArrayList<PingData> pingDataArrayList = new ArrayList<PingData>();
+    public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -270,6 +271,19 @@ public class NeverScapeAlonePlugin extends Plugin {
         String timer_string = "Queue Time: " + formatSeconds(timer);
         panel.setConnectingPanelQueueTime(timer_string);
         timer += 1;
+    }
+
+    @Schedule(period = 1, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void decayTiles(){
+        if (NeverScapeAlonePlugin.pingDataArrayList.size() == 0){
+            return;
+        }
+        tileTimer +=1;
+
+        if (tileTimer>= config.pingDecay()){
+            NeverScapeAlonePlugin.pingDataArrayList.remove(0);
+            tileTimer = 0;
+        }
     }
 
     public boolean pingSpeedLimit(){

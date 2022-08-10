@@ -114,6 +114,19 @@ public interface NeverScapeAloneConfig extends Config {
     {
         return 5;
     }
+    @ConfigItem(
+            position = 4,
+            keyName = "pingDecay",
+            name = "Ping Decay",
+            description = "Maximum number of seconds that a ping can live for",
+            section = interactiveSettings
+    )
+    @Range(max = 3600)
+    @Units(Units.SECONDS)
+    default int pingDecay()
+    {
+        return 20;
+    }
 
 
     @ConfigItem(
