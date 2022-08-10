@@ -420,6 +420,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
         current_activity_panel.add(Box.createVerticalStrut(2), ca);
         ca.gridy += 1;
 
+        JLabel player_count_label = new JLabel(String.valueOf(matchdata.getPlayers().size())+"/"+matchdata.getPartyMembers());
+        player_count_label.setIcon(Icons.PLAYERS_ICON);
+        player_count_label.setToolTipText("Players");
+        current_activity_panel.add(player_count_label, ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
         JLabel experience_label = new JLabel(matchdata.getRequirement().getExperience());
         experience_label.setIcon(Icons.EXPERIENCE_ICON);
         experience_label.setToolTipText("Experience");
@@ -1617,9 +1626,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
             sMatch.add(partyLeader_label, cMatch);
             cMatch.gridy += 1;
 
-            JLabel size_label = new JLabel(match.getPartyMembers());
+            JLabel size_label = new JLabel(match.getPlayerCount()+"/"+match.getPartyMembers());
             size_label.setIcon(Icons.PLAYERS_ICON);
-            size_label.setToolTipText("Max Size");
+            size_label.setToolTipText("Players");
             sMatch.add(size_label, cMatch);
             cMatch.gridy += 1;
 
