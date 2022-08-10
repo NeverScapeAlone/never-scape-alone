@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ServerMessage;
 import com.neverscapealone.enums.SoundPing;
 import com.neverscapealone.enums.SoundPingEnum;
