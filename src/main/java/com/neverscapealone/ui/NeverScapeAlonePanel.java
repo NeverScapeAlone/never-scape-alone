@@ -80,17 +80,18 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final int SUB_PANEL_SEPARATION_HEIGHT = 7;
 
     public JButton profile_player = new JButton();
-    public JButton promote_party_leader = new JButton();;
-    public JButton favorite = new JButton();;
-    public JButton dislike_button = new JButton();;
-    public JButton like_button = new JButton();;
-    public JButton kick = new JButton();;
+    public JButton promote_party_leader = new JButton();
+    public JButton favorite = new JButton();
+    public JButton dislike_button = new JButton();
+    public JButton like_button = new JButton();
+    public JButton kick = new JButton();
     public final JButton member_count_help_button = new JButton();
     public final JButton experience_help_button = new JButton();
     public final JButton split_help_button = new JButton();
     public final JButton accounts_help_button = new JButton();
     public final JButton region_help_button = new JButton();
     public final JButton passcode_help_button = new JButton();
+    public final JButton notes_help_button = new JButton();
     SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
     public final JSpinner party_member_count = new JSpinner(player_size_model);
     public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
@@ -98,6 +99,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
     public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
     public final JTextField passcode = new JTextField();
+    public final JTextField notes = new JTextField();
     // PANELS
     private final JPanel linksPanel;
     private final JPanel switchMenuPanel;
@@ -485,6 +487,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
         region_label.setToolTipText("Match Region");
         current_activity_panel.add(region_label, ca);
         ca.gridy +=1;
+
+        if (matchdata.getNotes() != null){
+            current_activity_panel.add(Box.createVerticalStrut(1), ca);
+            ca.gridy += 1;
+
+            JLabel notes_label = new JLabel("Hover for Match Notes");
+            notes_label.setIcon(Icons.NOTES_ICON);
+            notes_label.setToolTipText(matchdata.getNotes());
+            current_activity_panel.add(notes_label, ca);
+            ca.gridy += 1;
+        }
 
         c.gridy += 1;
         mp.add(current_activity_panel, c);
@@ -1480,7 +1493,39 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.weightx = 1;
         c.gridy += 1;
 
+
+        c.gridx = 0;
+        createSelectionPanel.add(header("Notes"), c);
+        c.gridx = 1;
+        notes.setToolTipText("Add some notes for your group! Let others know what you're looking for.");
+        createSelectionPanel.add(notes, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        notes_help_button.setIcon(Icons.NOTES_ICON);
+        notes_help_button.setSize(16, 16);
+        notes_help_button.setToolTipText("Click here for help!");
+        notes_help_button.addActionListener(this::notes_help_button_panel);
+        notes_help_button.setBorderPainted(false);
+        notes_help_button.setFocusPainted(false);
+        notes_help_button.setContentAreaFilled(false);
+        createSelectionPanel.add(notes_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+
         return createSelectionPanel;
+    }
+
+    private void notes_help_button_panel(ActionEvent actionEvent) {
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Notes Help" + "\n" +
+                "The Notes description can be used to add key information" + "\n"+
+                "that other players should know about your group!" + "\n"+
+                "Note that offensive language will be censored, and you may" + "\n"+
+                "be banned from using the plugin on severe offenses" + "\n"+
+                "Please follow the Rules of RuneScape when describing your group.";
+        JOptionPane.showMessageDialog(frame, message);
     }
 
     private void count_help_button_panel(ActionEvent actionEvent) {
@@ -1714,6 +1759,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
             region_label.setToolTipText("Match Region");
             sMatch.add(region_label, cMatch);
             cMatch.gridy += 1;
+
+            if (match.getNotes() != null){
+                sMatch.add(Box.createVerticalStrut(1), cMatch);
+                cMatch.gridy += 1;
+
+                JLabel notes_label = new JLabel("Hover for Match Notes");
+                notes_label.setIcon(Icons.NOTES_ICON);
+                notes_label.setToolTipText(match.getNotes());
+                sMatch.add(notes_label, cMatch);
+                cMatch.gridy += 1;
+            }
 
             /// end match code
             c.gridy += 1;

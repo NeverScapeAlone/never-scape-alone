@@ -532,6 +532,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         String accounts = panel.account_type.getSelectedItem().toString();
         String regions = panel.region.getSelectedItem().toString();
         String group_passcode = panel.passcode.getText();
+        String group_notes = panel.notes.getText();
 
         if (checkPasscode(group_passcode)) {
             panel.passcode.setBackground(Color.green.darker().darker().darker());
@@ -541,6 +542,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             panel.passcode.setToolTipText("Your passcode contains invalid characters. Try the help button to the right!");
             return;
         }
+
         panel.connectingPanelManager();
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
@@ -553,6 +555,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         sub_request.addProperty("accounts", accounts);
         sub_request.addProperty("regions", regions);
         sub_request.addProperty("group_passcode", group_passcode);
+        sub_request.addProperty("notes", group_notes);
 
         JsonObject create_request = new JsonObject();
         create_request.addProperty("detail", "create_match");

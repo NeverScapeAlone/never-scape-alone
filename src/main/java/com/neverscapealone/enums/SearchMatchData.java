@@ -60,6 +60,9 @@ public class SearchMatchData {
     @SerializedName("party_leader")
     @Expose
     private String partyLeader;
+    @SerializedName("notes")
+    @Expose
+    private String notes;
 
     public String getId() {
         return id;
@@ -188,6 +191,17 @@ public class SearchMatchData {
 
     public SearchMatchData withPartyLeader(String partyLeader) {
         this.partyLeader = partyLeader;
+        return this;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+    public SearchMatchData withNotes(String notes) {
+        this.notes = notes;
         return this;
     }
 
