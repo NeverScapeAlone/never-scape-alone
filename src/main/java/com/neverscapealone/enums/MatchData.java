@@ -50,6 +50,9 @@ public class MatchData {
     @SerializedName("isPrivate")
     @Expose
     private Boolean isPrivate;
+    @SerializedName("notes")
+    @Expose
+    private String notes;
     @SerializedName("ban_list")
     @Expose
     private List<Integer> banList;
@@ -174,6 +177,17 @@ public class MatchData {
 
     public MatchData withPlayers(List<Player> players) {
         this.players = players;
+        return this;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+    public MatchData withNotes(String notes) {
+        this.notes = notes;
         return this;
     }
 

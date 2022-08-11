@@ -36,6 +36,7 @@ public class Icons {
     // web links and references
     public static final ImageIcon COORDINATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/coordinate.png"));
     public static final ImageIcon WORLD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/world.png"));
+    public static final ImageIcon NOTES_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/notes.png"));
     public static final ImageIcon SAFETY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/safety.png"));
     public static final ImageIcon PROFILE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/profile.png"));
     public static final ImageIcon HELP_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/help.png"));
