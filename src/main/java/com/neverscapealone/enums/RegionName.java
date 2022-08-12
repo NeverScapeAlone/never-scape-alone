@@ -33,10 +33,7 @@ package com.neverscapealone.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -435,5 +432,13 @@ public enum RegionName {
             }
         }
         return regionReference;
+    }
+    public static ArrayList<String> regionActivityList() {
+        ArrayList<String> activityList = new ArrayList<String>();
+        activityList.add("Nowhere");
+        for (RegionName region : RegionName.values()) {
+            activityList.add(region.getActivityName());
+        }
+        return activityList;
     }
 }
