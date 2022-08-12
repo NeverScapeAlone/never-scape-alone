@@ -66,6 +66,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final Color COLOR_INPROGRESS = ColorScheme.PROGRESS_INPROGRESS_COLOR.darker().darker();
     public static final Color COLOR_PLUGIN_GREEN = Color.green.darker().darker();
     public static final Color COLOR_PLUGIN_YELLOW = Color.yellow.darker().darker();
+    public static final Color COLOR_PLUGIN_RED = Color.red.darker();
     /// panel match statics
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
@@ -617,7 +618,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setBackground(COLOR_PLUGIN_GREEN);
         } else {
             rating_selected = false;
-            button.setBackground(Color.red.darker());
+            button.setBackground(COLOR_PLUGIN_RED);
         }
     }
 
@@ -628,7 +629,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setBackground(COLOR_PLUGIN_GREEN);
         } else {
             discord_selected = false;
-            button.setBackground(Color.red.darker());
+            button.setBackground(COLOR_PLUGIN_RED);
         }
     }
 
@@ -639,7 +640,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setBackground(COLOR_PLUGIN_GREEN);
         } else {
             location_selected = false;
-            button.setBackground(Color.red.darker());
+            button.setBackground(COLOR_PLUGIN_RED);
         }
     }
 
@@ -650,7 +651,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setBackground(COLOR_PLUGIN_GREEN);
         } else {
             safety_selected = false;
-            button.setBackground(Color.red.darker());
+            button.setBackground(COLOR_PLUGIN_RED);
         }
     }
 
@@ -661,7 +662,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             button.setBackground(COLOR_PLUGIN_GREEN);
         } else {
             stats_selected = false;
-            button.setBackground(Color.red.darker());
+            button.setBackground(COLOR_PLUGIN_RED);
         }
     }
 
@@ -1308,7 +1309,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             cMatch.gridy = 0;
 
             JLabel no_matches_label = new JLabel("No Matches Found");
-            no_matches_label.setForeground(Color.red.darker().darker());
+            no_matches_label.setForeground(COLOR_PLUGIN_RED);
             no_matches_label.setIcon(Icons.CANCEL_ICON);
             no_matches_label.setToolTipText("No matches found with this current search, try again!");
             no_matches_label.setFont(FontManager.getRunescapeBoldFont());

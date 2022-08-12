@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.neverscapealone.ui.NeverScapeAlonePanel.COLOR_PLUGIN_RED;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
 
 public class PlayerPanel {
@@ -161,7 +162,7 @@ public class PlayerPanel {
             runewatch_label.setToolTipText(player.getRunewatch());
             runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
             runewatch_label.setFont(FontManager.getRunescapeFont());
-            runewatch_label.setForeground(Color.red.darker());
+            runewatch_label.setForeground(COLOR_PLUGIN_RED);
             player_panel.add(runewatch_label, cp);
             cp.gridy += 1;
         }
@@ -174,7 +175,7 @@ public class PlayerPanel {
             wdr_label.setToolTipText(player.getWdr());
             wdr_label.setIcon(Icons.WDR_ICON);
             wdr_label.setFont(FontManager.getRunescapeFont());
-            wdr_label.setForeground(Color.red.darker());
+            wdr_label.setForeground(COLOR_PLUGIN_RED);
             player_panel.add(wdr_label, cp);
             cp.gridy += 1;
         }
