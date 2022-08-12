@@ -535,7 +535,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         String group_notes = panel.notes.getText();
 
         if (checkPasscode(group_passcode)) {
-            panel.passcode.setBackground(Color.green.darker().darker().darker());
+            panel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_GREEN);
             panel.passcode.setToolTipText("Input your group passcode here.");
         } else {
             panel.passcode.setBackground(Color.RED.darker().darker().darker());
