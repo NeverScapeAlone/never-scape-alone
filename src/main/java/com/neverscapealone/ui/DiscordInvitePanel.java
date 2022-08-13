@@ -1,6 +1,6 @@
 package com.neverscapealone.ui;
 
-import com.neverscapealone.enums.MatchData;
+import com.neverscapealone.model.MatchData;
 import net.runelite.client.util.LinkBrowser;
 
 import javax.swing.*;

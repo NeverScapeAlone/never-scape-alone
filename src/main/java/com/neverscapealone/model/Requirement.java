@@ -23,29 +23,75 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+public class Requirement {
 
-import java.util.List;
-
-public class SearchMatches {
-
-    @SerializedName("search_matches")
+    @SerializedName("experience")
     @Expose
-    private List<SearchMatchData> searchMatches = null;
+    private String experience;
+    @SerializedName("split_type")
+    @Expose
+    private String splitType;
+    @SerializedName("accounts")
+    @Expose
+    private String accounts;
+    @SerializedName("regions")
+    @Expose
+    private String regions;
 
-    public List<SearchMatchData> getSearchMatches() {
-        return searchMatches;
+    public String getExperience() {
+        return experience;
     }
 
-    public void setSearchMatches(List<SearchMatchData> searchMatches) {
-        this.searchMatches = searchMatches;
+    public void setExperience(String experience) {
+        this.experience = experience;
     }
 
-    public SearchMatches withSearchMatches(List<SearchMatchData> searchMatches) {
-        this.searchMatches = searchMatches;
+    public Requirement withExperience(String experience) {
+        this.experience = experience;
         return this;
     }
+
+    public String getSplitType() {
+        return splitType;
+    }
+
+    public void setSplitType(String splitType) {
+        this.splitType = splitType;
+    }
+
+    public Requirement withSplitType(String splitType) {
+        this.splitType = splitType;
+        return this;
+    }
+
+    public String getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(String accounts) {
+        this.accounts = accounts;
+    }
+
+    public Requirement withAccounts(String accounts) {
+        this.accounts = accounts;
+        return this;
+    }
+
+    public String getRegions() {
+        return regions;
+    }
+
+    public void setRegions(String regions) {
+        this.regions = regions;
+    }
+
+    public Requirement withRegions(String regions) {
+        this.regions = regions;
+        return this;
+    }
+
 }

@@ -29,6 +29,8 @@ import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.PingData;
+import com.neverscapealone.model.SoundPing;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.Getter;
 import lombok.Setter;

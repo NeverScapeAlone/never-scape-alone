@@ -1,7 +1,7 @@
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.Player;
+import com.neverscapealone.model.Player;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.RegionName;
 import net.runelite.client.ui.FontManager;

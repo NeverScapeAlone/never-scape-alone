@@ -3,7 +3,7 @@ package com.neverscapealone.ui;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.AccountTypeSelection;
 import com.neverscapealone.enums.ActivityReference;
-import com.neverscapealone.enums.SearchMatchData;
+import com.neverscapealone.model.SearchMatchData;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;

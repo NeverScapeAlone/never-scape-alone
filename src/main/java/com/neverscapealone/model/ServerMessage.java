@@ -23,22 +23,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SoundPing {
-    @SerializedName("sound")
+public class ServerMessage {
+    @SerializedName("message")
     @Expose
-    private SoundPingEnum sound = null;
+    private String serverMessage = null;
 
-    public SoundPingEnum getSound() {
-        return sound;
+    public String getServerMessage() {
+        return serverMessage;
     }
 
-    public SoundPing buildSound(SoundPingEnum sound) {
-        this.sound = sound;
+    public ServerMessage buildServerMessage(String serverMessage) {
+        this.serverMessage = serverMessage;
         return this;
     }
 

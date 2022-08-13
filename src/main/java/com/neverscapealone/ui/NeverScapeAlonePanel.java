@@ -32,6 +32,7 @@ import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
