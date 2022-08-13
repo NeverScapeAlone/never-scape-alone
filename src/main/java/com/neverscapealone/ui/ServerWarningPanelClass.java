@@ -23,25 +23,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
-
-import com.neverscapealone.ui.Icons;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package com.neverscapealone.ui;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
-@Getter
-@AllArgsConstructor
-public enum WebLink {
-    DISCORD(Icons.DISCORD_ICON, "Join our Discord", "https://discord.gg/rs2AH3vnmf"),
-    TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter", "https://www.twitter.com/NeverScapeAlone"),
-    GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-    PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
-    PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
-    BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+public class ServerWarningPanelClass {
 
-    private final ImageIcon image;
-    private final String tooltip;
-    private final String link;
+    public static JPanel serverWarningPanel() {
+        JPanel serverWarningPanel = new JPanel();
+        serverWarningPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        serverWarningPanel.setBackground(SUB_BACKGROUND_COLOR);
+        serverWarningPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+
+        serverWarningPanel.add(Box.createVerticalStrut(3), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(new JLabel(), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(Box.createVerticalStrut(3), c);
+        return serverWarningPanel;
+    }
+
 }

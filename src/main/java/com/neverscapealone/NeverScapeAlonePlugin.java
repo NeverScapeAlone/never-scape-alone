@@ -34,6 +34,7 @@ import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.PingData;
 import com.neverscapealone.model.SoundPing;
+import com.neverscapealone.ui.ConnectingPanelClass;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.Getter;
 import lombok.Setter;
@@ -282,7 +283,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         String timer_string = "Queue Time: " + formatSeconds(timer);
-        panel.setConnectingPanelQueueTime(timer_string);
+        ConnectingPanelClass.setConnectingPanelQueueTime(timer_string);
         timer += 1;
     }
 
@@ -377,7 +378,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void quickMatchQueueStart(ActionEvent actionEvent) {
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id, config.authToken(), "0", null);
-        ArrayList<String> queue_list = panel.queue_list;
+        ArrayList<String> queue_list = NeverScapeAlonePanel.queue_list;
         if (queue_list.size() == 0) {
             return;
         }
@@ -459,49 +460,47 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick gameTick) {
 
-        switch (client.getGameState()) {
-            case LOGGED_IN:
-                username = client.getLocalPlayer().getName();
-                Integer health = client.getBoostedSkillLevel(Skill.HITPOINTS);
-                Integer base_health = client.getRealSkillLevel(Skill.HITPOINTS);
-                Integer prayer = client.getBoostedSkillLevel(Skill.PRAYER);
-                Integer base_prayer = client.getRealSkillLevel(Skill.PRAYER);
-                Integer run_energy = client.getEnergy();
+        if (client.getGameState() == GameState.LOGGED_IN) {
+            username = client.getLocalPlayer().getName();
+            Integer health = client.getBoostedSkillLevel(Skill.HITPOINTS);
+            Integer base_health = client.getRealSkillLevel(Skill.HITPOINTS);
+            Integer prayer = client.getBoostedSkillLevel(Skill.PRAYER);
+            Integer base_prayer = client.getRealSkillLevel(Skill.PRAYER);
+            Integer run_energy = client.getEnergy();
 
-                if (username.equals(old_username) &
-                        health.equals(old_health) &
-                        base_health.equals(old_base_health) &
-                        prayer.equals(old_prayer) &
-                        base_prayer.equals(old_base_prayer) &
-                        run_energy.equals(old_run_energy)) {
-                    return;
-                }
+            if (username.equals(old_username) &
+                    health.equals(old_health) &
+                    base_health.equals(old_base_health) &
+                    prayer.equals(old_prayer) &
+                    base_prayer.equals(old_base_prayer) &
+                    run_energy.equals(old_run_energy)) {
+                return;
+            }
 
-                old_username = username;
-                old_health = health;
-                old_base_health = base_health;
-                old_prayer = prayer;
-                old_base_prayer = base_prayer;
-                old_run_energy = run_energy;
+            old_username = username;
+            old_health = health;
+            old_base_health = base_health;
+            old_prayer = prayer;
+            old_base_prayer = base_prayer;
+            old_run_energy = run_energy;
 
-                if (websocket.getGroupID().equals("0")) {
-                    return;
-                }
+            if (websocket.getGroupID().equals("0")) {
+                return;
+            }
 
-                JsonObject status_payload = new JsonObject();
-                status_payload.addProperty("username", username);
-                status_payload.addProperty("hp", health);
-                status_payload.addProperty("base_hp", base_health);
-                status_payload.addProperty("prayer", prayer);
-                status_payload.addProperty("base_prayer", base_prayer);
-                status_payload.addProperty("run_energy", run_energy);
+            JsonObject status_payload = new JsonObject();
+            status_payload.addProperty("username", username);
+            status_payload.addProperty("hp", health);
+            status_payload.addProperty("base_hp", base_health);
+            status_payload.addProperty("prayer", prayer);
+            status_payload.addProperty("base_prayer", base_prayer);
+            status_payload.addProperty("run_energy", run_energy);
 
-                JsonObject create_request = new JsonObject();
-                create_request.addProperty("detail", "set_status");
-                create_request.add("status", status_payload);
+            JsonObject create_request = new JsonObject();
+            create_request.addProperty("detail", "set_status");
+            create_request.add("status", status_payload);
 
-                websocket.send(create_request);
-                break;
+            websocket.send(create_request);
         }
     }
 
@@ -528,21 +527,21 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void createMatchStart(ActionEvent actionEvent) {
-        String activity = panel.step1_activity;
-        String party_members = String.valueOf(panel.party_member_count.getValue());
-        String experience = panel.experience_level.getSelectedItem().toString();
-        String split_type = panel.party_loot.getSelectedItem().toString();
-        String accounts = panel.account_type.getSelectedItem().toString();
-        String regions = panel.region.getSelectedItem().toString();
-        String group_passcode = panel.passcode.getText();
-        String group_notes = panel.notes.getText();
+        String activity = NeverScapeAlonePanel.step1_activity;
+        String party_members = String.valueOf(NeverScapeAlonePanel.party_member_count.getValue());
+        String experience = NeverScapeAlonePanel.experience_level.getSelectedItem().toString();
+        String split_type = NeverScapeAlonePanel.party_loot.getSelectedItem().toString();
+        String accounts = NeverScapeAlonePanel.account_type.getSelectedItem().toString();
+        String regions = NeverScapeAlonePanel.region.getSelectedItem().toString();
+        String group_passcode = NeverScapeAlonePanel.passcode.getText();
+        String group_notes = NeverScapeAlonePanel.notes.getText();
 
         if (checkPasscode(group_passcode)) {
-            panel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_GREEN);
-            panel.passcode.setToolTipText("Input your group passcode here.");
+            NeverScapeAlonePanel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_GREEN);
+            NeverScapeAlonePanel.passcode.setToolTipText("Input your group passcode here.");
         } else {
-            panel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_RED);
-            panel.passcode.setToolTipText("Your passcode contains invalid characters. Try the help button to the right!");
+            NeverScapeAlonePanel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_RED);
+            NeverScapeAlonePanel.passcode.setToolTipText("Your passcode contains invalid characters. Try the help button to the right!");
             return;
         }
 
@@ -574,14 +573,14 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void searchActiveMatches(ActionEvent actionEvent) {
-        panel.searchBar.setEditable(false);
-        panel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
+        NeverScapeAlonePanel.searchBar.setEditable(false);
+        NeverScapeAlonePanel.searchBar.setIcon(IconTextField.Icon.LOADING_DARKER);
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
         String target = actionEvent.getActionCommand();
         if (target.length() <= 0) {
-            panel.searchBar.setEditable(true);
-            panel.searchBar.setIcon(IconTextField.Icon.SEARCH);
+            NeverScapeAlonePanel.searchBar.setEditable(true);
+            NeverScapeAlonePanel.searchBar.setIcon(IconTextField.Icon.SEARCH);
             return;
         }
         JsonObject search_request = new JsonObject();
