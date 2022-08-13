@@ -30,10 +30,7 @@ package com.neverscapealone.ui;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.ActivityReferenceEnum;
-import com.neverscapealone.enums.HelpButtonSwitchEnum;
-import com.neverscapealone.enums.MatchHeaderSwitchEnum;
-import com.neverscapealone.enums.SoundPingEnum;
+import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.*;
 import lombok.AllArgsConstructor;
@@ -76,8 +73,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
 
-    // PANELS
-    private final JPanel linksPanel;
     private final JPanel switchMenuPanel;
     private final JPanel connectingPanel;
     private final JPanel matchPanel;
@@ -168,7 +163,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // panel inits
-        linksPanel = linksPanel(); // add link panel perm
+        // PANELS
+        JPanel linksPanel = linksPanel(); // add link panel perm
         serverWarningPanel = serverWarningPanel();
         serverWarningPanel.setVisible(false);
         // switch menu panel
@@ -273,23 +269,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         serverWarningPanel.setVisible(b);
     }
 
-    private JPanel linksPanel() {
-        JPanel linksPanel = new JPanel();
-        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        linksPanel.setBackground(SUB_BACKGROUND_COLOR);
-        for (WebLink w : WebLink.values()) {
-            JLabel link = new JLabel(w.getImage());
-            link.setToolTipText(w.getTooltip());
-            link.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    LinkBrowser.browse(w.getLink());
-                }
-            });
-            linksPanel.add(link);
-        }
-        return linksPanel;
-    }
 
     private JPanel switchMenuPanel() {
         JPanel switchMenuPanel = new JPanel();
@@ -1125,20 +1104,22 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return searchbar_panel;
     }
 
-
-    @Getter
-    @AllArgsConstructor
-    public enum WebLink {
-        DISCORD(Icons.DISCORD_ICON, "Join our Discord", "https://discord.gg/rs2AH3vnmf"),
-        TWITTER(Icons.TWITTER_ICON, "Follow us on Twitter", "https://www.twitter.com/NeverScapeAlone"),
-        GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
-        PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
-        PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
-        BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
-
-        private final ImageIcon image;
-        private final String tooltip;
-        private final String link;
-
+    private JPanel linksPanel() {
+        JPanel linksPanel = new JPanel();
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        linksPanel.setBackground(SUB_BACKGROUND_COLOR);
+        for (WebLink w : WebLink.values()) {
+            JLabel link = new JLabel(w.getImage());
+            link.setToolTipText(w.getTooltip());
+            link.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    LinkBrowser.browse(w.getLink());
+                }
+            });
+            linksPanel.add(link);
+        }
+        return linksPanel;
     }
+
 }
