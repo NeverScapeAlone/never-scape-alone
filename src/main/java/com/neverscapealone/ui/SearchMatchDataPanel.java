@@ -1,6 +1,5 @@
 package com.neverscapealone.ui;
 
-import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.AccountTypeSelectionEnum;
 import com.neverscapealone.enums.ActivityReferenceEnum;
 import com.neverscapealone.model.SearchMatchData;
@@ -10,15 +9,12 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Objects;
 
 import static com.neverscapealone.ui.Components.convertNotes;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class SearchMatchDataPanel {
-    public JPanel createSearchMatchDataPanel(NeverScapeAlonePlugin plugin, SearchMatchData match){
+    public JPanel createSearchMatchDataPanel(SearchMatchData match){
         JPanel sMatch = new JPanel();
         sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
         sMatch.setBackground(SUB_BACKGROUND_COLOR);
@@ -143,25 +139,6 @@ public class SearchMatchDataPanel {
             sMatch.add(notes_label, cMatch);
             cMatch.gridy += 1;
         }
-
-        int v = 0;
-        if (match.getIsPrivate()) {
-            v = 1;
-        }
-        sMatch.setName(match.getId() + ":" + v);
-        sMatch.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                JPanel panel = (JPanel) e.getSource();
-                String name = panel.getName();
-                String[] name_split = name.split(":");
-                if (Objects.equals(name_split[1], "1")) {
-                    plugin.privateMatchPasscode(name_split[0]);
-                } else {
-                    plugin.publicMatchJoin(name_split[0]);
-                }
-            }
-        });
         return sMatch;
     }
 

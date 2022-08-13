@@ -27,7 +27,9 @@ package com.neverscapealone;
 
 import com.google.gson.*;
 import com.google.inject.Provides;
-import com.neverscapealone.enums.*;
+import com.neverscapealone.enums.PlayerButtonOptionEnum;
+import com.neverscapealone.enums.SoundEffectSelectionEnum;
+import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.PingData;
 import com.neverscapealone.model.SoundPing;
@@ -35,7 +37,6 @@ import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Player;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;

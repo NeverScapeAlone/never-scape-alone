@@ -30,7 +30,10 @@ package com.neverscapealone.ui;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.*;
+import com.neverscapealone.enums.ActivityReferenceEnum;
+import com.neverscapealone.enums.HelpButtonSwitchEnum;
+import com.neverscapealone.enums.MatchHeaderSwitchEnum;
+import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.*;
 import lombok.AllArgsConstructor;
@@ -59,6 +62,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
@@ -932,7 +936,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.COUNT), 16, 16);
+        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.COUNT), 16, 16);
         createSelectionPanel.add(member_count_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -945,7 +949,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.EXPERIENCE), 16, 16);
+        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.EXPERIENCE), 16, 16);
         createSelectionPanel.add(experience_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -957,7 +961,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(party_loot, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.SPLIT), 16, 16);
+        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.SPLIT), 16, 16);
         createSelectionPanel.add(split_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -969,7 +973,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(account_type, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.ACCOUNTS), 16, 16);
+        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.ACCOUNTS), 16, 16);
         createSelectionPanel.add(accounts_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -981,7 +985,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(region, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.REGION), 16, 16);
+        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.REGION), 16, 16);
         createSelectionPanel.add(region_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -993,7 +997,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(passcode, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.PASSCODE), 16, 16);
+        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.PASSCODE), 16, 16);
         createSelectionPanel.add(passcode_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -1005,7 +1009,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(notes, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.NOTES), 16, 16);
+        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.NOTES), 16, 16);
         createSelectionPanel.add(notes_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -1073,7 +1077,25 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
 
         for (SearchMatchData match : searchMatches.getSearchMatches()) {
-            JPanel sMatch = searchMatchDataPanel.createSearchMatchDataPanel(plugin, match);
+            JPanel sMatch = searchMatchDataPanel.createSearchMatchDataPanel(match);
+            int v = 0;
+            if (match.getIsPrivate()) {
+                v = 1;
+            }
+            sMatch.setName(match.getId() + ":" + v);
+            sMatch.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    JPanel panel = (JPanel) e.getSource();
+                    String name = panel.getName();
+                    String[] name_split = name.split(":");
+                    if (Objects.equals(name_split[1], "1")) {
+                        plugin.privateMatchPasscode(name_split[0]);
+                    } else {
+                        plugin.publicMatchJoin(name_split[0]);
+                    }
+                }
+            });
             /// end match code
             c.gridy += 1;
             searchMatchPanel.add(Box.createVerticalStrut(5), c);

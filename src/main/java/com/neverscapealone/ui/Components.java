@@ -71,7 +71,7 @@ public class Components {
         return output;
     }
 
-    public void help_button_switchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
+    public void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "";

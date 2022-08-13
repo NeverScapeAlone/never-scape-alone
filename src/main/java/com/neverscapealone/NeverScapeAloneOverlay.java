@@ -26,8 +26,8 @@
 
 package com.neverscapealone;
 
-import com.neverscapealone.model.PingData;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.PingData;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;

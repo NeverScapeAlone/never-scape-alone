@@ -1,9 +1,9 @@
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.model.Player;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.RegionNameEnum;
+import com.neverscapealone.model.Player;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
