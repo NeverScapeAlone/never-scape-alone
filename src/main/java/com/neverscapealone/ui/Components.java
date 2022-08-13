@@ -1,5 +1,6 @@
 package com.neverscapealone.ui;
 
+import com.google.common.base.Splitter;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
@@ -59,6 +60,5 @@ public class Components {
         label_holder.add(label);
         return label_holder;
     }
-
 
 }

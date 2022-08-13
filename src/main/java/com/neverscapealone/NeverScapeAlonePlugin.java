@@ -538,7 +538,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             panel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_GREEN);
             panel.passcode.setToolTipText("Input your group passcode here.");
         } else {
-            panel.passcode.setBackground(Color.RED.darker().darker().darker());
+            panel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_RED);
             panel.passcode.setToolTipText("Your passcode contains invalid characters. Try the help button to the right!");
             return;
         }

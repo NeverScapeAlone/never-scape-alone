@@ -70,14 +70,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     /// panel match statics
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
-    SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
-    public final JSpinner party_member_count = new JSpinner(player_size_model);
-    public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
-    public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
-    public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
-    public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
-    public final JTextField passcode = new JTextField();
-    public final JTextField notes = new JTextField();
+
     // PANELS
     private final JPanel linksPanel;
     private final JPanel switchMenuPanel;
@@ -98,6 +91,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final Components components;
     private final PlayerPanel playerPanel;
     private final SearchMatchDataPanel searchMatchDataPanel;
+    private final CurrentActivityPanel currentActivityPanel;
+    private final DiscordInvitePanel discordInvitePanel;
     private final NeverScapeAloneWebsocket websocket;
     private final Client user;
     private final WorldService worldService;
@@ -114,6 +109,16 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private static boolean stats_selected = true;
     public ArrayList<String> queue_list = new ArrayList<String>();
     public boolean isConnecting = false;
+
+    SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
+    public final JSpinner party_member_count = new JSpinner(player_size_model);
+    public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
+    public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
+    public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
+    public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
+    public final JTextField passcode = new JTextField();
+    public final JTextField notes = new JTextField();
+
     @Inject
     ConfigManager configManager;
     private JPanel randomPanel;
@@ -136,6 +141,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
             Components components,
             PlayerPanel playerPanel,
             SearchMatchDataPanel searchMatchDataPanel,
+            CurrentActivityPanel currentActivityPanel,
+            DiscordInvitePanel discordInvitePanel,
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
             Client user,
@@ -145,6 +152,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.components = components;
         this.playerPanel = playerPanel;
         this.searchMatchDataPanel = searchMatchDataPanel;
+        this.currentActivityPanel = currentActivityPanel;
+        this.discordInvitePanel = discordInvitePanel;
         this.websocket = websocket;
         this.user = user;
         this.eventBus = eventBus;
@@ -369,156 +378,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
-        /// current activity panel
-        JPanel current_activity_panel = new JPanel();
-        current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        current_activity_panel.setBackground(SUB_BACKGROUND_COLOR);
-        current_activity_panel.setLayout(new GridBagLayout());
-        current_activity_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        GridBagConstraints ca = new GridBagConstraints();
-        ca.weightx = 1;
-        ca.fill = GridBagConstraints.HORIZONTAL;
-        ca.anchor = GridBagConstraints.CENTER;
-        ca.gridx = 0;
-        ca.gridy = 0;
-
-        String activity = matchdata.getActivity();
-        ActivityReference activityReference = ActivityReference.valueOf(activity);
-        ImageIcon activity_icon = activityReference.getIcon();
-        String activity_name = activityReference.getTooltip();
-
-        JLabel match_title = new JLabel(activity_name);
-        match_title.setIcon(activity_icon);
-        match_title.setFont(FontManager.getRunescapeBoldFont());
-        current_activity_panel.add(match_title, ca);
-        ca.gridx = 1;
-
-        JLabel privateLabel = new JLabel();
-        if (matchdata.getIsPrivate()) {
-            privateLabel.setText("Private");
-            privateLabel.setIcon(Icons.PRIVATE_ICON);
-            privateLabel.setForeground(COLOR_PLUGIN_YELLOW);
-        } else {
-            privateLabel.setText("Public");
-            privateLabel.setIcon(Icons.PUBLIC_ICON);
-            privateLabel.setForeground(COLOR_PLUGIN_GREEN);
-        }
-        privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-        privateLabel.setToolTipText("Match ID: " + matchdata.getId());
-
-        ca.anchor = GridBagConstraints.LINE_END;
-        ca.fill = GridBagConstraints.LINE_END;
-        current_activity_panel.add(privateLabel, ca);
-
-        ca.anchor = GridBagConstraints.CENTER;
-        ca.fill = GridBagConstraints.HORIZONTAL;
-        ca.gridx = 0;
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(2), ca);
-        ca.gridy += 1;
-
-        JLabel friends_chat_label = new JLabel("FC: \""+matchdata.getPlayers().get(0).getLogin()+"\"");
-        friends_chat_label.setIcon(Icons.CHAT);
-        friends_chat_label.setToolTipText("Friend's Chat");
-        current_activity_panel.add(friends_chat_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
-
-        JLabel player_count_label = new JLabel(String.valueOf(matchdata.getPlayers().size())+"/"+matchdata.getPartyMembers());
-        player_count_label.setIcon(Icons.PLAYERS_ICON);
-        player_count_label.setToolTipText("Players");
-        current_activity_panel.add(player_count_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
-
-        JLabel experience_label = new JLabel(matchdata.getRequirement().getExperience());
-        experience_label.setIcon(Icons.EXPERIENCE_ICON);
-        experience_label.setToolTipText("Experience");
-        current_activity_panel.add(experience_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
-
-        JLabel split_label = new JLabel(matchdata.getRequirement().getSplitType());
-        split_label.setIcon(Icons.LOOTBAG_ICON);
-        split_label.setToolTipText("Loot Split");
-        current_activity_panel.add(split_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
-
-        String account_string = matchdata.getRequirement().getAccounts();
-        ImageIcon account_image = AccountTypeSelection.valueOf(account_string).getImage();
-        JLabel accounts_label = new JLabel(account_string);
-        accounts_label.setIcon(account_image);
-        accounts_label.setToolTipText("Accounts");
-        current_activity_panel.add(accounts_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
-
-        JLabel region_label = new JLabel(matchdata.getRequirement().getRegions());
-        region_label.setIcon(Icons.WORLD_ICON);
-        region_label.setToolTipText("Match Region");
-        current_activity_panel.add(region_label, ca);
-        ca.gridy +=1;
-
-        if (matchdata.getNotes() != null){
-            current_activity_panel.add(Box.createVerticalStrut(1), ca);
-            ca.gridy += 1;
-
-            JLabel notes_label = new JLabel("Hover for Match Notes");
-            notes_label.setIcon(Icons.NOTES_ICON);
-            notes_label.setToolTipText(matchdata.getNotes());
-            current_activity_panel.add(notes_label, ca);
-            ca.gridy += 1;
-        }
-
+        JPanel current_activity_panel = currentActivityPanel.createCurrentActivityPanel(matchdata);
         c.gridy += 1;
         mp.add(current_activity_panel, c);
 
-        // post button below activity panel
-
         if (matchdata.getDiscordInvite() != null){
-            JPanel discord_invite_panel = new JPanel();
-            discord_invite_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-            discord_invite_panel.setBackground(SUB_BACKGROUND_COLOR);
-            discord_invite_panel.setLayout(new GridBagLayout());
-            GridBagConstraints cd = new GridBagConstraints();
-            cd.weightx = 1;
-            cd.fill = GridBagConstraints.HORIZONTAL;
-            cd.anchor = GridBagConstraints.CENTER;
-            cd.gridx = 0;
-            cd.gridy = 0;
-            JButton discord_invite_button = new JButton();
-            discord_invite_button.setIcon(Icons.DISCORD_ICON);
-            discord_invite_button.setToolTipText("Join the group's discord!");
-            discord_invite_button.setText("Join Discord");
-            discord_invite_button.setBackground(new Color(114,137,218).darker().darker());
-            discord_invite_button.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-
-                    final JFrame frame = new JFrame();
-                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    String message = "Your microphone will be ON at the time of arrival.\n Please mute your microphone now, prior to joining.";
-                    String title = "NeverScapeAlone Discord Match ID: "+ matchdata.getId();
-                    if (JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, Icons.DISCORD_ICON, new String[]{"JOIN","CANCEL"}, "JOIN") == JOptionPane.YES_OPTION){
-                        LinkBrowser.browse(matchdata.getDiscordInvite());
-                    };
-
-                }
-            });
-            discord_invite_panel.add(discord_invite_button, cd);
-
+            JPanel discord_invite_panel = discordInvitePanel.createDiscordInvitePanel(matchdata);
             c.gridy += 1;
             mp.add(discord_invite_panel, c);
         }
@@ -1044,8 +909,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createPanel2.add(components.instructionTitle("Step 2: Choose Requirements"), c);
 
         c.gridy += 1;
-        JPanel createSelectionPanel = createSelectionPanel();
-        createPanel2.add(createSelectionPanel, c);
+        JPanel create_selection_panel = createSelectionPanel();
+        createPanel2.add(create_selection_panel, c);
 
         c.gridy += 1;
         createPanel2.add(Box.createVerticalStrut(6), c);
@@ -1173,7 +1038,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.weightx = 1;
         c.gridy += 1;
 
-
         return createSelectionPanel;
     }
 
@@ -1181,10 +1045,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "Notes Help" + "\n" +
+                "You're allowed 200 characters per notes section." + "\n"+
                 "The Notes description can be used to add key information" + "\n"+
                 "that other players should know about your group!" + "\n"+
                 "Note that offensive language will be censored, and you may" + "\n"+
-                "be banned from using the plugin on severe offenses" + "\n"+
+                "be banned from using the plugin on severe offenses." + "\n"+
                 "Please follow the Rules of RuneScape when describing your group.";
         JOptionPane.showMessageDialog(frame, message);
     }

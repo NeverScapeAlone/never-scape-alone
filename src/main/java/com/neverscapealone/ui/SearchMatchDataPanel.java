@@ -1,5 +1,6 @@
 package com.neverscapealone.ui;
 
+import com.google.common.base.Splitter;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.AccountTypeSelection;
 import com.neverscapealone.enums.ActivityReference;
@@ -31,6 +32,17 @@ public class SearchMatchDataPanel {
         cMatch.gridy = 0;
 
         /// start match block
+        JPanel activityHeader = new JPanel();
+        activityHeader.setBorder(new EmptyBorder(0, 0, 0, 0));
+        activityHeader.setBackground(SUB_BACKGROUND_COLOR);
+        activityHeader.setLayout(new GridBagLayout());
+        GridBagConstraints ah = new GridBagConstraints();
+        ah.weightx = 1;
+        ah.fill = GridBagConstraints.HORIZONTAL;
+        ah.anchor = GridBagConstraints.CENTER;
+        ah.gridx = 0;
+        ah.gridy = 0;
+
         String activity = match.getActivity();
         ActivityReference activityReference = ActivityReference.valueOf(activity);
         ImageIcon activity_icon = activityReference.getIcon();
@@ -39,8 +51,9 @@ public class SearchMatchDataPanel {
         JLabel match_title = new JLabel(activity_name);
         match_title.setIcon(activity_icon);
         match_title.setFont(FontManager.getRunescapeBoldFont());
-        sMatch.add(match_title, cMatch);
-        cMatch.gridx = 1;
+
+        activityHeader.add(match_title, ah);
+        ah.gridx = 1;
 
         JLabel privateLabel = new JLabel();
         if (match.getIsPrivate()) {
@@ -54,13 +67,12 @@ public class SearchMatchDataPanel {
         }
         privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         privateLabel.setToolTipText("Match ID: " + match.getId());
-        cMatch.anchor = GridBagConstraints.LINE_END;
-        cMatch.fill = GridBagConstraints.LINE_END;
-        sMatch.add(privateLabel, cMatch);
 
-        cMatch.anchor = GridBagConstraints.CENTER;
-        cMatch.fill = GridBagConstraints.HORIZONTAL;
-        cMatch.gridx = 0;
+        ah.anchor = GridBagConstraints.LINE_END;
+        ah.fill = GridBagConstraints.LINE_END;
+        activityHeader.add(privateLabel, ah);
+
+        sMatch.add(activityHeader, cMatch);
         cMatch.gridy += 1;
 
         sMatch.add(Box.createVerticalStrut(2), cMatch);
@@ -124,9 +136,10 @@ public class SearchMatchDataPanel {
             sMatch.add(Box.createVerticalStrut(1), cMatch);
             cMatch.gridy += 1;
 
-            JLabel notes_label = new JLabel("Hover for Match Notes");
+            String notes = convertNotes(match.getNotes());
+            JLabel notes_label = new JLabel(notes);
+            notes_label.setFont(FontManager.getRunescapeSmallFont());
             notes_label.setIcon(Icons.NOTES_ICON);
-            notes_label.setToolTipText(match.getNotes());
             sMatch.add(notes_label, cMatch);
             cMatch.gridy += 1;
         }
@@ -151,4 +164,14 @@ public class SearchMatchDataPanel {
         });
         return sMatch;
     }
+
+    private String convertNotes(String inputString){
+        String output = "";
+        for (String substring : Splitter.fixedLength(35).split(inputString)) {
+            output = output + substring + "<br/>";
+        }
+        output = "<html>" + output + "</html>";
+        return output;
+    }
+
 }
