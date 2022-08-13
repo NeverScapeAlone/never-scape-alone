@@ -2,7 +2,6 @@ package com.neverscapealone.ui;
 
 import com.google.common.base.Splitter;
 import com.neverscapealone.enums.HelpButtonSwitch;
-import com.neverscapealone.enums.MatchHeaderSwitch;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
