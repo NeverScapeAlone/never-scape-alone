@@ -15,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
+import static com.neverscapealone.ui.Components.convertNotes;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class SearchMatchDataPanel {
@@ -165,13 +166,6 @@ public class SearchMatchDataPanel {
         return sMatch;
     }
 
-    private String convertNotes(String inputString){
-        String output = "";
-        for (String substring : Splitter.fixedLength(35).split(inputString)) {
-            output = output + substring + "<br/>";
-        }
-        output = "<html>" + output + "</html>";
-        return output;
-    }
+
 
 }

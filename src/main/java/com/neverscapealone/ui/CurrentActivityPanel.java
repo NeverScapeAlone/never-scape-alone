@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
+import static com.neverscapealone.ui.Components.convertNotes;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class CurrentActivityPanel {
@@ -140,15 +141,6 @@ public class CurrentActivityPanel {
             ca.gridy += 1;
         }
         return current_activity_panel;
-    }
-
-    private String convertNotes(String inputString){
-        String output = "";
-        for (String substring : Splitter.fixedLength(35).split(inputString)) {
-            output = output + substring + "<br/>";
-        }
-        output = "<html>" + output + "</html>";
-        return output;
     }
 
 }

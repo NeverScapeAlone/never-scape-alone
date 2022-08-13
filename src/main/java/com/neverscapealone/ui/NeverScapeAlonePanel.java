@@ -444,26 +444,27 @@ public class NeverScapeAlonePanel extends PluginPanel {
         sc.gridx = 0;
         sc.gridy = 0;
 
-        JToggleButton rating_button = components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", COLOR_PLUGIN_GREEN, this::ratingButtonListener);
+
+        JToggleButton rating_button = components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.RATING));
         headermatchPanel.add(rating_button, sc);
 
         sc.gridx +=1;
 
-        JToggleButton discord_button = components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", COLOR_PLUGIN_GREEN, this::discordButtonListener);
+        JToggleButton discord_button = components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.DISCORD));
         headermatchPanel.add(discord_button, sc);
 
         sc.gridx +=1;
 
-        JToggleButton location_button = components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", COLOR_PLUGIN_GREEN, this::locationButtonListener);
+        JToggleButton location_button = components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.LOCATION));
         headermatchPanel.add(location_button, sc);
 
         sc.gridx +=1;
 
-        JToggleButton safety_button = components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", COLOR_PLUGIN_GREEN, this::safetyButtonListener);
+        JToggleButton safety_button = components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.SAFETY));
         headermatchPanel.add(safety_button, sc);
 
         sc.gridx +=1;
-        JToggleButton stats_button = components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", COLOR_PLUGIN_GREEN, this::statsButtonListener);
+        JToggleButton stats_button = components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.STATS));
         headermatchPanel.add(stats_button, sc);
 
         sc.gridx +=1;
@@ -476,58 +477,32 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return matchPanel;
     }
 
-    private void ratingButtonListener(ActionEvent actionEvent){
+    private void switchHeaderButtonListener(ActionEvent actionEvent, MatchHeaderSwitch matchHeaderSwitch){
         JToggleButton button = (JToggleButton) actionEvent.getSource();
+        boolean b = true;
         if (button.isSelected()){
-            rating_selected = true;
             button.setBackground(COLOR_PLUGIN_GREEN);
+            b = true;
         } else {
-            rating_selected = false;
             button.setBackground(COLOR_PLUGIN_RED);
+            b = false;
         }
-    }
-
-    private void discordButtonListener(ActionEvent actionEvent){
-        JToggleButton button = (JToggleButton) actionEvent.getSource();
-        if (button.isSelected()){
-            discord_selected = true;
-            button.setBackground(COLOR_PLUGIN_GREEN);
-        } else {
-            discord_selected = false;
-            button.setBackground(COLOR_PLUGIN_RED);
-        }
-    }
-
-    private void locationButtonListener(ActionEvent actionEvent){
-        JToggleButton button = (JToggleButton) actionEvent.getSource();
-        if (button.isSelected()){
-            location_selected = true;
-            button.setBackground(COLOR_PLUGIN_GREEN);
-        } else {
-            location_selected = false;
-            button.setBackground(COLOR_PLUGIN_RED);
-        }
-    }
-
-    private void safetyButtonListener(ActionEvent actionEvent){
-        JToggleButton button = (JToggleButton) actionEvent.getSource();
-        if (button.isSelected()){
-            safety_selected = true;
-            button.setBackground(COLOR_PLUGIN_GREEN);
-        } else {
-            safety_selected = false;
-            button.setBackground(COLOR_PLUGIN_RED);
-        }
-    }
-
-    private void statsButtonListener(ActionEvent actionEvent){
-        JToggleButton button = (JToggleButton) actionEvent.getSource();
-        if (button.isSelected()){
-            stats_selected = true;
-            button.setBackground(COLOR_PLUGIN_GREEN);
-        } else {
-            stats_selected = false;
-            button.setBackground(COLOR_PLUGIN_RED);
+        switch(matchHeaderSwitch){
+            case RATING:
+                rating_selected = b;
+                break;
+            case STATS:
+                stats_selected = b;
+                break;
+            case SAFETY:
+                safety_selected = b;
+                break;
+            case DISCORD:
+                discord_selected = b;
+                break;
+            case LOCATION:
+                location_selected = b;
+                break;
         }
     }
 
@@ -578,10 +553,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public void setConnectingPanelQueueTime(String display_text) {
         JLabel label = (JLabel) (connectingPanel.getComponent(2));
         label.setText(display_text);
-    }
-
-    public void connectingPanelManager(ActionEvent actionEvent) {
-        connectingPanelManager();
     }
 
     public void matchPanelManager() {
@@ -960,7 +931,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", this::count_help_button_panel, 16, 16);
+        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.COUNT), 16, 16);
         createSelectionPanel.add(member_count_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -973,7 +944,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", this::experience_help_button_panel, 16, 16);
+        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.EXPERIENCE), 16, 16);
         createSelectionPanel.add(experience_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -985,7 +956,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(party_loot, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", this::split_help_button_panel, 16, 16);
+        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.SPLIT), 16, 16);
         createSelectionPanel.add(split_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -997,7 +968,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(account_type, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", this::accounts_help_button_panel, 16, 16);
+        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.ACCOUNTS), 16, 16);
         createSelectionPanel.add(accounts_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -1009,7 +980,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(region, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", this::region_help_button_panel, 16, 16);
+        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.REGION), 16, 16);
         createSelectionPanel.add(region_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -1021,7 +992,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(passcode, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", this::passcode_help_button_panel, 16, 16);
+        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.PASSCODE), 16, 16);
         createSelectionPanel.add(passcode_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -1033,95 +1004,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(notes, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", this::notes_help_button_panel, 16, 16);
+        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.NOTES), 16, 16);
         createSelectionPanel.add(notes_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
 
         return createSelectionPanel;
-    }
-
-    private void notes_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Notes Help" + "\n" +
-                "You're allowed 200 characters per notes section." + "\n"+
-                "The Notes description can be used to add key information" + "\n"+
-                "that other players should know about your group!" + "\n"+
-                "Note that offensive language will be censored, and you may" + "\n"+
-                "be banned from using the plugin on severe offenses." + "\n"+
-                "Please follow the Rules of RuneScape when describing your group.";
-        JOptionPane.showMessageDialog(frame, message);
-    }
-
-    private void count_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Group Size Help" + "\n" +
-                "The group size string indicates the maximum" + "\n"+
-                "number of players that your group should have.";
-        JOptionPane.showMessageDialog(frame, message);
-    }
-
-    private void experience_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Experience Help" + "\n" +
-                "Different experience values can be used to indicate how competent your party is." + "\n" +
-                "Note: Anyone can join a party, regardless of the designation." + "\n" +
-                "1. Flexible - Anyone, of any experience level, can join." + "\n" +
-                "2. Novice - Those with some experience in the activity should join." + "\n" +
-                "3. Average - Those that see themselves as average in the activity, should join." + "\n" +
-                "4. Experienced - Those with plenty of experience should join in this activity.";
-        JOptionPane.showMessageDialog(frame, message);
-    }
-
-    private void split_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Split Help" + "\n" +
-                "How you would like to split your loot." + "\n" +
-                "This can be ignored if you're doing an activity which doesn't require loot splitting." + "\n" +
-                "1. FFA - Free for all, everyone picks up their own loot." + "\n" +
-                "2. Splits - Everyone splits the loot evenly at the end.";
-        JOptionPane.showMessageDialog(frame, message);
-    }
-
-    private void accounts_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Account Help" + "\n" +
-                "The types of accounts that you would like to have in your party" + "\n" +
-                "Note: Anyone can join a party, regardless of the designation." + "\n" +
-                "1. All Accounts - Every account type should join." + "\n" +
-                "2. Normal - Accounts without special designations should join." + "\n" +
-                "3. IM - Regular Ironmen should join." + "\n" +
-                "4. HCIM - Hardcore Ironmen should join." + "\n" +
-                "5. UIM - Ultimate Ironmen should join." + "\n" +
-                "6. GIM - Group Ironmen should join." + "\n" +
-                "7. HCGIM - Hardcore Group Ironmen should join." + "\n" +
-                "8. UGIM - Unranked Group Ironmen should join.";
-        JOptionPane.showMessageDialog(frame, message);
-    }
-
-    private void region_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Region Help" + "\n" +
-                "What region would like to set the group in." + "\n" +
-                "Note: Anyone can join a party, regardless of the designation.";
-        JOptionPane.showMessageDialog(frame, message);
-    }
-
-    private void passcode_help_button_panel(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        String message = "Passcode Help" + "\n" +
-                "Passcode to set for a private match." + "\n" +
-                "Leave the passcode field blank in order for your match to be public." + "\n" +
-                "-- Rules --" + "\n" +
-                "Any string of size <64 characters is allowed, with permitted characters: [A-Za-z0-9_- ]";
-        JOptionPane.showMessageDialog(frame, message);
     }
 
     private JPanel searchPanel() {
