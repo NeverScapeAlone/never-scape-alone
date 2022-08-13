@@ -17,13 +17,11 @@ import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 public class ActivityPanel {
 
     public JPanel createCurrentActivityPanel(MatchData matchData){
-        JPanel activityPanel = matchDataConversion(matchData);
-        return activityPanel;
+        return matchDataConversion(matchData);
     }
 
     public JPanel createSearchMatchDataPanel(SearchMatchData matchData){
-        JPanel activityPanel = matchDataConversion(matchData);
-        return activityPanel;
+        return matchDataConversion(matchData);
     }
 
     public JPanel matchDataConversion(Object dataInput){
@@ -110,28 +108,15 @@ public class ActivityPanel {
         ca.gridx = 0;
         ca.gridy = 0;
 
-        JPanel activityHeader = new JPanel();
-        activityHeader.setBorder(new EmptyBorder(0, 0, 0, 0));
-        activityHeader.setBackground(SUB_BACKGROUND_COLOR);
-        activityHeader.setLayout(new GridBagLayout());
-        GridBagConstraints ah = new GridBagConstraints();
-        ah.weightx = 1;
-        ah.fill = GridBagConstraints.HORIZONTAL;
-        ah.anchor = GridBagConstraints.CENTER;
-        ah.gridx = 0;
-        ah.gridy = 0;
-
+        // activity/match label
         ActivityReferenceEnum activityReferenceEnum = ActivityReferenceEnum.valueOf(activity);
         ImageIcon activity_icon = activityReferenceEnum.getIcon();
         String activity_name = activityReferenceEnum.getTooltip();
-
         JLabel match_title = new JLabel(activity_name);
         match_title.setIcon(activity_icon);
         match_title.setFont(FontManager.getRunescapeBoldFont());
 
-        activityHeader.add(match_title, ah);
-        ah.gridx = 1;
-
+        // private label
         JLabel privateLabel = new JLabel();
         if (isPrivate) {
             privateLabel.setText("Private");
@@ -142,13 +127,9 @@ public class ActivityPanel {
             privateLabel.setIcon(Icons.PUBLIC_ICON);
             privateLabel.setForeground(COLOR_PLUGIN_GREEN);
         }
-        privateLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         privateLabel.setToolTipText("Match ID: " + ID);
 
-        ah.anchor = GridBagConstraints.LINE_END;
-        ah.fill = GridBagConstraints.LINE_END;
-        activityHeader.add(privateLabel, ah);
-
+        JPanel activityHeader = doubleLabelPanel(match_title, privateLabel);
         current_activity_panel.add(activityHeader, ca);
         ca.gridy += 1;
 
@@ -177,19 +158,17 @@ public class ActivityPanel {
             ca.gridy += 1;
         }
 
-        JLabel player_count_label = new JLabel(playerCount+"/"+memberCount);
-        player_count_label.setIcon(Icons.PLAYERS_ICON);
-        player_count_label.setToolTipText("Players");
-        current_activity_panel.add(player_count_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
 
         JLabel experience_label = new JLabel(experience);
         experience_label.setIcon(Icons.EXPERIENCE_ICON);
         experience_label.setToolTipText("Experience");
-        current_activity_panel.add(experience_label, ca);
+
+        JLabel player_count_label = new JLabel(playerCount+"/"+memberCount);
+        player_count_label.setIcon(Icons.PLAYERS_ICON);
+        player_count_label.setToolTipText("Players");
+
+        JPanel experience_player_count = doubleLabelPanel(experience_label, player_count_label);
+        current_activity_panel.add(experience_player_count, ca);
         ca.gridy += 1;
 
         current_activity_panel.add(Box.createVerticalStrut(1), ca);
@@ -198,17 +177,14 @@ public class ActivityPanel {
         JLabel split_label = new JLabel(splitType);
         split_label.setIcon(Icons.LOOTBAG_ICON);
         split_label.setToolTipText("Loot Split");
-        current_activity_panel.add(split_label, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(1), ca);
-        ca.gridy += 1;
 
         ImageIcon account_image = AccountTypeSelectionEnum.valueOf(accounts).getImage();
         JLabel accounts_label = new JLabel(accounts);
         accounts_label.setIcon(account_image);
         accounts_label.setToolTipText("Accounts");
-        current_activity_panel.add(accounts_label, ca);
+
+        JPanel split_accounts_label = doubleLabelPanel(split_label, accounts_label);
+        current_activity_panel.add(split_accounts_label, ca);
         ca.gridy += 1;
 
         current_activity_panel.add(Box.createVerticalStrut(1), ca);
@@ -232,6 +208,28 @@ public class ActivityPanel {
             ca.gridy += 1;
         }
         return current_activity_panel;
+    }
+
+    private JPanel doubleLabelPanel(JLabel left, JLabel right){
+        JPanel doubleLabelPanel = new JPanel();
+        doubleLabelPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        doubleLabelPanel.setBackground(SUB_BACKGROUND_COLOR);
+        doubleLabelPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+        doubleLabelPanel.add(left, c);
+
+        c.gridx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+        c.fill = GridBagConstraints.LINE_END;
+        right.setHorizontalTextPosition(SwingConstants.LEFT);
+        doubleLabelPanel.add(right, c);
+
+        return doubleLabelPanel;
     }
 
 }
