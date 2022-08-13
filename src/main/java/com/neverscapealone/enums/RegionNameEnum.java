@@ -435,7 +435,6 @@ public enum RegionNameEnum {
     }
     public static ArrayList<String> regionActivityList() {
         ArrayList<String> activityList = new ArrayList<String>();
-        activityList.add("Nowhere");
         for (RegionNameEnum region : RegionNameEnum.values()) {
             activityList.add(region.getActivityName());
         }

@@ -33,6 +33,7 @@ import lombok.Value;
 @Value
 @Builder
 public class Payload {
+    // General information payload
     @SerializedName("detail") // server detail, or subject line. What is the message about?
     ServerStatusCode status;
     @SerializedName("server_message") // server message, is there any flavor text the server is sending as well?

@@ -95,8 +95,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final NeverScapeAloneConfig config;
     private final Components components;
     private final PlayerPanel playerPanel;
-    private final SearchMatchDataPanel searchMatchDataPanel;
-    private final CurrentActivityPanel currentActivityPanel;
+    private final ActivityPanel activityPanel;
     private final DiscordInvitePanel discordInvitePanel;
     private final NeverScapeAloneWebsocket websocket;
     private final Client user;
@@ -145,8 +144,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             NeverScapeAloneConfig config,
             Components components,
             PlayerPanel playerPanel,
-            SearchMatchDataPanel searchMatchDataPanel,
-            CurrentActivityPanel currentActivityPanel,
+            ActivityPanel activityPanel,
             DiscordInvitePanel discordInvitePanel,
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
@@ -156,8 +154,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.plugin = plugin;
         this.components = components;
         this.playerPanel = playerPanel;
-        this.searchMatchDataPanel = searchMatchDataPanel;
-        this.currentActivityPanel = currentActivityPanel;
+        this.activityPanel = activityPanel;
         this.discordInvitePanel = discordInvitePanel;
         this.websocket = websocket;
         this.user = user;
@@ -346,8 +343,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
-        /// match ID panel
-
         JPanel match_ID_panel = new JPanel();
         match_ID_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
         match_ID_panel.setBackground(SUB_BACKGROUND_COLOR);
@@ -383,9 +378,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
-        JPanel current_activity_panel = currentActivityPanel.createCurrentActivityPanel(matchdata);
+        JPanel activity_panel = activityPanel.createCurrentActivityPanel(matchdata);
         c.gridy += 1;
-        mp.add(current_activity_panel, c);
+        mp.add(activity_panel, c);
 
         if (matchdata.getDiscordInvite() != null){
             JPanel discord_invite_panel = discordInvitePanel.createDiscordInvitePanel(matchdata);
@@ -1077,7 +1072,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         }
 
         for (SearchMatchData match : searchMatches.getSearchMatches()) {
-            JPanel sMatch = searchMatchDataPanel.createSearchMatchDataPanel(match);
+            JPanel sMatch = activityPanel.createSearchMatchDataPanel(match);
             int v = 0;
             if (match.getIsPrivate()) {
                 v = 1;

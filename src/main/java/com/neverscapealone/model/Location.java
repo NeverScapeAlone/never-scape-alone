@@ -29,6 +29,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Location {
+    // player location
     @SerializedName("x")
     @Expose
     private Integer x;
