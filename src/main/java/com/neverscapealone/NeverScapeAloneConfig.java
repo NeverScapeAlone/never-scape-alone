@@ -25,7 +25,7 @@
 
 package com.neverscapealone;
 
-import com.neverscapealone.enums.SoundEffectSelection;
+import com.neverscapealone.enums.SoundEffectSelectionEnum;
 import net.runelite.client.config.*;
 
 import java.awt.*;
@@ -136,9 +136,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The normal 'ping' sound effect.",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectPing()
+    default SoundEffectSelectionEnum soundEffectPing()
     {
-        return SoundEffectSelection.BELL_DING;
+        return SoundEffectSelectionEnum.BELL_DING;
     }
 
     @ConfigItem(
@@ -148,9 +148,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The alert 'ping' sound effect.",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectAlertPing()
+    default SoundEffectSelectionEnum soundEffectAlertPing()
     {
-        return SoundEffectSelection.BELL_DONG;
+        return SoundEffectSelectionEnum.BELL_DONG;
     }
 
     @ConfigItem(
@@ -160,9 +160,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The sound when you join a match",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectMatchJoin()
+    default SoundEffectSelectionEnum soundEffectMatchJoin()
     {
-        return SoundEffectSelection.OPEN_DOOR;
+        return SoundEffectSelectionEnum.OPEN_DOOR;
     }
 
     @ConfigItem(
@@ -172,9 +172,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The sound when you leave a match",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectMatchLeave()
+    default SoundEffectSelectionEnum soundEffectMatchLeave()
     {
-        return SoundEffectSelection.CLOSE_DOOR;
+        return SoundEffectSelectionEnum.CLOSE_DOOR;
     }
 
     @ConfigItem(
@@ -184,9 +184,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The sound of a player joining the match",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectPlayerJoin()
+    default SoundEffectSelectionEnum soundEffectPlayerJoin()
     {
-        return SoundEffectSelection.GE_INCREMENT;
+        return SoundEffectSelectionEnum.GE_INCREMENT;
     }
 
     @ConfigItem(
@@ -196,9 +196,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The sound of a player leaving the match",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectPlayerLeave()
+    default SoundEffectSelectionEnum soundEffectPlayerLeave()
     {
-        return SoundEffectSelection.GE_DECREMENT;
+        return SoundEffectSelectionEnum.GE_DECREMENT;
     }
 
     @ConfigItem(
@@ -208,9 +208,9 @@ public interface NeverScapeAloneConfig extends Config {
             description = "The sound when there's an error",
             section = soundSelection
     )
-    default SoundEffectSelection soundEffectError()
+    default SoundEffectSelectionEnum soundEffectError()
     {
-        return SoundEffectSelection.UI_BOOP;
+        return SoundEffectSelectionEnum.UI_BOOP;
     }
 
     @ConfigItem(

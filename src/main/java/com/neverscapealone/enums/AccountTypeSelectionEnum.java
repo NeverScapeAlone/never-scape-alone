@@ -25,19 +25,26 @@
 
 package com.neverscapealone.enums;
 
+import com.neverscapealone.ui.Icons;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.swing.*;
+
 @Getter
 @RequiredArgsConstructor
-public enum ExperienceLevel {
-    Flexible("Flexible", 0),
-    Beginner("Beginner", 1),
-    Average("Average", 2),
-    Advanced("Advanced", 3);
+public enum AccountTypeSelectionEnum {
+    NORMAL("Normal", Icons.NSA_ICON),
+    IM("IM", Icons.IM_ICON),
+    HCIM("HCIM", Icons.HCGIM_ICON),
+    UIM("UIM", Icons.UIM_ICON),
+    GIM("GIM", Icons.GIM_ICON),
+    HCGIM("HCGIM", Icons.HCGIM_ICON),
+    UGIM("UGIM", Icons.UGIM_ICON),
+    ANY("Any", Icons.NSA_ICON);
 
     private final String name;
-    private final int experienceRating;
+    private final ImageIcon image;
 
     @Override
     public String toString() {

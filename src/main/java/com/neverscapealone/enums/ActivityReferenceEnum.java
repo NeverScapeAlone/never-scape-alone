@@ -33,7 +33,7 @@ import javax.swing.*;
 
 @Getter
 @RequiredArgsConstructor
-public enum ActivityReference
+public enum ActivityReferenceEnum
 // "random", "skill", "boss", "minigame", "misc", "raid"
 {
     // random

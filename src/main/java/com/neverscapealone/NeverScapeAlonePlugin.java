@@ -255,7 +255,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                 break;
             case BUTTON_PRESS:
                 if (config.soundEffectButtonBool()){
-                    clientThread.invoke(() -> client.playSoundEffect(SoundEffectSelection.UI_BOOP.getID()));
+                    clientThread.invoke(() -> client.playSoundEffect(SoundEffectSelectionEnum.UI_BOOP.getID()));
                 }
                 break;
         }

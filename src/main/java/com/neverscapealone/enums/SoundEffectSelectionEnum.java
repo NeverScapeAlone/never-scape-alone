@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum SoundEffectSelection {
+public enum SoundEffectSelectionEnum {
     UI_BOOP(2266),
     GE_INCREMENT(3929),
     GE_DECREMENT(3930),

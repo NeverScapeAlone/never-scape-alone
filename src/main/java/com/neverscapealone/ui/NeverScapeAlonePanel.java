@@ -446,26 +446,26 @@ public class NeverScapeAlonePanel extends PluginPanel {
         sc.gridy = 0;
 
 
-        JToggleButton rating_button = components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.RATING));
+        JToggleButton rating_button = components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.RATING));
         headermatchPanel.add(rating_button, sc);
 
         sc.gridx +=1;
 
-        JToggleButton discord_button = components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.DISCORD));
+        JToggleButton discord_button = components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
         headermatchPanel.add(discord_button, sc);
 
         sc.gridx +=1;
 
-        JToggleButton location_button = components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.LOCATION));
+        JToggleButton location_button = components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.LOCATION));
         headermatchPanel.add(location_button, sc);
 
         sc.gridx +=1;
 
-        JToggleButton safety_button = components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.SAFETY));
+        JToggleButton safety_button = components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.SAFETY));
         headermatchPanel.add(safety_button, sc);
 
         sc.gridx +=1;
-        JToggleButton stats_button = components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitch.STATS));
+        JToggleButton stats_button = components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.STATS));
         headermatchPanel.add(stats_button, sc);
 
         sc.gridx +=1;
@@ -478,7 +478,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         return matchPanel;
     }
 
-    private void switchHeaderButtonListener(ActionEvent actionEvent, MatchHeaderSwitch matchHeaderSwitch){
+    private void switchHeaderButtonListener(ActionEvent actionEvent, MatchHeaderSwitchEnum matchHeaderSwitch){
         JToggleButton button = (JToggleButton) actionEvent.getSource();
         boolean b = true;
         if (button.isSelected()){
@@ -706,8 +706,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     }
 
     private void addQueueButtons() {
-        ActivityReference[] values = ActivityReference.values();
-        for (ActivityReference value : values) {
+        ActivityReferenceEnum[] values = ActivityReferenceEnum.values();
+        for (ActivityReferenceEnum value : values) {
             JToggleButton button = new JToggleButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
@@ -827,8 +827,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     }
 
     private void addCreateButtons() {
-        ActivityReference[] values = ActivityReference.values();
-        for (ActivityReference value : values) {
+        ActivityReferenceEnum[] values = ActivityReferenceEnum.values();
+        for (ActivityReferenceEnum value : values) {
             JButton button = new JButton();
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
@@ -932,7 +932,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.COUNT), 16, 16);
+        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.COUNT), 16, 16);
         createSelectionPanel.add(member_count_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -945,7 +945,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         c.gridx = 2;
         c.weightx = 0;
-        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.EXPERIENCE), 16, 16);
+        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.EXPERIENCE), 16, 16);
         createSelectionPanel.add(experience_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -957,7 +957,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(party_loot, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.SPLIT), 16, 16);
+        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.SPLIT), 16, 16);
         createSelectionPanel.add(split_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -969,7 +969,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(account_type, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.ACCOUNTS), 16, 16);
+        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.ACCOUNTS), 16, 16);
         createSelectionPanel.add(accounts_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -981,7 +981,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(region, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.REGION), 16, 16);
+        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.REGION), 16, 16);
         createSelectionPanel.add(region_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -993,7 +993,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(passcode, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.PASSCODE), 16, 16);
+        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.PASSCODE), 16, 16);
         createSelectionPanel.add(passcode_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
@@ -1005,7 +1005,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createSelectionPanel.add(notes, c);
         c.gridx = 2;
         c.weightx = 0;
-        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitch.NOTES), 16, 16);
+        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", e -> components.help_button_switchboard(e, HelpButtonSwitchEnum.NOTES), 16, 16);
         createSelectionPanel.add(notes_help_button, c);
         c.weightx = 1;
         c.gridy += 1;

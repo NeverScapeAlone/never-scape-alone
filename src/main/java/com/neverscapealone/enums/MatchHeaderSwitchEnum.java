@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum MatchHeaderSwitch {
+public enum MatchHeaderSwitchEnum {
     RATING,
     DISCORD,
     LOCATION,

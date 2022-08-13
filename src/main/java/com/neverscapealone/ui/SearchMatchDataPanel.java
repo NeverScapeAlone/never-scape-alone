@@ -1,8 +1,8 @@
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.AccountTypeSelection;
-import com.neverscapealone.enums.ActivityReference;
+import com.neverscapealone.enums.AccountTypeSelectionEnum;
+import com.neverscapealone.enums.ActivityReferenceEnum;
 import com.neverscapealone.model.SearchMatchData;
 import net.runelite.client.ui.FontManager;
 
@@ -44,9 +44,9 @@ public class SearchMatchDataPanel {
         ah.gridy = 0;
 
         String activity = match.getActivity();
-        ActivityReference activityReference = ActivityReference.valueOf(activity);
-        ImageIcon activity_icon = activityReference.getIcon();
-        String activity_name = activityReference.getTooltip();
+        ActivityReferenceEnum activityReferenceEnum = ActivityReferenceEnum.valueOf(activity);
+        ImageIcon activity_icon = activityReferenceEnum.getIcon();
+        String activity_name = activityReferenceEnum.getTooltip();
 
         JLabel match_title = new JLabel(activity_name);
         match_title.setIcon(activity_icon);
@@ -116,7 +116,7 @@ public class SearchMatchDataPanel {
         cMatch.gridy += 1;
 
         String account_string = match.getAccounts();
-        ImageIcon account_image = AccountTypeSelection.valueOf(account_string).getImage();
+        ImageIcon account_image = AccountTypeSelectionEnum.valueOf(account_string).getImage();
         JLabel accounts_label = new JLabel(account_string);
         accounts_label.setIcon(account_image);
         accounts_label.setToolTipText("Accounts");

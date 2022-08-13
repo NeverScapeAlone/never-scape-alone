@@ -1,7 +1,7 @@
 package com.neverscapealone.ui;
 
 import com.google.common.base.Splitter;
-import com.neverscapealone.enums.HelpButtonSwitch;
+import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
@@ -71,11 +71,11 @@ public class Components {
         return output;
     }
 
-    public void help_button_switchboard(ActionEvent actionEvent, HelpButtonSwitch helpButtonSwitch) {
+    public void help_button_switchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "";
-        switch (helpButtonSwitch){
+        switch (helpButtonSwitchEnum){
             case COUNT:
                 message = "Group Size Help" + "\n" +
                         "The group size string indicates the maximum" + "\n"+

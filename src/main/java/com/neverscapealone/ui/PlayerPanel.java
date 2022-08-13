@@ -3,7 +3,7 @@ package com.neverscapealone.ui;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.model.Player;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
-import com.neverscapealone.enums.RegionName;
+import com.neverscapealone.enums.RegionNameEnum;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
@@ -21,7 +21,7 @@ import static com.neverscapealone.ui.NeverScapeAlonePanel.COLOR_PLUGIN_RED;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
 
 public class PlayerPanel {
-    Map<Integer, String> regionReference = RegionName.regionReference();
+    Map<Integer, String> regionReference = RegionNameEnum.regionReference();
 
     public JPanel createPlayerPanel(Player player,
                                     String client_username,

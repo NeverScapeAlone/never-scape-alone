@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum HelpButtonSwitch {
+public enum HelpButtonSwitchEnum {
     NOTES,
     COUNT,
     EXPERIENCE,
