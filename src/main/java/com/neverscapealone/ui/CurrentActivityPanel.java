@@ -1,6 +1,5 @@
 package com.neverscapealone.ui;
 
-import com.google.common.base.Splitter;
 import com.neverscapealone.enums.AccountTypeSelection;
 import com.neverscapealone.enums.ActivityReference;
 import com.neverscapealone.enums.MatchData;
