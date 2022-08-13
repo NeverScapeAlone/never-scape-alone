@@ -23,13 +23,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SearchMatchData {
+import java.util.List;
 
+public class MatchData {
+
+    @SerializedName("discord_invite")
+    @Expose
+    private String discordInvite;
     @SerializedName("ID")
     @Expose
     private String id;
@@ -39,30 +44,37 @@ public class SearchMatchData {
     @SerializedName("party_members")
     @Expose
     private String partyMembers;
+    @SerializedName("group_passcode")
+    @Expose
+    private String groupPasscode;
     @SerializedName("isPrivate")
     @Expose
     private Boolean isPrivate;
-    @SerializedName("experience")
-    @Expose
-    private String experience;
-    @SerializedName("split_type")
-    @Expose
-    private String splitType;
-    @SerializedName("accounts")
-    @Expose
-    private String accounts;
-    @SerializedName("regions")
-    @Expose
-    private String regions;
-    @SerializedName("player_count")
-    @Expose
-    private String playerCount;
-    @SerializedName("party_leader")
-    @Expose
-    private String partyLeader;
     @SerializedName("notes")
     @Expose
     private String notes;
+    @SerializedName("ban_list")
+    @Expose
+    private List<Integer> banList;
+    @SerializedName("requirement")
+    @Expose
+    private Requirement requirement;
+    @SerializedName("players")
+    @Expose
+    private List<Player> players = null;
+
+    public String getDiscordInvite() {
+        return discordInvite;
+    }
+
+    public void setDiscordInvite(String discordInvite) {
+        this.discordInvite = discordInvite;
+    }
+
+    public MatchData withDiscordInvite(String discordInvite) {
+        this.discordInvite = discordInvite;
+        return this;
+    }
 
     public String getId() {
         return id;
@@ -72,7 +84,7 @@ public class SearchMatchData {
         this.id = id;
     }
 
-    public SearchMatchData withId(String id) {
+    public MatchData withId(String id) {
         this.id = id;
         return this;
     }
@@ -85,7 +97,7 @@ public class SearchMatchData {
         this.activity = activity;
     }
 
-    public SearchMatchData withActivity(String activity) {
+    public MatchData withActivity(String activity) {
         this.activity = activity;
         return this;
     }
@@ -98,8 +110,21 @@ public class SearchMatchData {
         this.partyMembers = partyMembers;
     }
 
-    public SearchMatchData withPartyMembers(String partyMembers) {
+    public MatchData withPartyMembers(String partyMembers) {
         this.partyMembers = partyMembers;
+        return this;
+    }
+
+    public String getGroupPasscode() {
+        return groupPasscode;
+    }
+
+    public void setGroupPasscode(String groupPasscode) {
+        this.groupPasscode = groupPasscode;
+    }
+
+    public MatchData withGroupPasscode(String groupPasscode) {
+        this.groupPasscode = groupPasscode;
         return this;
     }
 
@@ -111,86 +136,47 @@ public class SearchMatchData {
         this.isPrivate = isPrivate;
     }
 
-    public SearchMatchData withIsPrivate(Boolean isPrivate) {
+    public MatchData withIsPrivate(Boolean isPrivate) {
         this.isPrivate = isPrivate;
         return this;
     }
 
-    public String getExperience() {
-        return experience;
+    public Requirement getRequirement() {
+        return requirement;
     }
 
-    public void setExperience(String experience) {
-        this.experience = experience;
+    public void setRequirement(Requirement requirement) {
+        this.requirement = requirement;
     }
 
-    public SearchMatchData withExperience(String experience) {
-        this.experience = experience;
+    public MatchData withRequirement(Requirement requirement) {
+        this.requirement = requirement;
         return this;
     }
 
-    public String getSplitType() {
-        return splitType;
+    public List<Integer> getBanList() {
+        return banList;
     }
 
-    public void setSplitType(String splitType) {
-        this.splitType = splitType;
+    public void setBanList(List<Integer> banList) {
+        this.banList = banList;
     }
 
-    public SearchMatchData withSplitType(String splitType) {
-        this.splitType = splitType;
+    public MatchData withBanList(List<Integer> banList) {
+        this.banList = banList;
         return this;
     }
 
-    public String getAccounts() {
-        return accounts;
+    public List<Player> getPlayers() {
+        return players;
     }
 
-    public void setAccounts(String accounts) {
-        this.accounts = accounts;
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
-    public SearchMatchData withAccounts(String accounts) {
-        this.accounts = accounts;
-        return this;
-    }
-
-    public String getRegions() {
-        return regions;
-    }
-
-    public void setRegions(String regions) {
-        this.regions = regions;
-    }
-
-    public SearchMatchData withRegions(String regions) {
-        this.regions = regions;
-        return this;
-    }
-
-    public String getPlayerCount() {
-        return playerCount;
-    }
-
-    public void setPlayerCount(String playerCount) {
-        this.playerCount = playerCount;
-    }
-
-    public SearchMatchData withPlayerCount(String playerCount) {
-        this.playerCount = playerCount;
-        return this;
-    }
-
-    public String getPartyLeader() {
-        return partyLeader;
-    }
-
-    public void setPartyLeader(String partyLeader) {
-        this.partyLeader = partyLeader;
-    }
-
-    public SearchMatchData withPartyLeader(String partyLeader) {
-        this.partyLeader = partyLeader;
+    public MatchData withPlayers(List<Player> players) {
+        this.players = players;
         return this;
     }
 
@@ -200,7 +186,7 @@ public class SearchMatchData {
     public void setNotes(String notes) {
         this.notes = notes;
     }
-    public SearchMatchData withNotes(String notes) {
+    public MatchData withNotes(String notes) {
         this.notes = notes;
         return this;
     }

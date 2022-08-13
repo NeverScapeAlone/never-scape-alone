@@ -37,7 +37,7 @@ import java.util.*;
 
 @Getter
 @RequiredArgsConstructor
-public enum RegionName {
+public enum RegionNameEnum {
     // Bosses
     BOSS_ABYSSAL_SIRE("Abyssal Sire", Arrays.asList(11851, 11850, 12363, 12362)),
     BOSS_CERBERUS("Cerberus", Arrays.asList(4883, 5140, 5395)),
@@ -420,13 +420,13 @@ public enum RegionName {
     private String activityName;
     private List<Integer> regionIDs;
     public static Map <Integer, String> regionReference = new HashMap<Integer, String>();
-    RegionName(String s, List<Integer> asList) {
+    RegionNameEnum(String s, List<Integer> asList) {
         this.activityName = s;
         this.regionIDs = asList;
     }
 
     public static Map <Integer, String>  regionReference() {
-        for (RegionName region : RegionName.values()) {
+        for (RegionNameEnum region : RegionNameEnum.values()) {
             for (Integer regionID : region.getRegionIDs()) {
                 regionReference.put(regionID, region.getActivityName());
             }
@@ -435,8 +435,7 @@ public enum RegionName {
     }
     public static ArrayList<String> regionActivityList() {
         ArrayList<String> activityList = new ArrayList<String>();
-        activityList.add("Nowhere");
-        for (RegionName region : RegionName.values()) {
+        for (RegionNameEnum region : RegionNameEnum.values()) {
             activityList.add(region.getActivityName());
         }
         return activityList;

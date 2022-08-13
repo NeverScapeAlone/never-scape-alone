@@ -23,30 +23,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.model;
+package com.neverscapealone.ui;
 
-import com.google.gson.annotations.SerializedName;
-import com.neverscapealone.enums.ServerStatusCode;
-import lombok.Builder;
-import lombok.Value;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
-@Value
-@Builder
-public class Payload {
-    // General information payload
-    @SerializedName("detail") // server detail, or subject line. What is the message about?
-    ServerStatusCode status;
-    @SerializedName("server_message") // server message, is there any flavor text the server is sending as well?
-    ServerMessage serverMessage;
-    @SerializedName("join") // the group ID to join on a create_match request
-    String group_id;
-    @SerializedName("passcode") // the passcode that is sent on a create_match request
-    String passcode;
-    @SerializedName("search_match_data") // limited data to be sent over to the client, this is mainly for selecting a match
-    SearchMatches search;
-    @SerializedName("match_data") // data regarding the match itself
-    MatchData matchData;
-    @SerializedName("ping_data") // incoming ping data
-    PingData pingData;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+public class ServerWarningPanelClass {
+
+    public static JPanel serverWarningPanel() {
+        JPanel serverWarningPanel = new JPanel();
+        serverWarningPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        serverWarningPanel.setBackground(SUB_BACKGROUND_COLOR);
+        serverWarningPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+
+        serverWarningPanel.add(Box.createVerticalStrut(3), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(new JLabel(), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(Box.createVerticalStrut(3), c);
+        return serverWarningPanel;
+    }
+
 }
-

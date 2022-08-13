@@ -1,9 +1,34 @@
+/*
+ * Copyright (c) 2022, Ferrariic <ferrariictweet@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.neverscapealone.ui;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.Player;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
-import com.neverscapealone.enums.RegionName;
+import com.neverscapealone.enums.RegionNameEnum;
+import com.neverscapealone.model.Player;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
@@ -20,8 +45,8 @@ import java.util.Objects;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.COLOR_PLUGIN_RED;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
 
-public class PlayerPanel {
-    Map<Integer, String> regionReference = RegionName.regionReference();
+public class PlayerPanelClass {
+    Map<Integer, String> regionReference = RegionNameEnum.regionReference();
 
     public JPanel createPlayerPanel(Player player,
                                     String client_username,
@@ -44,56 +69,10 @@ public class PlayerPanel {
         cp.gridy = 0;
 
         if (!Objects.equals(player.getLogin(), client_username)) {
-            /// if the panel drawn player is not the current player, draw buttons
-
-            JPanel player_name_button_panel = new JPanel();
-            player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-            player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
-            player_name_button_panel.setLayout(new GridBagLayout());
-            GridBagConstraints pnbp = new GridBagConstraints();
-            pnbp.anchor = GridBagConstraints.LINE_END;
-            pnbp.gridx = 0;
-            pnbp.gridy = 0;
-
-            JButton promote_party_leader = new JButton();
-            promote_party_leader.setIcon(Icons.CROWN_ICON);
-            promote_party_leader.setToolTipText("Promote " + player.getLogin());
-            promote_party_leader.setActionCommand(String.valueOf(player.getUserId()));
-            promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
-            player_name_button_panel.add(promote_party_leader, pnbp);
-            pnbp.gridx += 1;
-
-            JButton like_button = new JButton();
-            like_button.setIcon(Icons.LIKE_ICON);
-            like_button.setToolTipText("Like " + player.getLogin());
-            like_button.setActionCommand(String.valueOf(player.getUserId()));
-
-            like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
-            player_name_button_panel.add(like_button, pnbp);
-            pnbp.gridx += 1;
-
-            JButton dislike_button = new JButton();
-            dislike_button.setIcon(Icons.DISLIKE_ICON);
-            dislike_button.setToolTipText("Dislike " + player.getLogin());
-            dislike_button.setActionCommand(String.valueOf(player.getUserId()));
-            dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
-            player_name_button_panel.add(dislike_button, pnbp);
-            pnbp.gridx += 1;
-
-            JButton kick = new JButton();
-            kick.setIcon(Icons.KICK_ICON);
-            kick.setToolTipText("Kick " + player.getLogin());
-            kick.setActionCommand(String.valueOf(player.getUserId()));
-            kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
-            player_name_button_panel.add(kick, pnbp);
-            pnbp.gridx += 1;
-
-            player_panel.add(player_name_button_panel, cp);
+            player_panel.add(playerNameButtonPanel(plugin, player.getLogin(), player.getUserId()), cp);
             cp.gridy += 1;
         }
-        //////////////////// end player name button panel
 
-        //////////////////// start name panel
         JPanel player_name_panel = new JPanel();
         player_name_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         player_name_panel.setBackground(SUB_BACKGROUND_COLOR);
@@ -128,7 +107,6 @@ public class PlayerPanel {
         player_name_panel.add(player_name, pnp);
         player_panel.add(player_name_panel, cp);
         cp.gridy += 1;
-        //////////////////// end name panel
 
         if (rating_selected & (player.getRating() != -1)){
             player_panel.add(Box.createVerticalStrut(3));
@@ -264,6 +242,51 @@ public class PlayerPanel {
             cp.gridy += 1;
         }
         return player_panel;
+    }
+
+    private JPanel playerNameButtonPanel(NeverScapeAlonePlugin plugin, String login, Integer userId){
+        JPanel player_name_button_panel = new JPanel();
+        player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
+        player_name_button_panel.setLayout(new GridBagLayout());
+        GridBagConstraints pnbp = new GridBagConstraints();
+        pnbp.anchor = GridBagConstraints.LINE_END;
+        pnbp.gridx = 0;
+        pnbp.gridy = 0;
+
+        JButton promote_party_leader = new JButton();
+        promote_party_leader.setIcon(Icons.CROWN_ICON);
+        promote_party_leader.setToolTipText("Promote " + login);
+        promote_party_leader.setActionCommand(String.valueOf(userId));
+        promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
+        player_name_button_panel.add(promote_party_leader, pnbp);
+        pnbp.gridx += 1;
+
+        JButton like_button = new JButton();
+        like_button.setIcon(Icons.LIKE_ICON);
+        like_button.setToolTipText("Like " + login);
+        like_button.setActionCommand(String.valueOf(userId));
+
+        like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
+        player_name_button_panel.add(like_button, pnbp);
+        pnbp.gridx += 1;
+
+        JButton dislike_button = new JButton();
+        dislike_button.setIcon(Icons.DISLIKE_ICON);
+        dislike_button.setToolTipText("Dislike " + login);
+        dislike_button.setActionCommand(String.valueOf(userId));
+        dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
+        player_name_button_panel.add(dislike_button, pnbp);
+        pnbp.gridx += 1;
+
+        JButton kick = new JButton();
+        kick.setIcon(Icons.KICK_ICON);
+        kick.setToolTipText("Kick " + login);
+        kick.setActionCommand(String.valueOf(userId));
+        kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
+        player_name_button_panel.add(kick, pnbp);
+        pnbp.gridx += 1;
+        return player_name_button_panel;
     }
 
 

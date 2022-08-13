@@ -1,17 +1,45 @@
+/*
+ * Copyright (c) 2022, Ferrariic <ferrariictweet@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.neverscapealone.ui;
 
 import com.google.common.base.Splitter;
-import com.neverscapealone.enums.HelpButtonSwitch;
+import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+
 public class Components {
 
-    public JButton cleanJButton(Icon icon, String toolTip, ActionListener actionListener, int w, int h){
+    public static JButton cleanJButton(Icon icon, String toolTip, ActionListener actionListener, int w, int h){
         JButton button = new JButton();
         button.setIcon(icon);
         button.setToolTipText(toolTip);
@@ -23,7 +51,7 @@ public class Components {
         return button;
     }
 
-    public JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
+    public  static JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
         JToggleButton headerToggleButton = new JToggleButton();
         headerToggleButton.setIcon(icon);
         headerToggleButton.setToolTipText(toolTip);
@@ -34,7 +62,7 @@ public class Components {
         return headerToggleButton;
     }
 
-    public JPanel title(String title_text) {
+    public static JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
@@ -43,7 +71,7 @@ public class Components {
         return label_holder;
     }
 
-    public JPanel header(String title_text) {
+    public static JPanel header(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.LEFT);
@@ -52,7 +80,7 @@ public class Components {
         return label_holder;
     }
 
-    public JPanel instructionTitle(String title_text) {
+    public static JPanel instructionTitle(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
@@ -70,12 +98,23 @@ public class Components {
         output = "<html>" + output + "</html>";
         return output;
     }
+    public static JPanel subActivityPanel(int row, int column) {
+        if (row == 0 || column == 0) {
+            row = 5;
+            column = 5;
+        }
+        JPanel subActivityPanel = new JPanel();
+        subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        subActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        subActivityPanel.setLayout(new GridLayout(row, column));
+        return subActivityPanel;
+    }
 
-    public void help_button_switchboard(ActionEvent actionEvent, HelpButtonSwitch helpButtonSwitch) {
+    public static void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "";
-        switch (helpButtonSwitch){
+        switch (helpButtonSwitchEnum){
             case COUNT:
                 message = "Group Size Help" + "\n" +
                         "The group size string indicates the maximum" + "\n"+

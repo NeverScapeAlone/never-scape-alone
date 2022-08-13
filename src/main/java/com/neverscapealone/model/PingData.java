@@ -23,12 +23,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Location {
+public class PingData {
+
+    @SerializedName("username")
+    @Expose
+    private String username;
     @SerializedName("x")
     @Expose
     private Integer x;
@@ -47,10 +51,34 @@ public class Location {
     @SerializedName("plane")
     @Expose
     private Integer plane;
-    @SerializedName("world")
+    @SerializedName("color_r")
     @Expose
-    private Integer world;
+    private Integer colorR;
+    @SerializedName("color_g")
+    @Expose
+    private Integer colorG;
+    @SerializedName("color_b")
+    @Expose
+    private Integer colorB;
+    @SerializedName("color_alpha")
+    @Expose
+    private Integer colorAlpha;
+    @SerializedName("isAlert")
+    @Expose
+    private Boolean isAlert;
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public PingData withUsername(String username) {
+        this.username = username;
+        return this;
+    }
 
     public Integer getX() {
         return x;
@@ -60,7 +88,7 @@ public class Location {
         this.x = x;
     }
 
-    public Location withX(Integer x) {
+    public PingData withX(Integer x) {
         this.x = x;
         return this;
     }
@@ -73,7 +101,7 @@ public class Location {
         this.y = y;
     }
 
-    public Location withY(Integer y) {
+    public PingData withY(Integer y) {
         this.y = y;
         return this;
     }
@@ -86,7 +114,7 @@ public class Location {
         this.regionX = regionX;
     }
 
-    public Location withRegionX(Integer regionX) {
+    public PingData withRegionX(Integer regionX) {
         this.regionX = regionX;
         return this;
     }
@@ -99,7 +127,7 @@ public class Location {
         this.regionY = regionY;
     }
 
-    public Location withRegionY(Integer regionY) {
+    public PingData withRegionY(Integer regionY) {
         this.regionY = regionY;
         return this;
     }
@@ -112,7 +140,7 @@ public class Location {
         this.regionID = regionID;
     }
 
-    public Location withRegionID(Integer regionID) {
+    public PingData withRegionID(Integer regionID) {
         this.regionID = regionID;
         return this;
     }
@@ -125,21 +153,73 @@ public class Location {
         this.plane = plane;
     }
 
-    public Location withPlane(Integer plane) {
+    public PingData withPlane(Integer plane) {
         this.plane = plane;
         return this;
     }
 
-    public Integer getWorld() {
-        return world;
+    public Integer getColorR() {
+        return colorR;
     }
 
-    public void setWorld(Integer world) {
-        this.world = world;
+    public void setColorR(Integer colorR) {
+        this.colorR = colorR;
     }
 
-    public Location withWorld(Integer world) {
-        this.world = world;
+    public PingData withColorR(Integer colorR) {
+        this.colorR = colorR;
+        return this;
+    }
+
+    public Integer getColorG() {
+        return colorG;
+    }
+
+    public void setColorG(Integer colorG) {
+        this.colorG = colorG;
+    }
+
+    public PingData withColorG(Integer colorG) {
+        this.colorG = colorG;
+        return this;
+    }
+
+    public Integer getColorB() {
+        return colorB;
+    }
+
+    public void setColorB(Integer colorB) {
+        this.colorB = colorB;
+    }
+
+    public PingData withColorB(Integer colorB) {
+        this.colorB = colorB;
+        return this;
+    }
+
+    public Integer getColorAlpha() {
+        return colorAlpha;
+    }
+
+    public void setColorAlpha(Integer colorAlpha) {
+        this.colorAlpha = colorAlpha;
+    }
+
+    public PingData withColorAlpha(Integer colorAlpha) {
+        this.colorAlpha = colorAlpha;
+        return this;
+    }
+
+    public Boolean getIsAlert() {
+        return isAlert;
+    }
+
+    public void setIsAlert(Boolean isAlert) {
+        this.isAlert = isAlert;
+    }
+
+    public PingData withIsAlert(Boolean isAlert) {
+        this.isAlert = isAlert;
         return this;
     }
 

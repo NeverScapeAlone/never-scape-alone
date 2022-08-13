@@ -23,30 +23,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.model;
+package com.neverscapealone.enums;
 
-import com.google.gson.annotations.SerializedName;
-import com.neverscapealone.enums.ServerStatusCode;
-import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Value
-@Builder
-public class Payload {
-    // General information payload
-    @SerializedName("detail") // server detail, or subject line. What is the message about?
-    ServerStatusCode status;
-    @SerializedName("server_message") // server message, is there any flavor text the server is sending as well?
-    ServerMessage serverMessage;
-    @SerializedName("join") // the group ID to join on a create_match request
-    String group_id;
-    @SerializedName("passcode") // the passcode that is sent on a create_match request
-    String passcode;
-    @SerializedName("search_match_data") // limited data to be sent over to the client, this is mainly for selecting a match
-    SearchMatches search;
-    @SerializedName("match_data") // data regarding the match itself
-    MatchData matchData;
-    @SerializedName("ping_data") // incoming ping data
-    PingData pingData;
+@Getter
+@RequiredArgsConstructor
+public enum ExperienceLevelEnum {
+    Flexible("Flexible", 0),
+    Beginner("Beginner", 1),
+    Average("Average", 2),
+    Advanced("Advanced", 3);
+
+    private final String name;
+    private final int experienceRating;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
-

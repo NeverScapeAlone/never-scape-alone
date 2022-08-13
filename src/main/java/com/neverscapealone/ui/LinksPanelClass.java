@@ -23,24 +23,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.ui;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.neverscapealone.enums.WebLink;
+import net.runelite.client.util.LinkBrowser;
 
-@Getter
-@RequiredArgsConstructor
-public enum ExperienceLevel {
-    Flexible("Flexible", 0),
-    Beginner("Beginner", 1),
-    Average("Average", 2),
-    Advanced("Advanced", 3);
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-    private final String name;
-    private final int experienceRating;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
 
-    @Override
-    public String toString() {
-        return name;
+public class LinksPanelClass {
+    public JPanel linksPanel() {
+        JPanel linksPanel = new JPanel();
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        linksPanel.setBackground(SUB_BACKGROUND_COLOR);
+        for (WebLink w : WebLink.values()) {
+            JLabel link = new JLabel(w.getImage());
+            link.setToolTipText(w.getTooltip());
+            link.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    LinkBrowser.browse(w.getLink());
+                }
+            });
+            linksPanel.add(link);
+        }
+        return linksPanel;
     }
 }
