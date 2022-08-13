@@ -32,7 +32,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static com.neverscapealone.NeverScapeAlonePlugin.panel;
-import static com.neverscapealone.ui.Components.*;
+import static com.neverscapealone.ui.Components.cleanJButton;
+import static com.neverscapealone.ui.Components.title;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.connectingPanel;
 
 public class ConnectingPanelClass {

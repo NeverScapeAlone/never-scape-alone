@@ -34,8 +34,8 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 
 import static com.neverscapealone.ui.Components.subActivityPanel;
+import static com.neverscapealone.ui.Components.title;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
-import static com.neverscapealone.ui.Components.*;
 
 public class QueuePanelClass {
     public JPanel quickPanel(NeverScapeAlonePlugin plugin) {

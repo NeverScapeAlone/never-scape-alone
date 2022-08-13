@@ -25,7 +25,6 @@
 
 package com.neverscapealone.ui;
 
-import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ActivityReferenceEnum;
 import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import net.runelite.client.ui.FontManager;

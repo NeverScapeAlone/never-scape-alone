@@ -30,7 +30,6 @@ package com.neverscapealone.ui;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.MatchHeaderSwitchEnum;
 import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
@@ -51,8 +50,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -73,20 +70,20 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
 
-    private final JPanel switchMenuPanel;
+    private static JPanel switchMenuPanel;
     public static JPanel connectingPanel;
-    private final JPanel matchPanel;
-    private final JPanel quickPanel;
+    private static JPanel matchPanel;
+    private static JPanel quickPanel;
     public static JPanel createPanel;
     public static JPanel createPanel2;
-    private final JPanel searchPanel;
+    private static JPanel searchPanel;
     public static JButton quickMatchButton = new JButton();
-    private final JToggleButton quickMatchPanelButton = new JToggleButton();
-    private final JToggleButton createMatchPanelButton = new JToggleButton();
-    private final JToggleButton searchMatchPanelButton = new JToggleButton();
+    private static final JToggleButton quickMatchPanelButton = new JToggleButton();
+    private static final JToggleButton createMatchPanelButton = new JToggleButton();
+    private static final JToggleButton searchMatchPanelButton = new JToggleButton();
     // CLASSES
-    private final NeverScapeAlonePlugin plugin;
-    private final EventBus eventBus;
+    public static NeverScapeAlonePlugin plugin;
+    public static EventBus eventBus;
     private final NeverScapeAloneConfig config;
     private final Components components;
     private final PlayerPanelClass playerPanelClass;
@@ -96,7 +93,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final QueuePanelClass queuePanelClass;
     private final ConnectingPanelClass connectingPanelClass;
     private final LinksPanelClass linksPanelClass;
-    private final NeverScapeAloneWebsocket websocket;
+    private final MatchPanelClass matchPanelClass;
+    public static NeverScapeAloneWebsocket websocket;
     private final Client user;
     private final WorldService worldService;
     // BUTTONS
@@ -105,13 +103,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
     // GLOBAL VARIABLES
     public static String step1_activity = "";
-    private static boolean rating_selected = true;
-    private static boolean discord_selected = true;
-    private static boolean location_selected = true;
-    private static boolean safety_selected = true;
-    private static boolean stats_selected = true;
+    public static boolean rating_selected = true;
+    public static boolean discord_selected = true;
+    public static boolean location_selected = true;
+    public static boolean safety_selected = true;
+    public static boolean stats_selected = true;
     public static ArrayList<String> queue_list = new ArrayList<String>();
-    public boolean isConnecting = false;
+    public static boolean isConnecting = false;
 
     private static SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
     public static final JSpinner party_member_count = new JSpinner(player_size_model);
@@ -149,6 +147,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             QueuePanelClass queuePanelClass,
             ConnectingPanelClass connectingPanelClass,
             LinksPanelClass linksPanelClass,
+            MatchPanelClass matchPanelClass,
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
             Client user,
@@ -163,6 +162,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.queuePanelClass = queuePanelClass;
         this.connectingPanelClass = connectingPanelClass;
         this.linksPanelClass = linksPanelClass;
+        this.matchPanelClass = matchPanelClass;
         this.websocket = websocket;
         this.user = user;
         this.eventBus = eventBus;
@@ -185,7 +185,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         connectingPanel = ConnectingPanelClass.connectingPanel();
         connectingPanel.setVisible(false);
         // match panel
-        matchPanel = matchPanel();
+        matchPanel = matchPanelClass.matchPanel();
         matchPanel.setVisible(false);
         // constructions
         queuePanelClass.constructQueuePanels(); // construct queue panels for placement in quick panel
@@ -259,28 +259,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         label.setForeground(Color.YELLOW);
         serverWarningPanel.setVisible(b);
     }
-    private JPanel activitySearchBar() {
-        JPanel searchbar_panel = new JPanel();
-        searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        searchbar_panel.setBackground(BACKGROUND_COLOR);
-        searchbar_panel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridx = 0;
-        c.gridy = 0;
-
-        searchBar.setIcon(IconTextField.Icon.SEARCH);
-        searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
-        searchBar.setBackground(SUB_BACKGROUND_COLOR);
-        searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
-        searchBar.setText("*");
-        searchBar.addActionListener(plugin::searchActiveMatches);
-        searchbar_panel.add(searchBar, c);
-
-        return searchbar_panel;
-    }
     private JPanel switchMenuPanel() {
         JPanel switchMenuPanel = new JPanel();
         switchMenuPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -314,61 +292,115 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return switchMenuPanel;
     }
-    private JPanel matchPanel() {
-        JPanel matchPanel = new JPanel();
-        matchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        matchPanel.setLayout(new GridBagLayout());
+    private JPanel searchPanel() {
+        JPanel searchPanel = new JPanel();
+        searchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
         c.weightx = 1;
-        c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+        c.gridy = 0;
+        c.gridx = 0;
+
+        JPanel activitySearchBar = activitySearchBar();
+        searchPanel.add(activitySearchBar, c);
+        c.gridy += 1;
+        searchPanel.add(new JPanel(), c);
+        return searchPanel;
+    }
+    private JPanel activitySearchBar() {
+        JPanel searchbar_panel = new JPanel();
+        searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        searchbar_panel.setBackground(BACKGROUND_COLOR);
+        searchbar_panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
         c.gridx = 0;
         c.gridy = 0;
 
-        /// match header
-        JPanel headermatchPanel = new JPanel();
-        headermatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        headermatchPanel.setLayout(new GridBagLayout());
-        GridBagConstraints sc = new GridBagConstraints();
+        searchBar.setIcon(IconTextField.Icon.SEARCH);
+        searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
+        searchBar.setBackground(SUB_BACKGROUND_COLOR);
+        searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
+        searchBar.setText("*");
+        searchBar.addActionListener(plugin::searchActiveMatches);
+        searchbar_panel.add(searchBar, c);
 
-        sc.weightx = 1;
-        sc.anchor = GridBagConstraints.LINE_END;
-        sc.fill = GridBagConstraints.LINE_END;
-        sc.gridx = 0;
-        sc.gridy = 0;
+        return searchbar_panel;
+    }
+    public void setSearchPanel(SearchMatches searchMatches) {
+        JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
+        searchMatchPanel.removeAll();
 
+        searchMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        searchMatchPanel.setBackground(BACKGROUND_COLOR);
+        searchMatchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
 
-        JToggleButton rating_button = Components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.RATING));
-        headermatchPanel.add(rating_button, sc);
-
-        sc.gridx +=1;
-
-        JToggleButton discord_button = Components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
-        headermatchPanel.add(discord_button, sc);
-
-        sc.gridx +=1;
-
-        JToggleButton location_button = Components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.LOCATION));
-        headermatchPanel.add(location_button, sc);
-
-        sc.gridx +=1;
-
-        JToggleButton safety_button = Components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.SAFETY));
-        headermatchPanel.add(safety_button, sc);
-
-        sc.gridx +=1;
-        JToggleButton stats_button = Components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.STATS));
-        headermatchPanel.add(stats_button, sc);
-
-        sc.gridx +=1;
-        JButton leaveMatch = Components.cleanJButton(Icons.LOGOUT_ICON, "Leave Match", this::leaveMatch, 20, 20);
-        headermatchPanel.add(leaveMatch, sc);
-
-        matchPanel.add(headermatchPanel, c);
+        searchMatchPanel.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
-        matchPanel.add(new JPanel(), c);
-        return matchPanel;
+
+        if (searchMatches.getSearchMatches().size() == 0) {
+            JPanel sMatch = new JPanel();
+            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
+            sMatch.setBackground(SUB_BACKGROUND_COLOR);
+            sMatch.setLayout(new GridBagLayout());
+            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            GridBagConstraints cMatch = new GridBagConstraints();
+            cMatch.weightx = 1;
+            cMatch.fill = GridBagConstraints.HORIZONTAL;
+            cMatch.anchor = GridBagConstraints.CENTER;
+            cMatch.gridx = 0;
+            cMatch.gridy = 0;
+
+            JLabel no_matches_label = new JLabel("No Matches Found");
+            no_matches_label.setForeground(COLOR_PLUGIN_RED);
+            no_matches_label.setIcon(Icons.CANCEL_ICON);
+            no_matches_label.setToolTipText("No matches found with this current search, try again!");
+            no_matches_label.setFont(FontManager.getRunescapeBoldFont());
+
+            searchMatchPanel.add(no_matches_label, c);
+            return;
+        }
+
+        for (SearchMatchData match : searchMatches.getSearchMatches()) {
+            JPanel sMatch = activityPanelClass.createSearchMatchDataPanel(match);
+            int v = 0;
+            if (match.getIsPrivate()) {
+                v = 1;
+            }
+            sMatch.setName(match.getId() + ":" + v);
+            sMatch.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    JPanel panel = (JPanel) e.getSource();
+                    String name = panel.getName();
+                    String[] name_split = name.split(":");
+                    if (Objects.equals(name_split[1], "1")) {
+                        plugin.privateMatchPasscode(name_split[0]);
+                    } else {
+                        plugin.publicMatchJoin(name_split[0]);
+                    }
+                }
+            });
+            /// end match code
+            c.gridy += 1;
+            searchMatchPanel.add(Box.createVerticalStrut(5), c);
+            c.gridy += 1;
+            searchMatchPanel.add(sMatch, c);
+        }
+
+        searchMatchPanel.revalidate();
+        searchMatchPanel.repaint();
     }
     private void setMatchPanel(MatchData matchdata) {
         panelStateManager(PanelStateEnum.MATCH); // switch to match panel
@@ -388,37 +420,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
-        JPanel match_ID_panel = new JPanel();
-        match_ID_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        match_ID_panel.setBackground(SUB_BACKGROUND_COLOR);
-        match_ID_panel.setLayout(new GridBagLayout());
-        match_ID_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        GridBagConstraints cm = new GridBagConstraints();
-        cm.weightx = 1;
-        cm.fill = GridBagConstraints.HORIZONTAL;
-        cm.anchor = GridBagConstraints.CENTER;
-        cm.gridx = 0;
-        cm.gridy = 0;
-
-        JLabel matchID = new JLabel("ID: "+matchdata.getId());
-        matchID.setIcon(Icons.NSA_ICON);
-        matchID.setToolTipText("Your match ID");
-        if (matchdata.getIsPrivate()){
-            matchID.setForeground(COLOR_PLUGIN_YELLOW);
-        } else {
-            matchID.setForeground(COLOR_PLUGIN_GREEN);
-        }
-
-        matchID.setFont(FontManager.getRunescapeBoldFont());
-        matchID.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                StringSelection selection = new StringSelection(matchdata.getId());
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, selection);
-            }
-        });
-        match_ID_panel.add(matchID, cm);
+        JPanel match_ID_panel = MatchPanelClass.matchIDPanel(matchdata);
         mp.add(match_ID_panel, c);
         mp.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
@@ -447,13 +449,13 @@ public class NeverScapeAlonePanel extends PluginPanel {
             NeverScapeAlonePlugin.matchSize = matchPlayerSize;
 
             JPanel player_panel = playerPanelClass.createPlayerPanel(player,
-                    plugin.username,
-                    plugin,
-                    rating_selected,
-                    discord_selected,
-                    safety_selected,
-                    location_selected,
-                    stats_selected);
+                                                                    plugin.username,
+                                                                    plugin,
+                                                                    rating_selected,
+                                                                    discord_selected,
+                                                                    safety_selected,
+                                                                    location_selected,
+                                                                    stats_selected);
 
             mp.add(player_panel, c);
             c.gridy += 1;
@@ -464,57 +466,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.revalidate();
         mp.repaint();
     }
-    private void switchHeaderButtonListener(ActionEvent actionEvent, MatchHeaderSwitchEnum matchHeaderSwitch){
-        JToggleButton button = (JToggleButton) actionEvent.getSource();
-        boolean b = true;
-        if (button.isSelected()){
-            button.setBackground(COLOR_PLUGIN_GREEN);
-            b = true;
-        } else {
-            button.setBackground(COLOR_PLUGIN_RED);
-            b = false;
-        }
-        switch(matchHeaderSwitch){
-            case RATING:
-                rating_selected = b;
-                break;
-            case STATS:
-                stats_selected = b;
-                break;
-            case SAFETY:
-                safety_selected = b;
-                break;
-            case DISCORD:
-                discord_selected = b;
-                break;
-            case LOCATION:
-                location_selected = b;
-                break;
-        }
-    }
-    private void leaveMatch(ActionEvent actionEvent) {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        Object[] options = {"Leave",
-                "Stay"};
-        int n = JOptionPane.showOptionDialog(frame,
-                "Would you like to leave this match?",
-                "Match Logout",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[1]);
-        if (n == 0) {
-            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
-            websocket.logoff("Exiting match");
-            panelStateManager(PanelStateEnum.QUICK);
-        }
-    }
     public void panelStateManagerAction(ActionEvent event, PanelStateEnum panelStateEnum){
         panelStateManager(panelStateEnum);
     }
-    public void panelStateManager(PanelStateEnum panelStateEnum){
+    public static void panelStateManager(PanelStateEnum panelStateEnum){
         switch(panelStateEnum){
             case MATCH:
                 NeverScapeAlonePlugin.cycleQueue = false;
@@ -617,93 +572,4 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         return createPanel2;
     }
-    private JPanel searchPanel() {
-        JPanel searchPanel = new JPanel();
-        searchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        searchPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.WEST;
-        c.gridy = 0;
-        c.gridx = 0;
-
-        JPanel activitySearchBar = activitySearchBar();
-        searchPanel.add(activitySearchBar, c);
-        c.gridy += 1;
-        searchPanel.add(new JPanel(), c);
-        return searchPanel;
-    }
-    public void setSearchPanel(SearchMatches searchMatches) {
-        JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
-        searchMatchPanel.removeAll();
-
-        searchMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        searchMatchPanel.setBackground(BACKGROUND_COLOR);
-        searchMatchPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridx = 0;
-        c.gridy = 0;
-
-        searchMatchPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-
-        if (searchMatches.getSearchMatches().size() == 0) {
-            JPanel sMatch = new JPanel();
-            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
-            sMatch.setBackground(SUB_BACKGROUND_COLOR);
-            sMatch.setLayout(new GridBagLayout());
-            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-            GridBagConstraints cMatch = new GridBagConstraints();
-            cMatch.weightx = 1;
-            cMatch.fill = GridBagConstraints.HORIZONTAL;
-            cMatch.anchor = GridBagConstraints.CENTER;
-            cMatch.gridx = 0;
-            cMatch.gridy = 0;
-
-            JLabel no_matches_label = new JLabel("No Matches Found");
-            no_matches_label.setForeground(COLOR_PLUGIN_RED);
-            no_matches_label.setIcon(Icons.CANCEL_ICON);
-            no_matches_label.setToolTipText("No matches found with this current search, try again!");
-            no_matches_label.setFont(FontManager.getRunescapeBoldFont());
-
-            searchMatchPanel.add(no_matches_label, c);
-            return;
-        }
-
-        for (SearchMatchData match : searchMatches.getSearchMatches()) {
-            JPanel sMatch = activityPanelClass.createSearchMatchDataPanel(match);
-            int v = 0;
-            if (match.getIsPrivate()) {
-                v = 1;
-            }
-            sMatch.setName(match.getId() + ":" + v);
-            sMatch.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    JPanel panel = (JPanel) e.getSource();
-                    String name = panel.getName();
-                    String[] name_split = name.split(":");
-                    if (Objects.equals(name_split[1], "1")) {
-                        plugin.privateMatchPasscode(name_split[0]);
-                    } else {
-                        plugin.publicMatchJoin(name_split[0]);
-                    }
-                }
-            });
-            /// end match code
-            c.gridy += 1;
-            searchMatchPanel.add(Box.createVerticalStrut(5), c);
-            c.gridy += 1;
-            searchMatchPanel.add(sMatch, c);
-        }
-
-        searchMatchPanel.revalidate();
-        searchMatchPanel.repaint();
-    }
-
 }
