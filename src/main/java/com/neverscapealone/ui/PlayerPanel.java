@@ -44,51 +44,7 @@ public class PlayerPanel {
         cp.gridy = 0;
 
         if (!Objects.equals(player.getLogin(), client_username)) {
-            /// if the panel drawn player is not the current player, draw buttons
-
-            JPanel player_name_button_panel = new JPanel();
-            player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-            player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
-            player_name_button_panel.setLayout(new GridBagLayout());
-            GridBagConstraints pnbp = new GridBagConstraints();
-            pnbp.anchor = GridBagConstraints.LINE_END;
-            pnbp.gridx = 0;
-            pnbp.gridy = 0;
-
-            JButton promote_party_leader = new JButton();
-            promote_party_leader.setIcon(Icons.CROWN_ICON);
-            promote_party_leader.setToolTipText("Promote " + player.getLogin());
-            promote_party_leader.setActionCommand(String.valueOf(player.getUserId()));
-            promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
-            player_name_button_panel.add(promote_party_leader, pnbp);
-            pnbp.gridx += 1;
-
-            JButton like_button = new JButton();
-            like_button.setIcon(Icons.LIKE_ICON);
-            like_button.setToolTipText("Like " + player.getLogin());
-            like_button.setActionCommand(String.valueOf(player.getUserId()));
-
-            like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
-            player_name_button_panel.add(like_button, pnbp);
-            pnbp.gridx += 1;
-
-            JButton dislike_button = new JButton();
-            dislike_button.setIcon(Icons.DISLIKE_ICON);
-            dislike_button.setToolTipText("Dislike " + player.getLogin());
-            dislike_button.setActionCommand(String.valueOf(player.getUserId()));
-            dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
-            player_name_button_panel.add(dislike_button, pnbp);
-            pnbp.gridx += 1;
-
-            JButton kick = new JButton();
-            kick.setIcon(Icons.KICK_ICON);
-            kick.setToolTipText("Kick " + player.getLogin());
-            kick.setActionCommand(String.valueOf(player.getUserId()));
-            kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
-            player_name_button_panel.add(kick, pnbp);
-            pnbp.gridx += 1;
-
-            player_panel.add(player_name_button_panel, cp);
+            player_panel.add(playerNameButtonPanel(plugin, player.getLogin(), player.getUserId()), cp);
             cp.gridy += 1;
         }
         //////////////////// end player name button panel
@@ -264,6 +220,51 @@ public class PlayerPanel {
             cp.gridy += 1;
         }
         return player_panel;
+    }
+
+    private JPanel playerNameButtonPanel(NeverScapeAlonePlugin plugin, String login, Integer userId){
+        JPanel player_name_button_panel = new JPanel();
+        player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
+        player_name_button_panel.setLayout(new GridBagLayout());
+        GridBagConstraints pnbp = new GridBagConstraints();
+        pnbp.anchor = GridBagConstraints.LINE_END;
+        pnbp.gridx = 0;
+        pnbp.gridy = 0;
+
+        JButton promote_party_leader = new JButton();
+        promote_party_leader.setIcon(Icons.CROWN_ICON);
+        promote_party_leader.setToolTipText("Promote " + login);
+        promote_party_leader.setActionCommand(String.valueOf(userId));
+        promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
+        player_name_button_panel.add(promote_party_leader, pnbp);
+        pnbp.gridx += 1;
+
+        JButton like_button = new JButton();
+        like_button.setIcon(Icons.LIKE_ICON);
+        like_button.setToolTipText("Like " + login);
+        like_button.setActionCommand(String.valueOf(userId));
+
+        like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
+        player_name_button_panel.add(like_button, pnbp);
+        pnbp.gridx += 1;
+
+        JButton dislike_button = new JButton();
+        dislike_button.setIcon(Icons.DISLIKE_ICON);
+        dislike_button.setToolTipText("Dislike " + login);
+        dislike_button.setActionCommand(String.valueOf(userId));
+        dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
+        player_name_button_panel.add(dislike_button, pnbp);
+        pnbp.gridx += 1;
+
+        JButton kick = new JButton();
+        kick.setIcon(Icons.KICK_ICON);
+        kick.setToolTipText("Kick " + login);
+        kick.setActionCommand(String.valueOf(userId));
+        kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
+        player_name_button_panel.add(kick, pnbp);
+        pnbp.gridx += 1;
+        return player_name_button_panel;
     }
 
 
