@@ -91,6 +91,40 @@ public class CreatePanelClass {
         return createPanel;
     }
 
+    public JPanel createPanel2() {
+        JPanel createPanel2 = new JPanel();
+        createPanel2.setBorder(new EmptyBorder(0, 0, 0, 0));
+        createPanel2.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.gridy = 0;
+        c.gridx = 0;
+
+        createPanel2.add(Components.instructionTitle("Step 2: Choose Requirements"), c);
+
+        c.gridy += 1;
+        JPanel create_selection_panel = createSelectionPanel();
+        createPanel2.add(create_selection_panel, c);
+
+        c.gridy += 1;
+        createPanel2.add(Box.createVerticalStrut(6), c);
+
+        c.gridy += 1;
+        JButton button_confirm = new JButton();
+        button_confirm.setBackground(COLOR_PLUGIN_GREEN);
+        button_confirm.setText("Create Group");
+        button_confirm.setToolTipText("Click here to create a group with your current configuration!");
+        button_confirm.setIcon(Icons.NSA_ICON);
+        button_confirm.addActionListener(plugin::createMatchStart);
+        createPanel2.add(button_confirm, c);
+
+        return createPanel2;
+    }
+
     public JPanel createSelectionPanel() {
         JPanel createSelectionPanel = new JPanel();
         createSelectionPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
