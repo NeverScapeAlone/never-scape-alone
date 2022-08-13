@@ -167,7 +167,7 @@ public class ActivityPanel {
         player_count_label.setIcon(Icons.PLAYERS_ICON);
         player_count_label.setToolTipText("Players");
 
-        JPanel experience_player_count = doubleLabelPanel(experience_label, player_count_label);
+        JPanel experience_player_count = doubleLabelPanel(player_count_label, experience_label);
         current_activity_panel.add(experience_player_count, ca);
         ca.gridy += 1;
 
