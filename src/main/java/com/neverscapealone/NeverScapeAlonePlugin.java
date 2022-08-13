@@ -27,6 +27,7 @@ package com.neverscapealone;
 
 import com.google.gson.*;
 import com.google.inject.Provides;
+import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.SoundEffectSelectionEnum;
 import com.neverscapealone.enums.SoundPingEnum;
@@ -388,7 +389,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonObject create_request = new JsonObject();
         create_request.addProperty("detail", "quick_match");
         create_request.add("match_list", jsonArray);
-        panel.connectingPanelManager();
+        panel.panelStateManager(PanelStateEnum.CONNECTING);
         NeverScapeAlonePlugin.queuePayload = create_request;
         NeverScapeAlonePlugin.cycleQueue = true;
     }
@@ -517,13 +518,13 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void privateMatchJoin(String matchID, String passcode) {
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, passcode);
-        panel.connectingPanelManager();
+        panel.panelStateManager(PanelStateEnum.CONNECTING);
     }
 
     public void publicMatchJoin(String matchID) {
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, null);
-        panel.connectingPanelManager();
+        panel.panelStateManager(PanelStateEnum.CONNECTING);
     }
 
     public void createMatchStart(ActionEvent actionEvent) {
@@ -545,7 +546,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
 
-        panel.connectingPanelManager();
+        panel.panelStateManager(PanelStateEnum.CONNECTING);
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
 

@@ -33,8 +33,6 @@ import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
@@ -61,6 +59,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static com.neverscapealone.ui.Components.subActivityPanel;
+
 @Slf4j
 @Singleton
 public class NeverScapeAlonePanel extends PluginPanel {
@@ -77,10 +77,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final JPanel connectingPanel;
     private final JPanel matchPanel;
     private final JPanel quickPanel;
-    private final JPanel createPanel;
-    private final JPanel createPanel2;
+    public static JPanel createPanel;
+    public static JPanel createPanel2;
     private final JPanel searchPanel;
-    private final JButton quickMatchButton = new JButton();
+    public static JButton quickMatchButton = new JButton();
     private final JToggleButton quickMatchPanelButton = new JToggleButton();
     private final JToggleButton createMatchPanelButton = new JToggleButton();
     private final JToggleButton searchMatchPanelButton = new JToggleButton();
@@ -92,46 +92,48 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final PlayerPanel playerPanel;
     private final ActivityPanel activityPanel;
     private final DiscordInvitePanel discordInvitePanel;
+    private final CreatePanelClass createPanelClass;
+    private final QueuePanelClass queuePanelClass;
     private final NeverScapeAloneWebsocket websocket;
     private final Client user;
     private final WorldService worldService;
     // BUTTONS
     public IconTextField searchBar = new IconTextField();
-    public ArrayList activity_buttons = new ArrayList<JToggleButton>();
-    public ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
+    public static ArrayList activity_buttons = new ArrayList<JToggleButton>();
+    public static ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
     // GLOBAL VARIABLES
-    public String step1_activity = "";
+    public static String step1_activity = "";
     private static boolean rating_selected = true;
     private static boolean discord_selected = true;
     private static boolean location_selected = true;
     private static boolean safety_selected = true;
     private static boolean stats_selected = true;
-    public ArrayList<String> queue_list = new ArrayList<String>();
+    public static ArrayList<String> queue_list = new ArrayList<String>();
     public boolean isConnecting = false;
 
-    SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
-    public final JSpinner party_member_count = new JSpinner(player_size_model);
-    public final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
-    public final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
-    public final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
-    public final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
-    public final JTextField passcode = new JTextField();
-    public final JTextField notes = new JTextField();
+    private static SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
+    public static final JSpinner party_member_count = new JSpinner(player_size_model);
+    public static final JComboBox<String> experience_level = new JComboBox(new String[]{"Flexible", "Novice", "Average", "Experienced"});
+    public static final JComboBox<String> party_loot = new JComboBox(new String[]{"FFA", "Split"});
+    public static final JComboBox<String> account_type = new JComboBox(new String[]{"ANY", "NORMAL", "IM", "HCIM", "UIM", "GIM", "HCGIM", "UGIM"});
+    public static final JComboBox<String> region = new JComboBox(new String[]{"All Regions", "United States", "North Europe", "Central Europe", "Australia"});
+    public static final JTextField passcode = new JTextField();
+    public static final JTextField notes = new JTextField();
 
     @Inject
     ConfigManager configManager;
-    private JPanel randomPanel;
-    private JPanel skillPanel;
-    private JPanel bossPanel;
-    private JPanel raidPanel;
-    private JPanel minigamePanel;
-    private JPanel miscPanel;
-    private JPanel serverWarningPanel;
-    private JPanel createskillPanel;
-    private JPanel createbossPanel;
-    private JPanel createraidPanel;
-    private JPanel createminigamePanel;
-    private JPanel createmiscPanel;
+    public static JPanel randomPanel;
+    public static JPanel skillPanel;
+    public static JPanel bossPanel;
+    public static JPanel raidPanel;
+    public static JPanel minigamePanel;
+    public static JPanel miscPanel;
+    public static JPanel serverWarningPanel;
+    public static JPanel createskillPanel;
+    public static JPanel createbossPanel;
+    public static JPanel createraidPanel;
+    public static JPanel createminigamePanel;
+    public static JPanel createmiscPanel;
 
     @Inject
     public NeverScapeAlonePanel(
@@ -141,6 +143,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
             PlayerPanel playerPanel,
             ActivityPanel activityPanel,
             DiscordInvitePanel discordInvitePanel,
+            CreatePanelClass createPanelClass,
+            QueuePanelClass queuePanelClass,
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
             Client user,
@@ -151,6 +155,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.playerPanel = playerPanel;
         this.activityPanel = activityPanel;
         this.discordInvitePanel = discordInvitePanel;
+        this.createPanelClass = createPanelClass;
+        this.queuePanelClass = queuePanelClass;
         this.websocket = websocket;
         this.user = user;
         this.eventBus = eventBus;
@@ -176,14 +182,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         matchPanel = matchPanel();
         matchPanel.setVisible(false);
         // constructions
-        constructQueuePanels(); // construct queue panels for placement in quick panel
-        constructCreatePanels(); // construct create panels for placement in create panel
+        queuePanelClass.constructQueuePanels(); // construct queue panels for placement in quick panel
+        createPanelClass.constructCreatePanels(); // construct create panels for placement in create panel
         // quick panel
-        quickPanel = quickPanel();
+        quickPanel = queuePanelClass.quickPanel(plugin);
         quickPanel.setVisible(true);
         quickMatchPanelButton.setSelected(true);
         // create panel
-        createPanel = createPanel();
+        createPanel = createPanelClass.createPanel();
         createPanel.setVisible(false);
         createMatchPanelButton.setSelected(false);
         // create panel step 2
@@ -212,8 +218,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
         add(matchPanel);
 
         // toss other builders here
-        addQueueButtons();
-        addCreateButtons();
+        queuePanelClass.addQueueButtons();
+        createPanelClass.addCreateButtons();
     }
 
     @Subscribe
@@ -269,7 +275,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         serverWarningPanel.setVisible(b);
     }
 
-
     private JPanel switchMenuPanel() {
         JPanel switchMenuPanel = new JPanel();
         switchMenuPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -286,26 +291,26 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         quickMatchPanelButton.setText("Quick");
         quickMatchPanelButton.setToolTipText("Quickly find a match");
-        quickMatchPanelButton.addActionListener(this::quickPanelManager);
+        quickMatchPanelButton.addActionListener(e->panelStateManagerAction(e, PanelStateEnum.QUICK));
         switchMenuPanel.add(quickMatchPanelButton, c);
         c.gridx += 1;
 
         createMatchPanelButton.setText("Create");
         createMatchPanelButton.setToolTipText("Create a new match");
-        createMatchPanelButton.addActionListener(this::createPanelManager);
+        createMatchPanelButton.addActionListener(e->panelStateManagerAction(e, PanelStateEnum.CREATE));
         switchMenuPanel.add(createMatchPanelButton, c);
         c.gridx += 1;
 
         searchMatchPanelButton.setText("Search");
         searchMatchPanelButton.setToolTipText("Search for active matches");
-        searchMatchPanelButton.addActionListener(this::searchPanelManager);
+        searchMatchPanelButton.addActionListener(e->panelStateManagerAction(e, PanelStateEnum.SEARCH));
         switchMenuPanel.add(searchMatchPanelButton, c);
 
         return switchMenuPanel;
     }
 
     private void setMatchPanel(MatchData matchdata) {
-        matchPanelManager(); // switch to match panel
+        panelStateManager(PanelStateEnum.MATCH); // switch to match panel
         JPanel mp = (JPanel) matchPanel.getComponent(1);
         mp.removeAll();
 
@@ -501,7 +506,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         if (n == 0) {
             this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
             websocket.logoff("Exiting match");
-            quickPanelManager(actionEvent);
+            panelStateManager(PanelStateEnum.QUICK);
         }
     }
 
@@ -517,7 +522,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
         c.gridy = 0;
 
-        JButton escape = components.cleanJButton(Icons.CANCEL_ICON, "Exit", this::quickPanelManager, 20, 20);
+        JButton escape = components.cleanJButton(Icons.CANCEL_ICON, "Exit", e -> panelStateManagerAction(e, PanelStateEnum.QUICK), 20, 20);
         connectingPanel.add(escape, c);
 
         c.anchor = GridBagConstraints.CENTER;
@@ -534,312 +539,78 @@ public class NeverScapeAlonePanel extends PluginPanel {
         label.setText(display_text);
     }
 
-    public void matchPanelManager() {
-        NeverScapeAlonePlugin.cycleQueue = false;
-        isConnecting = false;
-        plugin.timer = 0;
-        matchPanel.setVisible(true);
-        switchMenuPanel.setVisible(false);
-        connectingPanel.setVisible(false);
-        createPanel.setVisible(false);
-        createPanel2.setVisible(false);
-        quickPanel.setVisible(false);
-        searchPanel.setVisible(false);
-        quickMatchPanelButton.setSelected(false);
-        createMatchPanelButton.setSelected(false);
+    public void panelStateManagerAction(ActionEvent event, PanelStateEnum panelStateEnum){
+        panelStateManager(panelStateEnum);
     }
 
-    public void connectingPanelManager() {
-        isConnecting = true;
-        matchPanel.setVisible(false);
-        switchMenuPanel.setVisible(false);
-        connectingPanel.setVisible(true);
-        createPanel.setVisible(false);
-        createPanel2.setVisible(false);
-        quickPanel.setVisible(false);
-        searchPanel.setVisible(false);
-        quickMatchPanelButton.setSelected(false);
-        createMatchPanelButton.setSelected(false);
-    }
-
-    private void quickPanelManager(ActionEvent actionEvent) {
-        NeverScapeAlonePlugin.cycleQueue = false;
-        isConnecting = false;
-        plugin.timer = 0;
-        matchPanel.setVisible(false);
-        switchMenuPanel.setVisible(true);
-        connectingPanel.setVisible(false);
-        createPanel.setVisible(false);
-        createPanel2.setVisible(false);
-        quickPanel.setVisible(true);
-        searchPanel.setVisible(false);
-        searchMatchPanelButton.setSelected(false);
-        createMatchPanelButton.setSelected(false);
-    }
-
-    private void createPanelManager(ActionEvent actionEvent) {
-        isConnecting = false;
-        NeverScapeAlonePlugin.cycleQueue = false;
-        matchPanel.setVisible(false);
-        switchMenuPanel.setVisible(true);
-        connectingPanel.setVisible(false);
-        createPanel.setVisible(true);
-        createPanel2.setVisible(false);
-        quickPanel.setVisible(false);
-        searchPanel.setVisible(false);
-        quickMatchPanelButton.setSelected(false);
-        searchMatchPanelButton.setSelected(false);
-    }
-
-    private void searchPanelManager(ActionEvent actionEvent) {
-        isConnecting = false;
-        NeverScapeAlonePlugin.cycleQueue = false;
-        matchPanel.setVisible(false);
-        switchMenuPanel.setVisible(true);
-        connectingPanel.setVisible(false);
-        createPanel.setVisible(false);
-        createPanel2.setVisible(false);
-        quickPanel.setVisible(false);
-        searchPanel.setVisible(true);
-        quickMatchPanelButton.setSelected(false);
-        createMatchPanelButton.setSelected(false);
-    }
-
-    private JPanel quickPanel() {
-        JPanel quickPanel = new JPanel();
-        quickPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        quickPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.WEST;
-
-        c.gridx = 0;
-        c.gridy = 0;
-        quickMatchButton.setText("Select Activities");
-        quickMatchButton.setToolTipText("Choose activities to play!");
-        quickMatchButton.setBackground(COLOR_INPROGRESS);
-        quickMatchButton.addActionListener(plugin::quickMatchQueueStart);
-        quickPanel.add(quickMatchButton, c);
-        c.gridy += 1;
-
-        quickPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        quickPanel.add(components.title("Random"), c);
-        c.gridy += 1;
-        c.fill = GridBagConstraints.NONE;
-        c.anchor = GridBagConstraints.CENTER;
-        quickPanel.add(randomPanel, c);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.WEST;
-        c.gridy += 1;
-
-        quickPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        quickPanel.add(components.title("Skills"), c);
-        c.gridy += 1;
-        quickPanel.add(skillPanel, c);
-        c.gridy += 1;
-
-        quickPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        quickPanel.add(components.title("Bosses"), c);
-        c.gridy += 1;
-        quickPanel.add(bossPanel, c);
-        c.gridy += 1;
-
-        quickPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        quickPanel.add(components.title("Raids"), c);
-        c.gridy += 1;
-        quickPanel.add(raidPanel, c);
-        c.gridy += 1;
-
-        quickPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        quickPanel.add(components.title("Mini-games"), c);
-        c.gridy += 1;
-        quickPanel.add(minigamePanel, c);
-        c.gridy += 1;
-
-        quickPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        quickPanel.add(components.title("Miscellaneous"), c);
-        c.gridy += 1;
-        quickPanel.add(miscPanel, c);
-        return quickPanel;
-    }
-
-    private JPanel subActivityPanel(int row, int column) {
-        if (row == 0 || column == 0) {
-            row = 5;
-            column = 5;
-        }
-        JPanel subActivityPanel = new JPanel();
-        subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        subActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
-        subActivityPanel.setLayout(new GridLayout(row, column));
-        return subActivityPanel;
-    }
-
-    private void addQueueButtons() {
-        ActivityReferenceEnum[] values = ActivityReferenceEnum.values();
-        for (ActivityReferenceEnum value : values) {
-            JToggleButton button = new JToggleButton();
-            button.setIcon(value.getIcon());
-            button.setPreferredSize(new Dimension(25, 25));
-            button.setToolTipText(value.getTooltip());
-            button.setName(value.getLabel());
-            button.addItemListener(this::activityButtonManager); // add function here
-            activity_buttons.add(button);
-
-            switch (value.getActivity()) {
-                case "random":
-                    randomPanel.add(button);
-                    break;
-                case "skill":
-                    skillPanel.add(button);
-                    break;
-                case "boss":
-                    bossPanel.add(button);
-                    break;
-                case "minigame":
-                    minigamePanel.add(button);
-                    break;
-                case "raid":
-                    raidPanel.add(button);
-                    break;
-                case "misc":
-                    miscPanel.add(button);
-            }
-        }
-    }
-
-    private void activityButtonManager(ItemEvent itemEvent) {
-        JToggleButton button = (JToggleButton) itemEvent.getItem();
-        String selection = button.getName();
-
-        if (button.isSelected()) {
-            queue_list.add(selection);
-        } else {
-            queue_list.remove(selection);
-        }
-
-        if (queue_list.size() > 0) {
-            quickMatchButton.setText("Start Queue");
-            quickMatchButton.setBackground(COLOR_PLUGIN_GREEN);
-        } else {
-            quickMatchButton.setText("Select Activities");
-            quickMatchButton.setBackground(COLOR_INPROGRESS);
-        }
-    }
-
-    private void constructQueuePanels() {
-        randomPanel = subActivityPanel(1, 1);
-        skillPanel = subActivityPanel(4, 6);
-        bossPanel = subActivityPanel(7, 6);
-        raidPanel = subActivityPanel(2, 2);
-        minigamePanel = subActivityPanel(6, 6);
-        miscPanel = subActivityPanel(3, 5);
-    }
-
-    private void constructCreatePanels() {
-        createskillPanel = subActivityPanel(4, 6);
-        createbossPanel = subActivityPanel(7, 6);
-        createraidPanel = subActivityPanel(2, 2);
-        createminigamePanel = subActivityPanel(6, 6);
-        createmiscPanel = subActivityPanel(3, 5);
-    }
-
-    private JPanel createPanel() {
-        JPanel createPanel = new JPanel();
-        createPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        createPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.WEST;
-
-        c.gridx = 0;
-        c.gridy = 0;
-        createPanel.add(components.instructionTitle("Step 1: Select an Activity"), c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(components.title("Skills"), c);
-        c.gridy += 1;
-        createPanel.add(createskillPanel, c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(components.title("Bosses"), c);
-        c.gridy += 1;
-        createPanel.add(createbossPanel, c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(components.title("Raids"), c);
-        c.gridy += 1;
-        createPanel.add(createraidPanel, c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(components.title("Mini-games"), c);
-        c.gridy += 1;
-        createPanel.add(createminigamePanel, c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(components.title("Miscellaneous"), c);
-        c.gridy += 1;
-        createPanel.add(createmiscPanel, c);
-
-        return createPanel;
-    }
-
-    private void addCreateButtons() {
-        ActivityReferenceEnum[] values = ActivityReferenceEnum.values();
-        for (ActivityReferenceEnum value : values) {
-            JButton button = new JButton();
-            button.setIcon(value.getIcon());
-            button.setPreferredSize(new Dimension(25, 25));
-            button.setToolTipText(value.getTooltip());
-            button.setName(value.getLabel());
-            button.addActionListener(this::create_activityButtonManager); // add function here
-            create_activity_buttons.add(button);
-
-            switch (value.getActivity()) {
-                case "skill":
-                    createskillPanel.add(button);
-                    break;
-                case "boss":
-                    createbossPanel.add(button);
-                    break;
-                case "minigame":
-                    createminigamePanel.add(button);
-                    break;
-                case "raid":
-                    createraidPanel.add(button);
-                    break;
-                case "misc":
-                    createmiscPanel.add(button);
-            }
-        }
-    }
-
-    private void create_activityButtonManager(ActionEvent actionEvent) {
-        Object object = actionEvent.getSource();
-        if (object instanceof JButton) {
-            step1_activity = ((JButton) object).getName();
-            createPanel.setVisible(false);
-            createPanel2.setVisible(true);
+    public void panelStateManager(PanelStateEnum panelStateEnum){
+        switch(panelStateEnum){
+            case MATCH:
+                NeverScapeAlonePlugin.cycleQueue = false;
+                isConnecting = false;
+                plugin.timer = 0;
+                matchPanel.setVisible(true);
+                switchMenuPanel.setVisible(false);
+                connectingPanel.setVisible(false);
+                createPanel.setVisible(false);
+                createPanel2.setVisible(false);
+                quickPanel.setVisible(false);
+                searchPanel.setVisible(false);
+                quickMatchPanelButton.setSelected(false);
+                createMatchPanelButton.setSelected(false);
+                break;
+            case QUICK:
+                NeverScapeAlonePlugin.cycleQueue = false;
+                isConnecting = false;
+                plugin.timer = 0;
+                matchPanel.setVisible(false);
+                switchMenuPanel.setVisible(true);
+                connectingPanel.setVisible(false);
+                createPanel.setVisible(false);
+                createPanel2.setVisible(false);
+                quickPanel.setVisible(true);
+                searchPanel.setVisible(false);
+                searchMatchPanelButton.setSelected(false);
+                createMatchPanelButton.setSelected(false);
+                break;
+            case CREATE:
+                isConnecting = false;
+                NeverScapeAlonePlugin.cycleQueue = false;
+                matchPanel.setVisible(false);
+                switchMenuPanel.setVisible(true);
+                connectingPanel.setVisible(false);
+                createPanel.setVisible(true);
+                createPanel2.setVisible(false);
+                quickPanel.setVisible(false);
+                searchPanel.setVisible(false);
+                quickMatchPanelButton.setSelected(false);
+                searchMatchPanelButton.setSelected(false);
+                break;
+            case SEARCH:
+                isConnecting = false;
+                NeverScapeAlonePlugin.cycleQueue = false;
+                matchPanel.setVisible(false);
+                switchMenuPanel.setVisible(true);
+                connectingPanel.setVisible(false);
+                createPanel.setVisible(false);
+                createPanel2.setVisible(false);
+                quickPanel.setVisible(false);
+                searchPanel.setVisible(true);
+                quickMatchPanelButton.setSelected(false);
+                createMatchPanelButton.setSelected(false);
+                break;
+            case CONNECTING:
+                isConnecting = true;
+                matchPanel.setVisible(false);
+                switchMenuPanel.setVisible(false);
+                connectingPanel.setVisible(true);
+                createPanel.setVisible(false);
+                createPanel2.setVisible(false);
+                quickPanel.setVisible(false);
+                searchPanel.setVisible(false);
+                quickMatchPanelButton.setSelected(false);
+                createMatchPanelButton.setSelected(false);
+                break;
         }
     }
 
@@ -856,10 +627,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridy = 0;
         c.gridx = 0;
 
-        createPanel2.add(components.instructionTitle("Step 2: Choose Requirements"), c);
+        createPanel2.add(Components.instructionTitle("Step 2: Choose Requirements"), c);
 
         c.gridy += 1;
-        JPanel create_selection_panel = createSelectionPanel();
+        JPanel create_selection_panel = createPanelClass.createSelectionPanel();
         createPanel2.add(create_selection_panel, c);
 
         c.gridy += 1;
@@ -875,120 +646,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createPanel2.add(button_confirm, c);
 
         return createPanel2;
-    }
-
-    private JPanel createSelectionPanel() {
-        JPanel createSelectionPanel = new JPanel();
-        createSelectionPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        createSelectionPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.WEST;
-
-        c.gridy = 0;
-        c.gridx = 0;
-
-        createSelectionPanel.add(components.header("Group Size"), c);
-        c.gridx = 1;
-
-        JPanel spinnerPanel = new JPanel();
-        spinnerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        spinnerPanel.setLayout(new GridBagLayout());
-        GridBagConstraints sp = new GridBagConstraints();
-        sp.weightx = 1;
-        sp.fill = GridBagConstraints.HORIZONTAL;
-        sp.anchor = GridBagConstraints.WEST;
-        sp.gridy = 0;
-        sp.gridx = 0;
-        party_member_count.setFont(FontManager.getRunescapeFont());
-        party_member_count.setToolTipText("Maximum party size");
-        spinnerPanel.add(party_member_count, sp);
-
-        createSelectionPanel.add(spinnerPanel, c);
-
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton member_count_help_button = components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.COUNT), 16, 16);
-        createSelectionPanel.add(member_count_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        c.gridx = 0;
-        createSelectionPanel.add(components.header("Experience"), c);
-        c.gridx = 1;
-        ((JLabel) experience_level.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        createSelectionPanel.add(experience_level, c);
-
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton experience_help_button = components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.EXPERIENCE), 16, 16);
-        createSelectionPanel.add(experience_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        c.gridx = 0;
-        createSelectionPanel.add(components.header("Split Type"), c);
-        c.gridx = 1;
-        ((JLabel) party_loot.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        createSelectionPanel.add(party_loot, c);
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton split_help_button = components.cleanJButton(Icons.LOOTBAG_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.SPLIT), 16, 16);
-        createSelectionPanel.add(split_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        c.gridx = 0;
-        createSelectionPanel.add(components.header("Accounts"), c);
-        c.gridx = 1;
-        ((JLabel) account_type.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        createSelectionPanel.add(account_type, c);
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton accounts_help_button = components.cleanJButton(Icons.NSA_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.ACCOUNTS), 16, 16);
-        createSelectionPanel.add(accounts_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        c.gridx = 0;
-        createSelectionPanel.add(components.header("Region"), c);
-        c.gridx = 1;
-        ((JLabel) region.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        createSelectionPanel.add(region, c);
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton region_help_button = components.cleanJButton(Icons.WORLD_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.REGION), 16, 16);
-        createSelectionPanel.add(region_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        c.gridx = 0;
-        createSelectionPanel.add(components.header("Passcode"), c);
-        c.gridx = 1;
-        passcode.setToolTipText("Leave blank for a Public match, DO NOT USE YOUR REAL PASSWORD");
-        createSelectionPanel.add(passcode, c);
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton passcode_help_button = components.cleanJButton(Icons.PRIVATE_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.PASSCODE), 16, 16);
-        createSelectionPanel.add(passcode_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        c.gridx = 0;
-        createSelectionPanel.add(components.header("Notes"), c);
-        c.gridx = 1;
-        notes.setToolTipText("Add some notes for your group! Let others know what you're looking for.");
-        createSelectionPanel.add(notes, c);
-        c.gridx = 2;
-        c.weightx = 0;
-        JButton notes_help_button = components.cleanJButton(Icons.NOTES_ICON, "Click here for help!", e -> components.helpButtonSwitchboard(e, HelpButtonSwitchEnum.NOTES), 16, 16);
-        createSelectionPanel.add(notes_help_button, c);
-        c.weightx = 1;
-        c.gridy += 1;
-
-        return createSelectionPanel;
     }
 
     private JPanel searchPanel() {

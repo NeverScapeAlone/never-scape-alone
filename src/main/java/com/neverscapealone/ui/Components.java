@@ -5,13 +5,16 @@ import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+
 public class Components {
 
-    public JButton cleanJButton(Icon icon, String toolTip, ActionListener actionListener, int w, int h){
+    public static JButton cleanJButton(Icon icon, String toolTip, ActionListener actionListener, int w, int h){
         JButton button = new JButton();
         button.setIcon(icon);
         button.setToolTipText(toolTip);
@@ -23,7 +26,7 @@ public class Components {
         return button;
     }
 
-    public JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
+    public  static JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
         JToggleButton headerToggleButton = new JToggleButton();
         headerToggleButton.setIcon(icon);
         headerToggleButton.setToolTipText(toolTip);
@@ -34,7 +37,7 @@ public class Components {
         return headerToggleButton;
     }
 
-    public JPanel title(String title_text) {
+    public static JPanel title(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
@@ -43,7 +46,7 @@ public class Components {
         return label_holder;
     }
 
-    public JPanel header(String title_text) {
+    public static JPanel header(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.LEFT);
@@ -52,7 +55,7 @@ public class Components {
         return label_holder;
     }
 
-    public JPanel instructionTitle(String title_text) {
+    public static JPanel instructionTitle(String title_text) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
@@ -70,8 +73,19 @@ public class Components {
         output = "<html>" + output + "</html>";
         return output;
     }
+    public static JPanel subActivityPanel(int row, int column) {
+        if (row == 0 || column == 0) {
+            row = 5;
+            column = 5;
+        }
+        JPanel subActivityPanel = new JPanel();
+        subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        subActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        subActivityPanel.setLayout(new GridLayout(row, column));
+        return subActivityPanel;
+    }
 
-    public void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
+    public static void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         String message = "";
