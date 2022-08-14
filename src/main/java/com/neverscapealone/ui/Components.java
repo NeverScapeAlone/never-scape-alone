@@ -25,7 +25,6 @@
 
 package com.neverscapealone.ui;
 
-import com.google.common.base.Splitter;
 import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import net.runelite.client.ui.FontManager;
 
