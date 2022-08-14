@@ -39,6 +39,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
@@ -125,7 +126,9 @@ public class PlayerPanelClass {
             player_panel.add(Box.createVerticalStrut(3));
             cp.gridy += 1;
 
-            JLabel discord_label = new JLabel(player.getDiscord());
+            byte[] decodedBytes = Base64.getDecoder().decode(player.getDiscord());
+            String decodedUsername = new String(decodedBytes);
+            JLabel discord_label = new JLabel(decodedUsername);
             discord_label.setIcon(Icons.DISCORD_ICON);
             discord_label.setFont(FontManager.getRunescapeFont());
             player_panel.add(discord_label, cp);

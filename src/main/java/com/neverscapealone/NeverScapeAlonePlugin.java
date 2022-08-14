@@ -67,6 +67,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
+import java.text.Normalizer;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -168,7 +169,6 @@ public class NeverScapeAlonePlugin extends Plugin {
                 .priority(90)
                 .build();
         clientToolbar.addNavigation(navButton);
-
     }
 
     @Override
@@ -191,9 +191,16 @@ public class NeverScapeAlonePlugin extends Plugin {
             setDiscordUsername(null);
             setDiscord_id(null);
         } else {
-            setDiscordUsername("@"+discordUser.username+"#"+discordUser.discriminator);
+            discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
+            String encodedUsername = sanitizeDiscordUsername(discordUsername);
             setDiscord_id(discordUser.userId);
         }
+    }
+
+    public String sanitizeDiscordUsername(String username){
+        String encodedString = Base64.getEncoder().encodeToString(username.getBytes());
+        System.out.println(encodedString);
+        return encodedString;
     }
 
     @Subscribe
