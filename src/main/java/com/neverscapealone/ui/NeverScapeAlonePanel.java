@@ -86,9 +86,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static EventBus eventBus;
     private final NeverScapeAloneConfig config;
     private final Components components;
-    private final PlayerPanelClass playerPanelClass;
-    private final ActivityPanelClass activityPanelClass;
-    private final DiscordInvitePanelClass discordInvitePanelClass;
+    private static PlayerPanelClass playerPanelClass;
+    private static ActivityPanelClass activityPanelClass;
+    private static DiscordInvitePanelClass discordInvitePanelClass;
     private final CreatePanelClass createPanelClass;
     public final QueuePanelClass queuePanelClass;
     public final ConnectingPanelClass connectingPanelClass;
@@ -112,6 +112,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static boolean stats_selected = true;
     public static ArrayList<String> queue_list = new ArrayList<String>();
     public static boolean isConnecting = false;
+    public static MatchData oldMatchData = null;
+    public static SearchMatches oldSearchMatches = null;
 
     private static SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
     public static final JSpinner party_member_count = new JSpinner(player_size_model);
@@ -238,6 +240,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public void onSearchMatches(SearchMatches searchMatches) {
         searchBar.setEditable(true);
         searchBar.setIcon(IconTextField.Icon.SEARCH);
+        oldSearchMatches = searchMatches;
         SwingUtilities.invokeLater(() -> setSearchPanel(searchMatches));
         setServerWarningPanel("", false);
     }
@@ -252,8 +255,17 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     @Subscribe
     public void onMatchData(MatchData matchData) {
+        oldMatchData = matchData;
         SwingUtilities.invokeLater(() -> setMatchPanel(matchData));
         setServerWarningPanel("", false);
+    }
+
+    public static void refreshMatchPanel(){
+        SwingUtilities.invokeLater(() -> setMatchPanel(oldMatchData));
+    }
+
+    public static void refreshSearchPanel(){
+        SwingUtilities.invokeLater(() -> setSearchPanel(oldSearchMatches));
     }
 
     private void setServerWarningPanel(String message, boolean b) {
@@ -265,7 +277,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         label.setForeground(Color.YELLOW);
         serverWarningPanel.setVisible(b);
     }
-    public void setSearchPanel(SearchMatches searchMatches) {
+    public static void setSearchPanel(SearchMatches searchMatches) {
         JPanel searchMatchPanel = (JPanel) searchPanel.getComponent(1);
         searchMatchPanel.removeAll();
 
@@ -335,7 +347,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanel.revalidate();
         searchMatchPanel.repaint();
     }
-    private void setMatchPanel(MatchData matchdata) {
+    public static void setMatchPanel(MatchData matchdata) {
         panelStateManager(PanelStateEnum.MATCH); // switch to match panel
         JPanel mp = (JPanel) matchPanel.getComponent(1);
         mp.removeAll();
@@ -375,9 +387,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         for (Player player : matchdata.getPlayers()) {
             Integer matchPlayerSize = matchdata.getPlayers().size();
             if (matchPlayerSize > NeverScapeAlonePlugin.matchSize){
-                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_JOIN));
+                NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_JOIN));
             } else if (matchPlayerSize < NeverScapeAlonePlugin.matchSize) {
-                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_LEAVE));
+                NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_LEAVE));
             };
             NeverScapeAlonePlugin.matchSize = matchPlayerSize;
 

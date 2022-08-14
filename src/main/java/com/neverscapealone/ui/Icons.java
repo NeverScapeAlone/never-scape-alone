@@ -41,6 +41,8 @@ public class Icons {
     public static final ImageIcon PROFILE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/profile.png"));
     public static final ImageIcon HELP_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/help.png"));
     public static final ImageIcon ACCEPT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Checkmark.png"));
+    public static final ImageIcon MINIMIZED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/minimized.png"));
+    public static final ImageIcon MAXIMIZED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/maximized.png"));
     public static final ImageIcon LOGOUT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/logout.png"));
     public static final ImageIcon CANCEL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/Xmark.png"));
     public static final ImageIcon UNDO_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/undo.png"));

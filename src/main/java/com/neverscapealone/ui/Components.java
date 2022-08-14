@@ -25,7 +25,6 @@
 
 package com.neverscapealone.ui;
 
-import com.google.common.base.Splitter;
 import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import net.runelite.client.ui.FontManager;
 
@@ -91,11 +90,7 @@ public class Components {
     }
 
     public static String convertNotes(String inputString){
-        String output = "";
-        for (String substring : Splitter.fixedLength(35).split(inputString)) {
-            output = output + substring + "<br/>";
-        }
-        output = "<html>" + output + "</html>";
+        String output = "<html><p style=\"overflow-wrap: break-word;\">" + inputString + "</p></html>";
         return output;
     }
     public static JPanel subActivityPanel(int row, int column) {
