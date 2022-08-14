@@ -193,13 +193,13 @@ public class NeverScapeAlonePlugin extends Plugin {
         } else {
             discordUsername = "@"+discordUser.username+"#"+discordUser.discriminator;
             String encodedUsername = sanitizeDiscordUsername(discordUsername);
+            setDiscordUsername(encodedUsername);
             setDiscord_id(discordUser.userId);
         }
     }
 
     public String sanitizeDiscordUsername(String username){
         String encodedString = Base64.getEncoder().encodeToString(username.getBytes());
-        System.out.println(encodedString);
         return encodedString;
     }
 
