@@ -35,11 +35,16 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.neverscapealone.ui.Components.convertNotes;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class ActivityPanelClass {
+
+    public static ArrayList<String> minimizedMatches = new ArrayList<>();
 
     public JPanel createCurrentActivityPanel(MatchData matchData){
         return matchDataConversion(matchData);
@@ -64,18 +69,36 @@ public class ActivityPanelClass {
             String region = matchData.getRequirement().getRegions();
             String notes = matchData.getNotes();
 
-            return createActivityPanel(activity,
-                                        isPrivate,
-                                        ID,
-                                        null,
-                                        fcLeader,
-                                        playerCount,
-                                        memberCount,
-                                        experience,
-                                        splitType,
-                                        accounts,
-                                        region,
-                                        notes);
+            if (minimizedMatches.contains(ID)){
+                return compressedActivityPanel(activity,
+                        isPrivate,
+                        ID,
+                        null,
+                        fcLeader,
+                        playerCount,
+                        memberCount,
+                        experience,
+                        splitType,
+                        accounts,
+                        region,
+                        notes,
+                        true);
+            } else {
+                return createActivityPanel(activity,
+                        isPrivate,
+                        ID,
+                        null,
+                        fcLeader,
+                        playerCount,
+                        memberCount,
+                        experience,
+                        splitType,
+                        accounts,
+                        region,
+                        notes,
+                        true);
+            }
+
 
         }
         if (dataInput instanceof SearchMatchData){
@@ -92,6 +115,21 @@ public class ActivityPanelClass {
             String region = searchMatchData.getRegions();
             String notes = searchMatchData.getNotes();
 
+            if (minimizedMatches.contains(ID)){
+            return compressedActivityPanel(activity,
+                                        isPrivate,
+                                        ID,
+                                        partyLeader,
+                                        null,
+                                        playerCount,
+                                        memberCount,
+                                        experience,
+                                        splitType,
+                                        accounts,
+                                        region,
+                                        notes,
+                                        false);
+            } else {
             return createActivityPanel(activity,
                                         isPrivate,
                                         ID,
@@ -103,9 +141,162 @@ public class ActivityPanelClass {
                                         splitType,
                                         accounts,
                                         region,
-                                        notes);
+                                        notes,
+                                        false);
+            }
         }
         return null;
+    }
+
+    public void miniMaximizer(ActionEvent actionEvent){
+        JButton button = (JButton) actionEvent.getSource();
+        String command = actionEvent.getActionCommand();
+        if (Objects.equals(command, "match_minimize")){
+            minimizedMatches.add(button.getName());
+            refreshMatchPanel();
+        }
+        if (Objects.equals(command, "match_maximize")){
+            minimizedMatches.remove(button.getName());
+            refreshMatchPanel();
+        }
+        if (Objects.equals(command, "search_minimize")){
+            minimizedMatches.add(button.getName());
+            refreshSearchPanel();
+        }
+        if (Objects.equals(command, "search_maximize")){
+            minimizedMatches.remove(button.getName());
+            refreshSearchPanel();
+        }
+    }
+
+    public JPanel compressedActivityPanel(String activity,
+                                          boolean isPrivate,
+                                          String ID,
+                                          String partyLeader,
+                                          String fcLeader,
+                                          String playerCount,
+                                          String memberCount,
+                                          String experience,
+                                          String splitType,
+                                          String accounts,
+                                          String region,
+                                          String notes,
+                                          boolean isMatchData){
+
+        JPanel compressedActivityPanel = new JPanel();
+        compressedActivityPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        compressedActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        compressedActivityPanel.setLayout(new GridBagLayout());
+        compressedActivityPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        // activity image
+        ActivityReferenceEnum activityReferenceEnum = ActivityReferenceEnum.valueOf(activity);
+        ImageIcon activity_icon = activityReferenceEnum.getIcon();
+        String activity_name = activityReferenceEnum.getTooltip();
+        JLabel activity_label = new JLabel(activity_icon);
+        activity_label.setToolTipText(activity_name);
+
+        compressedActivityPanel.add(activity_label, c);
+        c.gridx += 1;
+
+        // private icon
+        JLabel private_label = new JLabel();
+        if (isPrivate) {
+            private_label.setIcon(Icons.PRIVATE_ICON);
+            private_label.setForeground(COLOR_PLUGIN_YELLOW);
+        } else {
+            private_label.setIcon(Icons.PUBLIC_ICON);
+            private_label.setForeground(COLOR_PLUGIN_GREEN);
+        }
+        private_label.setToolTipText("Match ID: " + ID);
+
+        compressedActivityPanel.add(private_label, c);
+        c.gridx += 1;
+
+        // fc/party lead
+
+        JLabel chat_leader_slot = new JLabel();
+        if (partyLeader != null){
+            chat_leader_slot.setIcon(Icons.CROWN_ICON);
+            chat_leader_slot.setToolTipText(partyLeader);
+        } else if (fcLeader != null) {
+            chat_leader_slot.setIcon(Icons.CHAT);
+            chat_leader_slot.setToolTipText("FC: \""+fcLeader+"\"");
+        }
+
+        compressedActivityPanel.add(chat_leader_slot, c);
+        c.gridx += 1;
+
+        // experience
+        JLabel experience_label = new JLabel();
+        experience_label.setIcon(Icons.EXPERIENCE_ICON);
+        experience_label.setToolTipText(experience);
+
+        compressedActivityPanel.add(experience_label, c);
+        c.gridx += 1;
+
+        // player count label
+        JLabel player_count_label = new JLabel();
+        player_count_label.setIcon(Icons.PLAYERS_ICON);
+        player_count_label.setToolTipText(playerCount+"/"+memberCount);
+
+        compressedActivityPanel.add(player_count_label, c);
+        c.gridx += 1;
+
+        // split label
+        JLabel split_label = new JLabel();
+        split_label.setIcon(Icons.LOOTBAG_ICON);
+        split_label.setToolTipText(splitType);
+
+        compressedActivityPanel.add(split_label, c);
+        c.gridx += 1;
+
+        // accounts
+        ImageIcon account_image = AccountTypeSelectionEnum.valueOf(accounts).getImage();
+        JLabel accounts_label = new JLabel();
+        accounts_label.setIcon(account_image);
+        accounts_label.setToolTipText(accounts);
+
+        compressedActivityPanel.add(accounts_label, c);
+        c.gridx += 1;
+
+        // region
+        JLabel region_label = new JLabel();
+        region_label.setIcon(Icons.WORLD_ICON);
+        region_label.setToolTipText(region);
+
+        compressedActivityPanel.add(region_label, c);
+        c.gridx += 1;
+
+        // notes
+        if (notes != null){
+            String convertNotes = convertNotes(notes);
+            JLabel notes_label = new JLabel();
+            notes_label.setIcon(Icons.NOTES_ICON);
+            notes_label.setToolTipText(convertNotes);
+            compressedActivityPanel.add(notes_label, c);
+            c.gridx += 1;
+        }
+
+        JButton expandCollapse = Components.cleanJButton(Icons.MINIMIZED_ICON,"Maximize panel", this::miniMaximizer,10,10);
+        expandCollapse.setName(ID);
+        if (isMatchData){
+            expandCollapse.setActionCommand("match_maximize");
+        } else {
+            expandCollapse.setActionCommand("search_maximize");
+        }
+
+        c.anchor = GridBagConstraints.LINE_END;
+        c.fill = GridBagConstraints.LINE_END;
+        compressedActivityPanel.add(expandCollapse, c);
+
+        return compressedActivityPanel;
     }
 
     public JPanel createActivityPanel(String activity,
@@ -119,7 +310,8 @@ public class ActivityPanelClass {
                                       String splitType,
                                       String accounts,
                                       String region,
-                                      String notes)
+                                      String notes,
+                                      boolean isMatchData)
     {
         JPanel current_activity_panel = new JPanel();
         current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -141,7 +333,23 @@ public class ActivityPanelClass {
         match_title.setIcon(activity_icon);
         match_title.setFont(FontManager.getRunescapeBoldFont());
 
-        // private label
+        JButton expandCollapse = Components.cleanJButton(Icons.MAXIMIZED_ICON,"Minimize panel", this::miniMaximizer,10,10);
+        expandCollapse.setName(ID);
+        if (isMatchData){
+            expandCollapse.setActionCommand("match_minimize");
+        } else {
+            expandCollapse.setActionCommand("search_minimize");
+        }
+
+
+        current_activity_panel.add(doubleLabelPanel(match_title, expandCollapse), ca);
+        ca.gridy += 1;
+
+        current_activity_panel.add(Box.createVerticalStrut(1), ca);
+        ca.gridy += 1;
+
+        // leader/fc leader & party label
+
         JLabel privateLabel = new JLabel();
         if (isPrivate) {
             privateLabel.setText("Private");
@@ -154,35 +362,25 @@ public class ActivityPanelClass {
         }
         privateLabel.setToolTipText("Match ID: " + ID);
 
-        JPanel activityHeader = doubleLabelPanel(match_title, privateLabel);
-        current_activity_panel.add(activityHeader, ca);
-        ca.gridy += 1;
-
-        current_activity_panel.add(Box.createVerticalStrut(2), ca);
-        ca.gridy += 1;
-
         if (partyLeader != null){
             JLabel party_leader = new JLabel(partyLeader);
             party_leader.setIcon(Icons.CROWN_ICON);
             party_leader.setToolTipText("Party Leader");
-            current_activity_panel.add(party_leader, ca);
+            current_activity_panel.add(doubleLabelPanel(party_leader, privateLabel), ca);
             ca.gridy += 1;
 
             current_activity_panel.add(Box.createVerticalStrut(1), ca);
             ca.gridy += 1;
-        }
-
-        if (fcLeader != null){
+        } else if (fcLeader != null) {
             JLabel friends_chat_label = new JLabel("FC: \""+fcLeader+"\"");
             friends_chat_label.setIcon(Icons.CHAT);
             friends_chat_label.setToolTipText("Friend's Chat");
-            current_activity_panel.add(friends_chat_label, ca);
+            current_activity_panel.add(doubleLabelPanel(friends_chat_label, privateLabel), ca);
             ca.gridy += 1;
 
             current_activity_panel.add(Box.createVerticalStrut(1), ca);
             ca.gridy += 1;
         }
-
 
         JLabel experience_label = new JLabel(experience);
         experience_label.setIcon(Icons.EXPERIENCE_ICON);
@@ -235,7 +433,7 @@ public class ActivityPanelClass {
         return current_activity_panel;
     }
 
-    private JPanel doubleLabelPanel(JLabel left, JLabel right){
+    private JPanel doubleLabelPanel(JComponent left, JComponent right){
         JPanel doubleLabelPanel = new JPanel();
         doubleLabelPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         doubleLabelPanel.setBackground(SUB_BACKGROUND_COLOR);
@@ -251,9 +449,14 @@ public class ActivityPanelClass {
         c.gridx = 1;
         c.anchor = GridBagConstraints.LINE_END;
         c.fill = GridBagConstraints.LINE_END;
-        right.setHorizontalTextPosition(SwingConstants.LEFT);
-        doubleLabelPanel.add(right, c);
 
+        if (right instanceof JLabel) {
+            ((JLabel) right).setHorizontalTextPosition(SwingConstants.LEFT);
+            doubleLabelPanel.add(right, c);
+            return doubleLabelPanel;
+        }
+
+        doubleLabelPanel.add(right, c);
         return doubleLabelPanel;
     }
 
