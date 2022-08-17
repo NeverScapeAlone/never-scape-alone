@@ -290,15 +290,6 @@ public class ActivityPanelClass {
             compressedActivityPanel.add(notes_label, c);
             c.gridx += 1;
         }
-        // version
-        if ((Objects.requireNonNull(notes).length() >= 1)){
-            String convertNotes = convertNotes(notes);
-            JLabel notes_label = new JLabel();
-            notes_label.setIcon(Icons.NOTES_ICON);
-            notes_label.setToolTipText(convertNotes);
-            compressedActivityPanel.add(notes_label, c);
-            c.gridx += 1;
-        }
 
         String pluginVersion = websocket.getPluginVersion();
         if (!Objects.equals(matchVersion, pluginVersion)){
