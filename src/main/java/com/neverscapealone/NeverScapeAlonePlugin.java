@@ -71,6 +71,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -150,6 +151,19 @@ public class NeverScapeAlonePlugin extends Plugin {
     protected void startUp() throws Exception {
 
         log.info("NeverScapeAlone started!");
+
+        try
+        {
+            final Properties props = new Properties();
+            props.load(NeverScapeAlonePlugin.class.getResourceAsStream("/version.txt"));
+            websocket.setPluginVersion(props.getProperty("version"));
+        }
+        catch (Exception e)
+        {
+            log.error("NeverScapeAlone plugin version not found", e);
+            pluginManager.setPluginEnabled(this, false);
+            return;
+        }
 
         overlayManager.add(overlay);
         keyManager.registerKeyListener(hotkeyListener);

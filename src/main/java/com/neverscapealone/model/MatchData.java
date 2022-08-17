@@ -47,6 +47,9 @@ public class MatchData {
     @SerializedName("group_passcode")
     @Expose
     private String groupPasscode;
+    @SerializedName("match_version")
+    @Expose
+    private String matchVersion;
     @SerializedName("isPrivate")
     @Expose
     private Boolean isPrivate;
@@ -127,6 +130,19 @@ public class MatchData {
         this.groupPasscode = groupPasscode;
         return this;
     }
+    public String getMatchVersion() {
+        return matchVersion;
+    }
+
+    public void setMatchVersion(String matchVersion) {
+        this.matchVersion = matchVersion;
+    }
+
+    public MatchData withMatchVersion(String matchVersion) {
+        this.matchVersion = matchVersion;
+        return this;
+    }
+
 
     public Boolean getIsPrivate() {
         return isPrivate;
