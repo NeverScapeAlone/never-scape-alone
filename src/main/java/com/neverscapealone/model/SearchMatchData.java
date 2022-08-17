@@ -60,6 +60,9 @@ public class SearchMatchData {
     @SerializedName("party_leader")
     @Expose
     private String partyLeader;
+    @SerializedName("match_version")
+    @Expose
+    private String matchVersion;
     @SerializedName("notes")
     @Expose
     private String notes;
@@ -191,6 +194,19 @@ public class SearchMatchData {
 
     public SearchMatchData withPartyLeader(String partyLeader) {
         this.partyLeader = partyLeader;
+        return this;
+    }
+
+    public String getMatchVersion() {
+        return matchVersion;
+    }
+
+    public void setMatchVersion(String matchVersion) {
+        this.matchVersion = matchVersion;
+    }
+
+    public SearchMatchData withMatchVersion(String matchVersion) {
+        this.matchVersion = matchVersion;
         return this;
     }
 

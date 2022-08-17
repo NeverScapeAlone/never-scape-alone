@@ -24,9 +24,21 @@ dependencies {
 }
 
 group = 'com.neverscapealone'
-version = 'v2.10.0-alpha'
+version = 'v2.11.0-alpha'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
+
+// https://github.com/dillydill123/inventory-setups/blob/2643da8f1952e30be554d0d601397daced9c3120/build.gradle#L39
+task createProperties(dependsOn: processResources) {
+	doLast {
+		new File("$buildDir/resources/main/version.txt").text = "version=$project.version"
+	}
+}
+
+classes {
+	dependsOn createProperties
+}
+

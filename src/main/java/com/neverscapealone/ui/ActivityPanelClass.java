@@ -68,6 +68,7 @@ public class ActivityPanelClass {
             String accounts = matchData.getRequirement().getAccounts();
             String region = matchData.getRequirement().getRegions();
             String notes = matchData.getNotes();
+            String matchVersion = matchData.getMatchVersion();
 
             if (minimizedMatches.contains(ID)){
                 return compressedActivityPanel(activity,
@@ -82,7 +83,8 @@ public class ActivityPanelClass {
                         accounts,
                         region,
                         notes,
-                        true);
+                        true,
+                        matchVersion);
             } else {
                 return createActivityPanel(activity,
                         isPrivate,
@@ -96,7 +98,8 @@ public class ActivityPanelClass {
                         accounts,
                         region,
                         notes,
-                        true);
+                        true,
+                        matchVersion);
             }
 
 
@@ -114,6 +117,7 @@ public class ActivityPanelClass {
             String accounts = searchMatchData.getAccounts();
             String region = searchMatchData.getRegions();
             String notes = searchMatchData.getNotes();
+            String matchVersion = searchMatchData.getMatchVersion();
 
             if (minimizedMatches.contains(ID)){
             return compressedActivityPanel(activity,
@@ -128,7 +132,8 @@ public class ActivityPanelClass {
                                         accounts,
                                         region,
                                         notes,
-                                        false);
+                                        false,
+                                        matchVersion);
             } else {
             return createActivityPanel(activity,
                                         isPrivate,
@@ -142,7 +147,8 @@ public class ActivityPanelClass {
                                         accounts,
                                         region,
                                         notes,
-                                        false);
+                                        false,
+                                        matchVersion);
             }
         }
         return null;
@@ -181,7 +187,8 @@ public class ActivityPanelClass {
                                           String accounts,
                                           String region,
                                           String notes,
-                                          boolean isMatchData){
+                                          boolean isMatchData,
+                                          String matchVersion){
 
         JPanel compressedActivityPanel = new JPanel();
         compressedActivityPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -275,13 +282,31 @@ public class ActivityPanelClass {
         c.gridx += 1;
 
         // notes
-        if (notes != null){
+        if ((Objects.requireNonNull(notes).length() >= 1)){
             String convertNotes = convertNotes(notes);
             JLabel notes_label = new JLabel();
             notes_label.setIcon(Icons.NOTES_ICON);
             notes_label.setToolTipText(convertNotes);
             compressedActivityPanel.add(notes_label, c);
             c.gridx += 1;
+        }
+        // version
+        if ((Objects.requireNonNull(notes).length() >= 1)){
+            String convertNotes = convertNotes(notes);
+            JLabel notes_label = new JLabel();
+            notes_label.setIcon(Icons.NOTES_ICON);
+            notes_label.setToolTipText(convertNotes);
+            compressedActivityPanel.add(notes_label, c);
+            c.gridx += 1;
+        }
+
+        String pluginVersion = websocket.getPluginVersion();
+        if (!Objects.equals(matchVersion, pluginVersion)){
+            JLabel matchVersionLabel = new JLabel();
+            matchVersionLabel.setIcon(Icons.CANCEL_ICON);
+            matchVersionLabel.setToolTipText("Current Version Incompatible. Plugin: "+pluginVersion+" Match : "+matchVersion);
+            compressedActivityPanel.add(matchVersionLabel, c);
+            c.gridx +=1;
         }
 
         JButton expandCollapse = Components.cleanJButton(Icons.MINIMIZED_ICON,"Maximize panel", this::miniMaximizer,10,10);
@@ -311,7 +336,8 @@ public class ActivityPanelClass {
                                       String accounts,
                                       String region,
                                       String notes,
-                                      boolean isMatchData)
+                                      boolean isMatchData,
+                                      String matchVersion)
     {
         JPanel current_activity_panel = new JPanel();
         current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -419,7 +445,7 @@ public class ActivityPanelClass {
         current_activity_panel.add(region_label, ca);
         ca.gridy +=1;
 
-        if (notes != null){
+        if (Objects.requireNonNull(notes).length() >= 1){
             current_activity_panel.add(Box.createVerticalStrut(1), ca);
             ca.gridy += 1;
 
@@ -428,6 +454,20 @@ public class ActivityPanelClass {
             notes_label.setFont(FontManager.getRunescapeSmallFont());
             notes_label.setIcon(Icons.NOTES_ICON);
             current_activity_panel.add(notes_label, ca);
+            ca.gridy += 1;
+        }
+
+        String pluginVersion = websocket.getPluginVersion();
+        if (!Objects.equals(matchVersion, pluginVersion)){
+            current_activity_panel.add(Box.createVerticalStrut(1), ca);
+            ca.gridy += 1;
+
+            JLabel matchVersionLabel = new JLabel(matchVersion);
+            matchVersionLabel.setIcon(Icons.CANCEL_ICON);
+            matchVersionLabel.setFont(FontManager.getRunescapeSmallFont());
+            matchVersionLabel.setForeground(COLOR_PLUGIN_RED);
+            matchVersionLabel.setToolTipText("Current Version Incompatible. Plugin: "+pluginVersion+" Match : "+matchVersion);
+            current_activity_panel.add(matchVersionLabel, ca);
             ca.gridy += 1;
         }
         return current_activity_panel;
