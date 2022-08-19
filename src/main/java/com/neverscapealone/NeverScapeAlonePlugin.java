@@ -321,10 +321,10 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public boolean pingSpeedLimit(){
-        // ~3 pings every second, to complement server-side rate-limiter
+        // ~4 pings every second, to complement server-side rate-limiter
         long currentTimeMillis = System.currentTimeMillis();
         long gap = currentTimeMillis - NeverScapeAlonePlugin.last_ping;
-        if (gap >= 350){
+        if (gap >= 250){
             NeverScapeAlonePlugin.last_ping = currentTimeMillis;
             return true;
         }
