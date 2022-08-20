@@ -125,6 +125,7 @@ public enum ActivityReferenceEnum
     GNOME_RESTAURANT(Icons.GNOME_RESTAURANT, "minigame", "Gnome Restaurant", "GNOME_RESTAURANT"),
     GUARDIANS_OF_THE_RIFT(Icons.GUARDIANS_OF_THE_RIFT, "minigame", "Guardians of the Rift", "GUARDIANS_OF_THE_RIFT"),
     HALLOWED_SEPULCHRE(Icons.HALLOWED_SEPULCHRE, "minigame", "Hallowed Sepulchre", "HALLOWED_SEPULCHRE"),
+    HERBIBOAR(Icons.HERBIBOAR, "minigame", "Herbiboar", "HERBIBOAR"),
     PURO_PURO(Icons.PURO_PURO, "minigame", "Puro Puro", "PURO_PURO"),
     MAGE_ARENA(Icons.MAGE_ARENA, "minigame", "Mage Arena", "MAGE_ARENA"),
     MAHOGANY_HOMES(Icons.MAHOGANY_HOMES, "minigame", "Mahogany Homes", "MAHOGANY_HOMES"),
@@ -151,6 +152,9 @@ public enum ActivityReferenceEnum
     HARD_COX(Icons.HARD_COX, "raid", "Chambers of Xeric Challenge Mode", "HARD_COX"),
     TOB(Icons.TOB, "raid", "Theatre of Blood", "TOB"),
     HARD_TOB(Icons.HARD_TOB, "raid", "Theatre of Blood Hard Mode", "HARD_TOB"),
+    ENTRY_TOA(Icons.ENTRY_TOA, "raid", "Entry Tombs of Amascut", "ENTRY_TOA"),
+    NORMAL_TOA(Icons.NORMAL_TOA, "raid", "Tombs of Amascut", "NORMAL_TOA"),
+    EXPERT_TOA(Icons.EXPERT_TOA, "raid", "Expert Tombs of Amascut", "EXPERT_TOA"),
 
     // misc
     CLUES(Icons.CLUES, "misc", "Clues", "CLUES"),

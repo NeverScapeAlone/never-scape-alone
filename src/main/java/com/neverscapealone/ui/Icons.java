@@ -192,6 +192,7 @@ public class Icons {
     public static final ImageIcon GNOME_RESTAURANT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/gnome_restaurant.png"));
     public static final ImageIcon GUARDIANS_OF_THE_RIFT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/gotr.png"));
     public static final ImageIcon HALLOWED_SEPULCHRE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/hallowed_sepulchre.png"));
+    public static final ImageIcon HERBIBOAR = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/herbiboar.png"));
     public static final ImageIcon PURO_PURO = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/puro_puro.png"));
     public static final ImageIcon MAGE_ARENA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ma.png"));
     public static final ImageIcon MAHOGANY_HOMES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/mahogany_homes.png"));
@@ -218,6 +219,9 @@ public class Icons {
     public static final ImageIcon HARD_COX = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/chambersofxericchallengemode.png"));
     public static final ImageIcon TOB = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/theatreofblood.png"));
     public static final ImageIcon HARD_TOB = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/theatreofbloodhardmode.png"));
+    public static final ImageIcon ENTRY_TOA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/toa_entry.png"));
+    public static final ImageIcon NORMAL_TOA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/toa_normal.png"));
+    public static final ImageIcon EXPERT_TOA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/toa_expert.png"));
 
     // MISC
     public static final ImageIcon CLUES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/cluescrollsall.png"));
