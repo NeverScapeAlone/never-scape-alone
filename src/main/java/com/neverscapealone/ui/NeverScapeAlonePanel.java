@@ -294,7 +294,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanel.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
 
-        if (searchMatches.getSearchMatches().size() == 0) {
+        if (searchMatches.getSearchMatches() == null) {
             JPanel sMatch = new JPanel();
             sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
             sMatch.setBackground(SUB_BACKGROUND_COLOR);
