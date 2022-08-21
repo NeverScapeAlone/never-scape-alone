@@ -59,7 +59,7 @@ public class QueuePanelClass {
 
         quickPanel.add(Box.createVerticalStrut(5), c);
         c.gridy += 1;
-        quickPanel.add(title("Random"), c);
+        quickPanel.add(title("I'm Feeling Lucky"), c);
         c.gridy += 1;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
