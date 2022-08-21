@@ -39,6 +39,7 @@ public enum WebLink {
     GITHUB(Icons.GITHUB_ICON, "Check out the project's source code", "https://github.com/NeverScapeAlone"),
     PATREON(Icons.PATREON_ICON, "Support us through Patreon", "https://www.patreon.com/bot_detector"),
     PAYPAL(Icons.PAYPAL_ICON, "Support us through PayPal", "https://www.paypal.com/paypalme/osrsbotdetector"),
+    RUNEWATCH(Icons.RUNEWATCH_ICON, "Report a player through RuneWatch!", "https://runewatch.com/"),
     BUG_REPORT_ICON(Icons.BUG_REPORT, "Submit a bug report here", "https://github.com/NeverScapeAlone/never-scape-alone/issues");
 
     private final ImageIcon image;
