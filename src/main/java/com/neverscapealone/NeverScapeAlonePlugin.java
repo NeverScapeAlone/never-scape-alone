@@ -221,6 +221,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         NeverScapeAlonePlugin.pingDataArrayList.add(pingdata);
         for(int x = NeverScapeAlonePlugin.pingDataArrayList.size(); x > config.maxPingCount(); x--)
         {
+            client.clearHintArrow();
             NeverScapeAlonePlugin.pingDataArrayList.remove(0);
         }
 
@@ -315,6 +316,9 @@ public class NeverScapeAlonePlugin extends Plugin {
         tileTimer +=1;
 
         if (tileTimer>= config.pingDecay()){
+            if (NeverScapeAlonePlugin.pingDataArrayList.size() == 1){
+                client.clearHintArrow();
+            }
             NeverScapeAlonePlugin.pingDataArrayList.remove(0);
             tileTimer = 0;
         }
