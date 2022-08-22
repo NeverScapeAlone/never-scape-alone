@@ -32,6 +32,7 @@ import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.SoundEffectSelectionEnum;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.MatchData;
 import com.neverscapealone.model.PingData;
 import com.neverscapealone.model.SoundPing;
 import com.neverscapealone.ui.ConnectingPanelClass;
@@ -93,7 +94,9 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private NeverScapeAloneWebsocket websocket;
     @Inject
-    private NeverScapeAloneOverlay overlay;
+    private NeverScapeAlonePingOverlay overlay;
+    @Inject
+    private NeverScapeAloneMinimapOverlay minimapOverlay;
     @Inject
     private NeverScapeAloneHotkeyListener hotkeyListener;
     @Inject
@@ -138,6 +141,7 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     //
     public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
+    public static ArrayList<String> groupMemberNames = new ArrayList<>();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -166,6 +170,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
 
         overlayManager.add(overlay);
+        overlayManager.add(minimapOverlay);
         keyManager.registerKeyListener(hotkeyListener);
 
         if (StringUtils.isBlank(config.authToken())) {
@@ -187,6 +192,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Override
     protected void shutDown() throws Exception {
         overlayManager.remove(overlay);
+        overlayManager.remove(minimapOverlay);
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
         client.clearHintArrow();
@@ -230,6 +236,15 @@ public class NeverScapeAlonePlugin extends Plugin {
         } else {
             this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.NORMAL_PING));
         }
+    }
+
+    @Subscribe
+    public void onMatchData(MatchData matchData) {
+        ArrayList<String> temporaryGroupMemberNames = new ArrayList<>();
+        for (com.neverscapealone.model.Player player : matchData.getPlayers()){
+            temporaryGroupMemberNames.add(player.getLogin());
+        }
+        NeverScapeAlonePlugin.groupMemberNames = temporaryGroupMemberNames;
     }
 
     private void pingTile(PingData pingData){

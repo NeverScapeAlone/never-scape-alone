@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, LlemonDuck <napkinorton@gmail.com>
+ * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
  * Copyright (c) 2022, Ferrariic <ferrariictweet@gmail.com>
  * All rights reserved.
  *
@@ -23,27 +23,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.neverscapealone;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Objects;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.PingData;
 import net.runelite.api.Client;
-import net.runelite.api.Perspective;
-import net.runelite.api.Point;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.api.Player;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-import javax.inject.Inject;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Objects;
-
-public class NeverScapeAloneOverlay extends Overlay
+@Singleton
+public class NeverScapeAloneMinimapOverlay extends Overlay
 {
     private final Client client;
     private final NeverScapeAlonePlugin plugin;
@@ -51,25 +52,22 @@ public class NeverScapeAloneOverlay extends Overlay
     private final NeverScapeAloneWebsocket websocket;
 
     @Inject
-    private EventBus eventBus;
-
-    @Inject
-    private NeverScapeAloneOverlay(Client client, NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config, NeverScapeAloneWebsocket websocket)
+    private NeverScapeAloneMinimapOverlay(Client client, NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config, NeverScapeAloneWebsocket websocket)
     {
+        setLayer(OverlayLayer.ABOVE_WIDGETS);
         setPosition(OverlayPosition.DYNAMIC);
-        setLayer(OverlayLayer.ABOVE_SCENE);
+        setPriority(OverlayPriority.HIGH);
         this.client = client;
         this.plugin = plugin;
         this.config = config;
         this.websocket = websocket;
     }
 
-
     @Override
     public Dimension render(Graphics2D graphics)
     {
         if (!NeverScapeAloneWebsocket.isSocketConnected){
-            NeverScapeAlonePlugin.pingDataArrayList = new ArrayList<>();
+            NeverScapeAlonePlugin.groupMemberNames = new ArrayList<>();
             // if the socket isn't connected, don't draw anything
             return null;
         }
@@ -77,38 +75,31 @@ public class NeverScapeAloneOverlay extends Overlay
             // if we're only connected to main lobby, don't draw anything
             return null;
         }
-        ArrayList<PingData> pingDataArrayList = NeverScapeAlonePlugin.pingDataArrayList;
-        if (pingDataArrayList == null || pingDataArrayList.size() == 0){
+        ArrayList<String> groupMemberNames = NeverScapeAlonePlugin.groupMemberNames;
+        if (groupMemberNames == null || groupMemberNames.size() == 0){
             return null;
         }
 
-        for (PingData pingData : pingDataArrayList){
-            renderPing(graphics, pingData);
+        for (Player player : client.getPlayers()){
+            if (groupMemberNames.contains(player.getName())) {
+                renderPlayerOverlay(graphics, player, config.minimapGroupMemberColor());
+            }
         }
-
         return null;
     }
 
-    private void renderPing(final Graphics2D graphics, PingData pingData) {
-        final LocalPoint localPoint = LocalPoint.fromWorld(client, pingData.getX(), pingData.getY());
+    private void renderPlayerOverlay(Graphics2D graphics, Player actor, Color color)
+    {
+        final String name = actor.getName().replace('\u00A0', ' ');
 
-        if (localPoint == null)
+        if (config.showOnMinimapBool())
         {
-            return;
+            final net.runelite.api.Point minimapLocation = actor.getMinimapLocation();
+
+            if (minimapLocation != null)
+            {
+                OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
+            }
         }
-
-        final Polygon poly = Perspective.getCanvasTilePoly(client, localPoint);
-
-        if (poly == null)
-        {
-            return;
-        }
-
-        Color color = new Color(pingData.getColorR(), pingData.getColorG(), pingData.getColorB(), pingData.getColorAlpha());
-        String ping_user = pingData.getUsername();
-
-        OverlayUtil.renderPolygon(graphics, poly, color);
-        Point p = Perspective.getCanvasTextLocation(client, graphics, localPoint, ping_user, 1);
-        OverlayUtil.renderTextLocation(graphics, p, ping_user, color);
     }
 }
