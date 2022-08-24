@@ -98,6 +98,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private NeverScapeAloneMinimapOverlay minimapOverlay;
     @Inject
+    private NeverScapeAloneWorldMapOverlay worldMapOverlay;
+    @Inject
     private NeverScapeAloneHotkeyListener hotkeyListener;
     @Inject
     private OverlayManager overlayManager;
@@ -171,6 +173,7 @@ public class NeverScapeAlonePlugin extends Plugin {
 
         overlayManager.add(overlay);
         overlayManager.add(minimapOverlay);
+        overlayManager.add(worldMapOverlay);
         keyManager.registerKeyListener(hotkeyListener);
 
         if (StringUtils.isBlank(config.authToken())) {
@@ -193,6 +196,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     protected void shutDown() throws Exception {
         overlayManager.remove(overlay);
         overlayManager.remove(minimapOverlay);
+        overlayManager.remove(worldMapOverlay);
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
         client.clearHintArrow();
