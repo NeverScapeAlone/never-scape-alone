@@ -141,7 +141,7 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     //
     public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
-    public static ArrayList<String> groupMemberNames = new ArrayList<>();
+    public static MatchData matchData = new MatchData();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -240,11 +240,7 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Subscribe
     public void onMatchData(MatchData matchData) {
-        ArrayList<String> temporaryGroupMemberNames = new ArrayList<>();
-        for (com.neverscapealone.model.Player player : matchData.getPlayers()){
-            temporaryGroupMemberNames.add(player.getLogin());
-        }
-        NeverScapeAlonePlugin.groupMemberNames = temporaryGroupMemberNames;
+        NeverScapeAlonePlugin.matchData = matchData;
     }
 
     private void pingTile(PingData pingData){

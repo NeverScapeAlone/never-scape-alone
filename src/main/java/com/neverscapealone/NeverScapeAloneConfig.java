@@ -63,13 +63,6 @@ public interface NeverScapeAloneConfig extends Config {
     )
     String soundSelection = "soundSelection";
 
-    @ConfigSection(
-            position = 5,
-            name = "Color Settings",
-            description = "Plugin Color Settings"
-    )
-    String colorSelection = "colorSelection";
-
     @ConfigItem(
             position = 1,
             keyName = AUTH_TOKEN_KEY,
@@ -148,8 +141,8 @@ public interface NeverScapeAloneConfig extends Config {
     @ConfigItem(
             position = 1,
             keyName = "showOnMinimap",
-            name = "Show Players",
-            description = "Show Players on Minimap",
+            name = "Minimap Overlay",
+            description = "Shows Icons on Minimap Overlay",
             section = minimapSection
     )
     default boolean showOnMinimapBool()
@@ -159,6 +152,30 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigItem(
             position = 2,
+            keyName = "showPlayerNameMinimap",
+            name = "Player Name",
+            description = "Shows Player Name on Minimap Overlay",
+            section = minimapSection
+    )
+    default boolean showPlayerNameMinimapBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "showPlayerIconMinimap",
+            name = "Player Icon",
+            description = "Show Player Icon on Minimap",
+            section = minimapSection
+    )
+    default boolean showPlayerIconMinimapBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 4,
             keyName = "minimapGroupMemberColor",
             name = "Player Color",
             description = "The color your group member will be on the minimap.",
