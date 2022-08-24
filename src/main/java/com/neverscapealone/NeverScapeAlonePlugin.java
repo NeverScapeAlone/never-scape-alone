@@ -32,6 +32,7 @@ import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.SoundEffectSelectionEnum;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
+import com.neverscapealone.model.MatchData;
 import com.neverscapealone.model.PingData;
 import com.neverscapealone.model.SoundPing;
 import com.neverscapealone.ui.ConnectingPanelClass;
@@ -76,7 +77,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@PluginDescriptor(name = "NeverScapeAlone", description = "This plugin lets you partner up with other players to complete bosses, minigames, skills, and other miscellaneous activities.", tags = {"Matchmaking", "Party", "Skill", "PVP", "Boss", "Minigame"}, enabledByDefault = true)
+@PluginDescriptor(name = "NeverScapeAlone", description = "This plugin lets you partner up with other players to complete bosses, minigames, skills, and other miscellaneous activities.", tags = {"Matchmaking", "Party", "Skill", "PVP", "Boss", "Minigame","LFG"}, enabledByDefault = true)
 public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private Client client;
@@ -93,7 +94,9 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private NeverScapeAloneWebsocket websocket;
     @Inject
-    private NeverScapeAloneOverlay overlay;
+    private NeverScapeAlonePingOverlay overlay;
+    @Inject
+    private NeverScapeAloneMinimapOverlay minimapOverlay;
     @Inject
     private NeverScapeAloneHotkeyListener hotkeyListener;
     @Inject
@@ -138,6 +141,7 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     //
     public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
+    public static MatchData matchData = new MatchData();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -166,6 +170,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
 
         overlayManager.add(overlay);
+        overlayManager.add(minimapOverlay);
         keyManager.registerKeyListener(hotkeyListener);
 
         if (StringUtils.isBlank(config.authToken())) {
@@ -187,6 +192,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Override
     protected void shutDown() throws Exception {
         overlayManager.remove(overlay);
+        overlayManager.remove(minimapOverlay);
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
         client.clearHintArrow();
@@ -230,6 +236,11 @@ public class NeverScapeAlonePlugin extends Plugin {
         } else {
             this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.NORMAL_PING));
         }
+    }
+
+    @Subscribe
+    public void onMatchData(MatchData matchData) {
+        NeverScapeAlonePlugin.matchData = matchData;
     }
 
     private void pingTile(PingData pingData){
@@ -325,10 +336,10 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public boolean pingSpeedLimit(){
-        // ~4 pings every second, to complement server-side rate-limiter
+        // ~10 pings every second, to complement server-side rate-limiter
         long currentTimeMillis = System.currentTimeMillis();
         long gap = currentTimeMillis - NeverScapeAlonePlugin.last_ping;
-        if (gap >= 250){
+        if (gap >= 100){
             NeverScapeAlonePlugin.last_ping = currentTimeMillis;
             return true;
         }
@@ -531,6 +542,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void privateMatchPasscode(String matchID) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
         String message = "ID: " + matchID + "\n" + "Enter passcode for Private Match:";
         String passcode = JOptionPane.showInputDialog(frame, message);
         if (passcode.length() > 0) {

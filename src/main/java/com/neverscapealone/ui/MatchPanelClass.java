@@ -135,6 +135,7 @@ public class MatchPanelClass {
     public void leaveMatch(ActionEvent actionEvent) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
         Object[] options = {"Leave",
                 "Stay"};
         int n = JOptionPane.showOptionDialog(frame,

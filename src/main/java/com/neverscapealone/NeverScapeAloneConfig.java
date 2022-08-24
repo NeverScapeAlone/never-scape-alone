@@ -51,17 +51,17 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigSection(
             position = 3,
+            name = "Minimap Settings",
+            description = "Minimap settings for the plugin"
+    )
+    String minimapSection = "minimapSection";
+
+    @ConfigSection(
+            position = 4,
             name = "Sound Settings",
             description = "Plugin Sound Settings"
     )
     String soundSelection = "soundSelection";
-
-    @ConfigSection(
-            position = 4,
-            name = "Color Settings",
-            description = "Plugin Color Settings"
-    )
-    String colorSelection = "colorSelection";
 
     @ConfigItem(
             position = 1,
@@ -127,6 +127,61 @@ public interface NeverScapeAloneConfig extends Config {
     {
         return 20;
     }
+
+    @ConfigItem(
+            position = 5,
+            keyName = "pingColor",
+            name = "Ping Color",
+            description = "This is the color that other players see when you ping a tile.",
+            section = interactiveSettings
+    )
+    default Color pingColor(){return new Color(247, 241, 49);};
+
+
+    @ConfigItem(
+            position = 1,
+            keyName = "showOnMinimap",
+            name = "Minimap Overlay",
+            description = "Shows Icons on Minimap Overlay",
+            section = minimapSection
+    )
+    default boolean showOnMinimapBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "showPlayerNameMinimap",
+            name = "Player Name",
+            description = "Shows Player Name on Minimap Overlay",
+            section = minimapSection
+    )
+    default boolean showPlayerNameMinimapBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "showPlayerIconMinimap",
+            name = "Player Icon",
+            description = "Show Player Icon on Minimap",
+            section = minimapSection
+    )
+    default boolean showPlayerIconMinimapBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 4,
+            keyName = "minimapGroupMemberColor",
+            name = "Player Color",
+            description = "The color your group member will be on the minimap.",
+            section = minimapSection
+    )
+    default Color minimapGroupMemberColor(){return new Color(247, 241, 49);};
 
 
     @ConfigItem(
@@ -308,14 +363,5 @@ public interface NeverScapeAloneConfig extends Config {
     {
         return true;
     }
-
-    @ConfigItem(
-            position = 1,
-            keyName = "pingColor",
-            name = "Ping Color",
-            description = "This is the color that other players see when you ping a tile.",
-            section = colorSelection
-    )
-    default Color pingColor(){return new Color(247, 241, 49);};
 }
 

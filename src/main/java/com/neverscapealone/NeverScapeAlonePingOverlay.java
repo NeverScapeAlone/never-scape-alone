@@ -43,7 +43,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class NeverScapeAloneOverlay extends Overlay
+public class NeverScapeAlonePingOverlay extends Overlay
 {
     private final Client client;
     private final NeverScapeAlonePlugin plugin;
@@ -54,7 +54,7 @@ public class NeverScapeAloneOverlay extends Overlay
     private EventBus eventBus;
 
     @Inject
-    private NeverScapeAloneOverlay(Client client, NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config, NeverScapeAloneWebsocket websocket)
+    private NeverScapeAlonePingOverlay(Client client, NeverScapeAlonePlugin plugin, NeverScapeAloneConfig config, NeverScapeAloneWebsocket websocket)
     {
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
