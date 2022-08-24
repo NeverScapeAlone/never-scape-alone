@@ -108,9 +108,16 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
             WorldPoint playerLocation = new WorldPoint(player.getLocation().getX(), player.getLocation().getY(), 0);
             Point playerPoint = worldMapOverlay.mapWorldPointToGraphicsPoint(playerLocation);
 
-            graphics.drawString(player.getLogin(),playerPoint.getX(), playerPoint.getY());
-            graphics.drawImage(iconToBuffered(Icons.CROWN_ICON),null, playerPoint.getX(), playerPoint.getY());
-
+            if (config.showPlayerNameMapBool()){
+                graphics.drawString(player.getLogin(),playerPoint.getX(), playerPoint.getY());
+            }
+            if (config.showPlayerIconMapBool()){
+                BufferedImage bi = iconToBuffered(Icons.NSA_ICON);
+                if (player.getIsPartyLeader()){
+                    bi = iconToBuffered(Icons.CROWN_ICON);
+                }
+                graphics.drawImage(bi, null, playerPoint.getX()-(bi.getWidth()/2), playerPoint.getY()-(bi.getHeight()/2));
+            }
         }
     }
 
