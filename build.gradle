@@ -10,7 +10,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = 'latest.release'
+def runeLiteVersion = '1.8.32'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'com.neverscapealone'
-version = 'v2.14.0-alpha'
+version = 'v2.15.0-alpha'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {

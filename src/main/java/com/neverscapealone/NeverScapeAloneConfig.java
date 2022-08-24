@@ -58,6 +58,13 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigSection(
             position = 4,
+            name = "Map Settings",
+            description = "Map settings for the plugin"
+    )
+    String mapSection = "mapSection";
+
+    @ConfigSection(
+            position = 5,
             name = "Sound Settings",
             description = "Plugin Sound Settings"
     )
@@ -182,6 +189,31 @@ public interface NeverScapeAloneConfig extends Config {
             section = minimapSection
     )
     default Color minimapGroupMemberColor(){return new Color(247, 241, 49);};
+
+
+    @ConfigItem(
+            position = 1,
+            keyName = "showPlayerNameMap",
+            name = "Player Name",
+            description = "Show Player Name on Map",
+            section = mapSection
+    )
+    default boolean showPlayerNameMapBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "showPlayerIconMap",
+            name = "Player Icon",
+            description = "Show Player Icon on Minimap",
+            section = mapSection
+    )
+    default boolean showPlayerIconMapBool()
+    {
+        return true;
+    }
 
 
     @ConfigItem(
