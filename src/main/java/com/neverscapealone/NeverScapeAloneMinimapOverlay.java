@@ -28,7 +28,6 @@ package com.neverscapealone;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.MatchData;
 import com.neverscapealone.ui.Icons;
-import com.neverscapealone.ui.NeverScapeAlonePanel;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.client.ui.overlay.*;
@@ -38,9 +37,7 @@ import javax.inject.Singleton;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @Singleton
