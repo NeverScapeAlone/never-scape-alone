@@ -108,6 +108,7 @@ public class Components {
     public static void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
         String message = "";
         switch (helpButtonSwitchEnum){
             case COUNT:

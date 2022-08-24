@@ -58,6 +58,7 @@ public class DiscordInvitePanelClass {
             public void mousePressed(MouseEvent e) {
 
                 final JFrame frame = new JFrame();
+                frame.setAlwaysOnTop(true);
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 String message = "Your microphone will be ON at the time of arrival.\n Please mute your microphone now, prior to joining.";
                 String title = "NeverScapeAlone Discord Match ID: "+ matchData.getId();
