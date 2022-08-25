@@ -207,7 +207,7 @@ public interface NeverScapeAloneConfig extends Config {
             position = 2,
             keyName = "showPlayerIconMap",
             name = "Player Icon",
-            description = "Show Player Icon on Minimap",
+            description = "Show Player Icon on Map",
             section = mapSection
     )
     default boolean showPlayerIconMapBool()
@@ -215,6 +215,18 @@ public interface NeverScapeAloneConfig extends Config {
         return true;
     }
 
+
+    @ConfigItem(
+            position = 3,
+            keyName = "showPlayerStatsMap",
+            name = "Player Stats",
+            description = "Show Player Stats on Map",
+            section = mapSection
+    )
+    default boolean showPlayerStatsMapBool()
+    {
+        return true;
+    }
 
     @ConfigItem(
             position = 1,

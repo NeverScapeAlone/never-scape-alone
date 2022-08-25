@@ -125,7 +125,10 @@ public class NeverScapeAloneMinimapOverlay extends Overlay
             if (minimapLocation != null)
             {
                 if (config.showPlayerNameMinimapBool()){
-                    OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
+                    FontMetrics fm = graphics.getFontMetrics();
+                    int nameCenterX = minimapLocation.getX() - (fm.stringWidth(name)/2);
+                    int nameHeightY = minimapLocation.getY() - fm.getAscent()/2;
+                    OverlayUtil.renderTextLocation(graphics, new net.runelite.api.Point(nameCenterX, nameHeightY), name, color);
                 }
                 if (config.showPlayerIconMinimapBool()){
                     OverlayUtil.renderImageLocation(graphics, new net.runelite.api.Point(minimapLocation.getX()-(playerIcon.getWidth()/2), minimapLocation.getY()-playerIcon.getHeight()/2), playerIcon);

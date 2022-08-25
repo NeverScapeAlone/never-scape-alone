@@ -35,10 +35,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
 
 import javax.inject.Inject;
@@ -97,7 +94,6 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
         Rectangle worldMapRectangle = worldMapWidget.getBounds();
 
         graphics.setClip(worldMapRectangle);
-        graphics.setColor(Color.CYAN);
 
         renderPlayerIcon(graphics, NeverScapeAlonePlugin.matchData);
         return null;
@@ -109,22 +105,60 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
             Point playerPoint = worldMapOverlay.mapWorldPointToGraphicsPoint(playerLocation);
 
             if (config.showPlayerNameMapBool()){
-                graphics.drawString(player.getLogin(),playerPoint.getX(), playerPoint.getY());
+                FontMetrics fm = graphics.getFontMetrics();
+                int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2);
+                int nameHeightY = playerPoint.getY() - fm.getAscent()/2;
+                graphics.setColor(Color.GREEN);
+                graphics.drawString(player.getLogin(), nameCenterX, nameHeightY);
             }
             if (config.showPlayerIconMapBool()){
-                BufferedImage bi = iconToBuffered(Icons.NSA_ICON);
+                BufferedImage bi = iconToBuffered(Icons.NSA_ICON, 16, 16);
                 if (player.getIsPartyLeader()){
-                    bi = iconToBuffered(Icons.CROWN_ICON);
+                    bi = iconToBuffered(Icons.CROWN_ICON, 16, 16);
                 }
                 graphics.drawImage(bi, null, playerPoint.getX()-(bi.getWidth()/2), playerPoint.getY()-(bi.getHeight()/2));
+            }
+            if (config.showPlayerStatsMapBool()){
+
+                BufferedImage hitpointsBi = iconToBuffered(Icons.HITPOINTS, 16, 16);
+                BufferedImage prayerBi = iconToBuffered(Icons.PRAYER, 16, 16);
+                BufferedImage runBi = iconToBuffered(Icons.AGILITY, 16, 16);
+
+                // draw hitpoints
+                int hitpointsCenterX = playerPoint.getX()-(hitpointsBi.getWidth()*2);
+                int hitpointsCenterY = playerPoint.getY()+(hitpointsBi.getHeight()/2);
+                graphics.drawImage(hitpointsBi, null, hitpointsCenterX, hitpointsCenterY);
+                graphics.setColor(Color.ORANGE);
+                centerStringOnImage(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
+
+                // draw prayer
+                int prayerCenterX = playerPoint.getX()-(prayerBi.getWidth()/2);
+                int prayerCenterY = playerPoint.getY()+(prayerBi.getHeight()/2);
+                graphics.drawImage(prayerBi, null, prayerCenterX, prayerCenterY);
+                graphics.setColor(Color.ORANGE);
+                centerStringOnImage(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
+
+                // draw run
+                int runCenterX = playerPoint.getX()+(runBi.getWidth());
+                int runCenterY = playerPoint.getY()+(runBi.getHeight()/2);
+                graphics.drawImage(runBi, null, runCenterX, runCenterY);
+                graphics.setColor(Color.ORANGE);
+                centerStringOnImage(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
             }
         }
     }
 
-    private BufferedImage iconToBuffered(ImageIcon icon){
+    private void centerStringOnImage(Graphics graphics, int currentX, int currentY, String string){
+        FontMetrics fm = graphics.getFontMetrics();
+        int centerX = currentX;
+        int centerY = currentY + (fm.getAscent() + fm.getHeight()/4);
+        graphics.drawString(string, centerX, centerY);
+    }
+
+    private BufferedImage iconToBuffered(ImageIcon icon, Integer width, Integer height){
         // resize
         Image image = icon.getImage();
-        Image tempImage = image.getScaledInstance(16, 16,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        Image tempImage = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
         ImageIcon sizedImageIcon = new ImageIcon(tempImage);
 
         // write to buffered
