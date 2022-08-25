@@ -113,7 +113,7 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 FontMetrics fm = graphics.getFontMetrics();
                 int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2);
                 int nameHeightY = playerPoint.getY() - fm.getAscent()/2;
-                graphics.setColor(Color.GREEN);
+                graphics.setColor(config.mapColor());
                 graphics.drawString(player.getLogin(), nameCenterX, nameHeightY);
             }
             if (config.showPlayerIconMapBool()){
@@ -123,8 +123,11 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 }
                 graphics.drawImage(bi, null, playerPoint.getX()-(bi.getWidth()/2), playerPoint.getY()-(bi.getHeight()/2));
             }
-            if (config.showPlayerStatsMapBool()){
 
+            if (config.showPlayerStatsMapBool()){
+                if (player.getStatus() == null){
+                    return;
+                }
                 BufferedImage hitpointsBi = iconToBuffered(Icons.HITPOINTS, 16, 16);
                 BufferedImage prayerBi = iconToBuffered(Icons.PRAYER, 16, 16);
                 BufferedImage runBi = iconToBuffered(Icons.AGILITY, 16, 16);
