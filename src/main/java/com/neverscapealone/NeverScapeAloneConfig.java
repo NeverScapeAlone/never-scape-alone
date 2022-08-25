@@ -34,51 +34,44 @@ import java.awt.*;
 public interface NeverScapeAloneConfig extends Config {
     String CONFIG_GROUP = "NeverScapeAlone";
     String AUTH_TOKEN_KEY = "authToken";
-    // SECTIONS
-    @ConfigSection(
-            position = 1,
-            name = "Authentication",
-            description = "Settings for user authentication."
-    )
-    String authSection = "authSection";
 
     @ConfigSection(
-            position = 2,
+            position = 1,
             name = "Interactive Settings",
             description = "Select the interactive settings for the plugin."
     )
     String interactiveSettings = "interactiveSettings";
 
     @ConfigSection(
-            position = 3,
+            position = 2,
             name = "Minimap Settings",
             description = "Minimap settings for the plugin"
     )
     String minimapSection = "minimapSection";
 
     @ConfigSection(
-            position = 4,
+            position = 3,
             name = "Map Settings",
             description = "Map settings for the plugin"
     )
     String mapSection = "mapSection";
 
     @ConfigSection(
-            position = 5,
+            position = 4,
             name = "Player Overlay Settings",
             description = "Player overlay settings"
     )
     String playerSection = "playerSection";
 
     @ConfigSection(
-            position = 6,
+            position = 5,
             name = "Color Settings",
             description = "General color settings"
     )
     String colorSection = "colorSection";
 
     @ConfigSection(
-            position = 7,
+            position = 6,
             name = "Sound Settings",
             description = "Plugin Sound Settings"
     )
@@ -91,7 +84,7 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Your authentication token for the plugin. Length 32 characters - automatically generated if cleared and the plugin is restarted.",
             warning = "There are rare circumstances where you will need to change this field. If you are unsure about what you are doing, please click 'No'.",
             secret = true,
-            section = authSection
+            hidden = true
     )
     default String authToken() {
         return "";
