@@ -136,24 +136,37 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 int hitpointsCenterX = playerPoint.getX()-(hitpointsBi.getWidth()*2);
                 int hitpointsCenterY = playerPoint.getY()+(hitpointsBi.getHeight()/2);
                 graphics.drawImage(hitpointsBi, null, hitpointsCenterX, hitpointsCenterY);
-                graphics.setColor(Color.ORANGE);
+                graphics.setColor(Color.BLACK);
+                drawTextShadow(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
+                graphics.setColor(Color.YELLOW);
                 centerStringOnImage(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
 
                 // draw prayer
                 int prayerCenterX = playerPoint.getX()-(prayerBi.getWidth()/2);
                 int prayerCenterY = playerPoint.getY()+(prayerBi.getHeight()/2);
                 graphics.drawImage(prayerBi, null, prayerCenterX, prayerCenterY);
-                graphics.setColor(Color.ORANGE);
+                graphics.setColor(Color.BLACK);
+                drawTextShadow(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
+                graphics.setColor(Color.YELLOW);
                 centerStringOnImage(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
 
                 // draw run
                 int runCenterX = playerPoint.getX()+(runBi.getWidth());
                 int runCenterY = playerPoint.getY()+(runBi.getHeight()/2);
                 graphics.drawImage(runBi, null, runCenterX, runCenterY);
-                graphics.setColor(Color.ORANGE);
+                graphics.setColor(Color.BLACK);
+                drawTextShadow(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
+                graphics.setColor(Color.YELLOW);
                 centerStringOnImage(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
             }
         }
+    }
+
+    private void drawTextShadow(Graphics graphics, int currentX, int currentY, String string){
+        FontMetrics fm = graphics.getFontMetrics();
+        int centerX = currentX+1;
+        int centerY = currentY + (fm.getAscent() + fm.getHeight()/4)+1;
+        graphics.drawString(string, centerX, centerY);
     }
 
     private void centerStringOnImage(Graphics graphics, int currentX, int currentY, String string){
