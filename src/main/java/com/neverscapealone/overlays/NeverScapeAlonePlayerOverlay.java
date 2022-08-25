@@ -31,10 +31,8 @@ import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.MatchData;
 import com.neverscapealone.ui.Icons;
-import net.runelite.api.Client;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.Point;
-import net.runelite.api.RenderOverview;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -106,9 +104,8 @@ public class NeverScapeAlonePlayerOverlay extends Overlay
 
     private void renderPlayerName(final Graphics2D graphics, Player player, BufferedImage bufferedImage) {
         int height = player.getLogicalHeight();
-        int height_ratio = config.playerIconHeightRatio()/10;
         if (config.showPlayerIconBool()){
-            OverlayUtil.renderActorOverlayImage(graphics, player, bufferedImage, null, height*height_ratio);
+            OverlayUtil.renderActorOverlayImage(graphics, player, bufferedImage, null, height);
         }
         if (config.showPlayerNameBool()){
             OverlayUtil.renderActorOverlay(graphics, player, player.getName(), config.overlayColor());

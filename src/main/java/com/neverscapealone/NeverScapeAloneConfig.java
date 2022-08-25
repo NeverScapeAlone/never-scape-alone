@@ -269,19 +269,6 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 4,
-            keyName = "playerIconHeightRatio",
-            name = "Icon Height",
-            description = "How high should the player's icon be?",
-            section = playerSection
-    )
-    @Range(max = 10)
-    default int playerIconHeightRatio()
-    {
-        return 5;
-    }
-
-    @ConfigItem(
             position = 1,
             keyName = "minimapColor",
             name = "Member Minimap Color",
