@@ -23,8 +23,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.neverscapealone;
+package com.neverscapealone.overlays;
 
+import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.MatchData;
 import com.neverscapealone.ui.Icons;

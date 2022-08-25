@@ -24,8 +24,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone;
+package com.neverscapealone.overlays;
 
+import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.PingData;
 import net.runelite.api.Client;
