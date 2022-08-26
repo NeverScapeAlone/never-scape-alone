@@ -105,7 +105,7 @@ public class NeverScapeAlonePlayerOverlay extends Overlay
     private void renderPlayerName(final Graphics2D graphics, Player player, BufferedImage bufferedImage) {
         int height = player.getLogicalHeight();
         if (config.showPlayerIconBool()){
-            OverlayUtil.renderActorOverlayImage(graphics, player, bufferedImage, null, height);
+            OverlayUtil.renderActorOverlayImage(graphics, player, bufferedImage, null, height/2);
         }
         if (config.showPlayerNameBool()){
             OverlayUtil.renderActorOverlay(graphics, player, player.getName(), config.overlayColor());
