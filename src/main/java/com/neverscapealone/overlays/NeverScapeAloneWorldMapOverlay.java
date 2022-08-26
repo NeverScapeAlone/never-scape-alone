@@ -23,8 +23,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.neverscapealone;
+package com.neverscapealone.overlays;
 
+import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.MatchData;
 import com.neverscapealone.ui.Icons;
@@ -111,7 +113,7 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 FontMetrics fm = graphics.getFontMetrics();
                 int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2);
                 int nameHeightY = playerPoint.getY() - fm.getAscent()/2;
-                graphics.setColor(Color.GREEN);
+                graphics.setColor(config.mapColor());
                 graphics.drawString(player.getLogin(), nameCenterX, nameHeightY);
             }
             if (config.showPlayerIconMapBool()){
@@ -121,8 +123,11 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 }
                 graphics.drawImage(bi, null, playerPoint.getX()-(bi.getWidth()/2), playerPoint.getY()-(bi.getHeight()/2));
             }
-            if (config.showPlayerStatsMapBool()){
 
+            if (config.showPlayerStatsMapBool()){
+                if (player.getStatus() == null){
+                    return;
+                }
                 BufferedImage hitpointsBi = iconToBuffered(Icons.HITPOINTS, 16, 16);
                 BufferedImage prayerBi = iconToBuffered(Icons.PRAYER, 16, 16);
                 BufferedImage runBi = iconToBuffered(Icons.AGILITY, 16, 16);
@@ -131,24 +136,37 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 int hitpointsCenterX = playerPoint.getX()-(hitpointsBi.getWidth()*2);
                 int hitpointsCenterY = playerPoint.getY()+(hitpointsBi.getHeight()/2);
                 graphics.drawImage(hitpointsBi, null, hitpointsCenterX, hitpointsCenterY);
-                graphics.setColor(Color.ORANGE);
+                graphics.setColor(Color.BLACK);
+                drawTextShadow(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
+                graphics.setColor(Color.YELLOW);
                 centerStringOnImage(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
 
                 // draw prayer
                 int prayerCenterX = playerPoint.getX()-(prayerBi.getWidth()/2);
                 int prayerCenterY = playerPoint.getY()+(prayerBi.getHeight()/2);
                 graphics.drawImage(prayerBi, null, prayerCenterX, prayerCenterY);
-                graphics.setColor(Color.ORANGE);
+                graphics.setColor(Color.BLACK);
+                drawTextShadow(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
+                graphics.setColor(Color.YELLOW);
                 centerStringOnImage(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
 
                 // draw run
                 int runCenterX = playerPoint.getX()+(runBi.getWidth());
                 int runCenterY = playerPoint.getY()+(runBi.getHeight()/2);
                 graphics.drawImage(runBi, null, runCenterX, runCenterY);
-                graphics.setColor(Color.ORANGE);
+                graphics.setColor(Color.BLACK);
+                drawTextShadow(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
+                graphics.setColor(Color.YELLOW);
                 centerStringOnImage(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
             }
         }
+    }
+
+    private void drawTextShadow(Graphics graphics, int currentX, int currentY, String string){
+        FontMetrics fm = graphics.getFontMetrics();
+        int centerX = currentX+1;
+        int centerY = currentY + (fm.getAscent() + fm.getHeight()/4)+1;
+        graphics.drawString(string, centerX, centerY);
     }
 
     private void centerStringOnImage(Graphics graphics, int currentX, int currentY, String string){

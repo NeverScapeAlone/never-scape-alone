@@ -35,6 +35,10 @@ import com.neverscapealone.http.NeverScapeAloneWebsocket;
 import com.neverscapealone.model.MatchData;
 import com.neverscapealone.model.PingData;
 import com.neverscapealone.model.SoundPing;
+import com.neverscapealone.overlays.NeverScapeAloneMinimapOverlay;
+import com.neverscapealone.overlays.NeverScapeAlonePingOverlay;
+import com.neverscapealone.overlays.NeverScapeAlonePlayerOverlay;
+import com.neverscapealone.overlays.NeverScapeAloneWorldMapOverlay;
 import com.neverscapealone.ui.ConnectingPanelClass;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.Getter;
@@ -99,6 +103,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     private NeverScapeAloneMinimapOverlay minimapOverlay;
     @Inject
     private NeverScapeAloneWorldMapOverlay worldMapOverlay;
+    @Inject
+    private NeverScapeAlonePlayerOverlay playerOverlay;
     @Inject
     private NeverScapeAloneHotkeyListener hotkeyListener;
     @Inject
@@ -174,6 +180,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         overlayManager.add(overlay);
         overlayManager.add(minimapOverlay);
         overlayManager.add(worldMapOverlay);
+        overlayManager.add(playerOverlay);
         keyManager.registerKeyListener(hotkeyListener);
 
         if (StringUtils.isBlank(config.authToken())) {
@@ -197,6 +204,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         overlayManager.remove(overlay);
         overlayManager.remove(minimapOverlay);
         overlayManager.remove(worldMapOverlay);
+        overlayManager.remove(playerOverlay);
         keyManager.unregisterKeyListener(hotkeyListener);
         clientToolbar.removeNavigation(navButton);
         client.clearHintArrow();

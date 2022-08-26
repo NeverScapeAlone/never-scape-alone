@@ -34,37 +34,44 @@ import java.awt.*;
 public interface NeverScapeAloneConfig extends Config {
     String CONFIG_GROUP = "NeverScapeAlone";
     String AUTH_TOKEN_KEY = "authToken";
-    // SECTIONS
-    @ConfigSection(
-            position = 1,
-            name = "Authentication",
-            description = "Settings for user authentication."
-    )
-    String authSection = "authSection";
 
     @ConfigSection(
-            position = 2,
+            position = 1,
             name = "Interactive Settings",
             description = "Select the interactive settings for the plugin."
     )
     String interactiveSettings = "interactiveSettings";
 
     @ConfigSection(
-            position = 3,
+            position = 2,
             name = "Minimap Settings",
             description = "Minimap settings for the plugin"
     )
     String minimapSection = "minimapSection";
 
     @ConfigSection(
-            position = 4,
+            position = 3,
             name = "Map Settings",
             description = "Map settings for the plugin"
     )
     String mapSection = "mapSection";
 
     @ConfigSection(
+            position = 4,
+            name = "Player Overlay Settings",
+            description = "Player overlay settings"
+    )
+    String playerSection = "playerSection";
+
+    @ConfigSection(
             position = 5,
+            name = "Color Settings",
+            description = "General color settings"
+    )
+    String colorSection = "colorSection";
+
+    @ConfigSection(
+            position = 6,
             name = "Sound Settings",
             description = "Plugin Sound Settings"
     )
@@ -77,7 +84,7 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Your authentication token for the plugin. Length 32 characters - automatically generated if cleared and the plugin is restarted.",
             warning = "There are rare circumstances where you will need to change this field. If you are unsure about what you are doing, please click 'No'.",
             secret = true,
-            section = authSection
+            hidden = true
     )
     default String authToken() {
         return "";
@@ -182,16 +189,6 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 4,
-            keyName = "minimapGroupMemberColor",
-            name = "Player Color",
-            description = "The color your group member will be on the minimap.",
-            section = minimapSection
-    )
-    default Color minimapGroupMemberColor(){return new Color(247, 241, 49);};
-
-
-    @ConfigItem(
             position = 1,
             keyName = "showPlayerNameMap",
             name = "Player Name",
@@ -227,6 +224,69 @@ public interface NeverScapeAloneConfig extends Config {
     {
         return true;
     }
+
+    @ConfigItem(
+            position = 1,
+            keyName = "showPlayerOverlay",
+            name = "Player Overlay",
+            description = "Show Player Overlay",
+            section = playerSection
+    )
+    default boolean showPlayerOverlayBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "showPlayerName",
+            name = "Player Name",
+            description = "Show Player Name",
+            section = playerSection
+    )
+    default boolean showPlayerNameBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "showPlayerIcon",
+            name = "Player Icon",
+            description = "Show Player Icon",
+            section = playerSection
+    )
+    default boolean showPlayerIconBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 1,
+            keyName = "minimapColor",
+            name = "Member Minimap Color",
+            description = "Teammate color on the minimap",
+            section = colorSection
+    )
+    default Color minimapColor(){return new Color(0, 255, 174);};
+
+    @ConfigItem(
+            position = 2,
+            keyName = "mapColor",
+            name = "Member Map Color",
+            description = "Teammate color on the map",
+            section = colorSection
+    )
+    default Color mapColor(){return new Color(0, 255, 174);};
+
+    @ConfigItem(
+            position = 3,
+            keyName = "overlayColor",
+            name = "Member Color",
+            description = "Teammate overlay color",
+            section = colorSection
+    )
+    default Color overlayColor(){return new Color(0, 255, 174);};
 
     @ConfigItem(
             position = 1,
