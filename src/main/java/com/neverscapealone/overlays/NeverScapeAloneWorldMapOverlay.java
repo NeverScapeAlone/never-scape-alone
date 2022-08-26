@@ -106,10 +106,19 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
 
     private void renderPlayerIcon(final Graphics2D graphics, MatchData matchData) {
         for (com.neverscapealone.model.Player player : matchData.getPlayers()){
+            if (player.getLocation() == null){
+                continue;
+            }
             WorldPoint playerLocation = new WorldPoint(player.getLocation().getX(), player.getLocation().getY(), 0);
             Point playerPoint = worldMapOverlay.mapWorldPointToGraphicsPoint(playerLocation);
 
             if (config.showPlayerNameMapBool()){
+                if (player.getLogin() == null){
+                    continue;
+                }
+                if (playerPoint == null){
+                    continue;
+                }
                 FontMetrics fm = graphics.getFontMetrics();
                 int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2);
                 int nameHeightY = playerPoint.getY() - fm.getAscent()/2;
