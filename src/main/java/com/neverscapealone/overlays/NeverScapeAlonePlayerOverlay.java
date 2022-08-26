@@ -79,7 +79,7 @@ public class NeverScapeAlonePlayerOverlay extends Overlay
         if (NeverScapeAlonePlugin.matchData == null){
             return null;
         }
-        if (NeverScapeAlonePlugin.matchData.getPlayers().size() == 0){
+        if (NeverScapeAlonePlugin.matchData.getPlayers() == null){
             return null;
         }
 
