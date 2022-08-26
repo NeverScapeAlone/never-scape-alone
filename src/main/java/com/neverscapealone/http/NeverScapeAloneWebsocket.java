@@ -38,12 +38,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
-import net.runelite.client.RuneLiteProperties;
 import net.runelite.client.eventbus.EventBus;
 import okhttp3.*;
 
 import java.io.EOFException;
-import java.net.ConnectException;
 import java.net.SocketException;
 import java.time.Instant;
 import java.util.function.Supplier;
