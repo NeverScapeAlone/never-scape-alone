@@ -120,7 +120,7 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                     continue;
                 }
                 FontMetrics fm = graphics.getFontMetrics();
-                int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2); //
+                int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2);
                 int nameHeightY = playerPoint.getY() - fm.getAscent()/2;
                 graphics.setColor(config.mapColor());
                 graphics.drawString(player.getLogin(), nameCenterX, nameHeightY);
