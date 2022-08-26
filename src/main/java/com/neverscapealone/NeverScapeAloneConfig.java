@@ -77,6 +77,13 @@ public interface NeverScapeAloneConfig extends Config {
     )
     String soundSelection = "soundSelection";
 
+    @ConfigSection(
+            position = 7,
+            name = "Connectivity Settings",
+            description = "Plugin Connectivity Settings"
+    )
+    String connectivitySection = "connectivitySection";
+
     @ConfigItem(
             position = 1,
             keyName = AUTH_TOKEN_KEY,
@@ -466,6 +473,20 @@ public interface NeverScapeAloneConfig extends Config {
     default boolean soundEffectButtonBool()
     {
         return true;
+    }
+
+
+    @ConfigItem(
+            position = 1,
+            keyName = "numberOfRetries",
+            name = "Max Retries",
+            description = "Max number of retries when reconnecting to the server.",
+            section = connectivitySection
+    )
+    @Range(max = 120)
+    default int numberOfRetries()
+    {
+        return 60;
     }
 }
 

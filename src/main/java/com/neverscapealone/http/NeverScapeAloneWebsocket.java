@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.model.Payload;
 import com.neverscapealone.model.ServerMessage;
@@ -41,7 +42,6 @@ import net.runelite.client.eventbus.EventBus;
 import okhttp3.*;
 
 import java.io.EOFException;
-import java.net.ConnectException;
 import java.net.SocketException;
 import java.time.Instant;
 import java.util.function.Supplier;
@@ -57,12 +57,15 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     private OkHttpClient okHttpClient;
     @Inject
     private Gson gson;
+
+    private final NeverScapeAloneConfig config;
     private static String username;
     private static String discord;
     private static String discord_id;
     private static String token;
     private static String groupID = "0";
     private static String passcode;
+    private static int retryAttempts = 0;
     public static boolean isSocketConnected = false;
     private WebSocket socket;
     private final EventBus eventBus;
@@ -75,10 +78,11 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
             (pluginVersion != null && !pluginVersion.isEmpty()) ? pluginVersion : "INVALID-VERSION";
 
     @Inject
-    private NeverScapeAloneWebsocket(EventBus eventbus)
+    private NeverScapeAloneWebsocket(EventBus eventbus, NeverScapeAloneConfig config)
     {
         this.eventBus = eventbus;
         this.gson = new Gson();
+        this.config = config;
         this.okHttpClient = new OkHttpClient();
     }
     public void connect(String username, String discord, String discord_id, String token, String groupID, String passcode) {
@@ -148,6 +152,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, okhttp3.Response response) {
         isSocketConnected = true;
+        NeverScapeAloneWebsocket.retryAttempts = 0;
     }
 
     @Override
@@ -201,12 +206,15 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        if (t instanceof ConnectException) {
-            this.eventBus.post(new ServerMessage().buildServerMessage("No Server Connection"));
-            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
-        } else if (t instanceof SocketException || t instanceof EOFException) {
-            this.eventBus.post(new ServerMessage().buildServerMessage("Connection Reset"));
-            this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+        if (t instanceof SocketException || t instanceof EOFException) {
+            NeverScapeAloneWebsocket.retryAttempts += 1;
+            if (NeverScapeAloneWebsocket.retryAttempts < config.numberOfRetries()){
+                this.eventBus.post(new ServerMessage().buildServerMessage("Reconnecting: "+String.valueOf(retryAttempts)+"/"+String.valueOf(config.numberOfRetries())));
+                connect(NeverScapeAloneWebsocket.username, NeverScapeAloneWebsocket.discord, NeverScapeAloneWebsocket.discord_id, NeverScapeAloneWebsocket.token, NeverScapeAloneWebsocket.groupID, NeverScapeAloneWebsocket.passcode);
+            } else {
+                this.eventBus.post(new ServerMessage().buildServerMessage("No Server Connection"));
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
+            }
         } else {
             this.eventBus.post(new ServerMessage().buildServerMessage("Unknown Error"));
             this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.ERROR));
