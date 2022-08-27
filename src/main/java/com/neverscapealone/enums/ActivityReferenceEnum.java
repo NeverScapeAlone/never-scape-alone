@@ -130,6 +130,7 @@ public enum ActivityReferenceEnum
     MAGE_ARENA(Icons.MAGE_ARENA, "minigame", "Mage Arena", "MAGE_ARENA"),
     MAHOGANY_HOMES(Icons.MAHOGANY_HOMES, "minigame", "Mahogany Homes", "MAHOGANY_HOMES"),
     MAGE_TRAINING_ARENA(Icons.MAGE_TRAINING_ARENA, "minigame", "Mage Training Arena", "MAGE_TRAINING_ARENA"),
+    MOTHERLODE_MINE(Icons.MOTHERLODE_MINE, "minigame", "Motherlode Mine", "MOTHERLODE_MINE"),
     NIGHTMARE_ZONE(Icons.NIGHTMARE_ZONE, "minigame", "Nightmare Zone", "NIGHTMARE_ZONE"),
     ORGANIZED_CRIME(Icons.ORGANIZED_CRIME, "minigame", "Organized Crime", "ORGANIZED_CRIME"),
     PEST_CONTROL(Icons.PEST_CONTROL, "minigame", "Pest Control", "PEST_CONTROL"),

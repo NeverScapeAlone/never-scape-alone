@@ -197,6 +197,7 @@ public class Icons {
     public static final ImageIcon MAGE_ARENA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ma.png"));
     public static final ImageIcon MAHOGANY_HOMES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/mahogany_homes.png"));
     public static final ImageIcon MAGE_TRAINING_ARENA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/mta.png"));
+    public static final ImageIcon MOTHERLODE_MINE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/motherlode_mine.png"));
     public static final ImageIcon NIGHTMARE_ZONE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/nmz.png"));
     public static final ImageIcon ORGANIZED_CRIME = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/organized_crime.png"));
     public static final ImageIcon PEST_CONTROL = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/pest_control.png"));
