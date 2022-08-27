@@ -218,6 +218,7 @@ public class Icons {
     // RAIDS
     public static final ImageIcon COX = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/chambersofxeric.png"));
     public static final ImageIcon HARD_COX = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/chambersofxericchallengemode.png"));
+    public static final ImageIcon ENTRY_TOB = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/theatreofbloodeasy.png"));
     public static final ImageIcon TOB = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/theatreofblood.png"));
     public static final ImageIcon HARD_TOB = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/theatreofbloodhardmode.png"));
     public static final ImageIcon ENTRY_TOA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/toa_entry.png"));

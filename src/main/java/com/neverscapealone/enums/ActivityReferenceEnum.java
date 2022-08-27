@@ -151,6 +151,7 @@ public enum ActivityReferenceEnum
     // raid
     COX(Icons.COX, "raid", "Chambers of Xeric", "COX"),
     HARD_COX(Icons.HARD_COX, "raid", "Chambers of Xeric Challenge Mode", "HARD_COX"),
+    ENTRY_TOB(Icons.ENTRY_TOB, "raid", "Entry Theatre of Blood", "ENTRY_TOB"),
     TOB(Icons.TOB, "raid", "Theatre of Blood", "TOB"),
     HARD_TOB(Icons.HARD_TOB, "raid", "Theatre of Blood Hard Mode", "HARD_TOB"),
     ENTRY_TOA(Icons.ENTRY_TOA, "raid", "Entry Tombs of Amascut", "ENTRY_TOA"),
