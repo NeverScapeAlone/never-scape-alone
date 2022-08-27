@@ -5,11 +5,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MapStatsOptionsEnum {
-    NOTES,
-    COUNT,
-    EXPERIENCE,
-    SPLIT,
-    ACCOUNTS,
-    REGION,
-    PASSCODE
+    Icons,
+    Bars,
+    None,
 }

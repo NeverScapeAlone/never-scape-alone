@@ -119,6 +119,7 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 if (playerPoint == null){
                     continue;
                 }
+
                 FontMetrics fm = graphics.getFontMetrics();
                 int nameCenterX = playerPoint.getX() - (fm.stringWidth(player.getLogin())/2);
                 int nameHeightY = playerPoint.getY() - fm.getAscent()/2;
@@ -133,40 +134,76 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
                 graphics.drawImage(bi, null, playerPoint.getX()-(bi.getWidth()/2), playerPoint.getY()-(bi.getHeight()/2));
             }
 
-            if (config.showPlayerStatsMapBool()){
-                if (player.getStatus() == null){
-                    return;
-                }
-                BufferedImage hitpointsBi = iconToBuffered(Icons.HITPOINTS, 16, 16);
-                BufferedImage prayerBi = iconToBuffered(Icons.PRAYER, 16, 16);
-                BufferedImage runBi = iconToBuffered(Icons.AGILITY, 16, 16);
+            if (player.getStatus() == null){
+                continue;
+            }
+            switch (config.showPlayerStatsMapBool()){
+                case Icons:
+                    BufferedImage hitpointsBi = iconToBuffered(Icons.HITPOINTS, 16, 16);
+                    BufferedImage prayerBi = iconToBuffered(Icons.PRAYER, 16, 16);
+                    BufferedImage runBi = iconToBuffered(Icons.AGILITY, 16, 16);
 
-                // draw hitpoints
-                int hitpointsCenterX = playerPoint.getX()-(hitpointsBi.getWidth()*2);
-                int hitpointsCenterY = playerPoint.getY()+(hitpointsBi.getHeight()/2);
-                graphics.drawImage(hitpointsBi, null, hitpointsCenterX, hitpointsCenterY);
-                graphics.setColor(Color.BLACK);
-                drawTextShadow(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
-                graphics.setColor(Color.YELLOW);
-                centerStringOnImage(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
+                    // draw hitpoints
+                    int hitpointsCenterX = playerPoint.getX()-(hitpointsBi.getWidth()*2);
+                    int hitpointsCenterY = playerPoint.getY()+(hitpointsBi.getHeight()/2);
+                    graphics.drawImage(hitpointsBi, null, hitpointsCenterX, hitpointsCenterY);
+                    graphics.setColor(Color.BLACK);
+                    drawTextShadow(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
+                    graphics.setColor(Color.YELLOW);
+                    centerStringOnImage(graphics, hitpointsCenterX, hitpointsCenterY, String.valueOf(player.getStatus().getHp()));
 
-                // draw prayer
-                int prayerCenterX = playerPoint.getX()-(prayerBi.getWidth()/2);
-                int prayerCenterY = playerPoint.getY()+(prayerBi.getHeight()/2);
-                graphics.drawImage(prayerBi, null, prayerCenterX, prayerCenterY);
-                graphics.setColor(Color.BLACK);
-                drawTextShadow(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
-                graphics.setColor(Color.YELLOW);
-                centerStringOnImage(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
+                    // draw prayer
+                    int prayerCenterX = playerPoint.getX()-(prayerBi.getWidth()/2);
+                    int prayerCenterY = playerPoint.getY()+(prayerBi.getHeight()/2);
+                    graphics.drawImage(prayerBi, null, prayerCenterX, prayerCenterY);
+                    graphics.setColor(Color.BLACK);
+                    drawTextShadow(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
+                    graphics.setColor(Color.YELLOW);
+                    centerStringOnImage(graphics, prayerCenterX, prayerCenterY, String.valueOf(player.getStatus().getPrayer()));
 
-                // draw run
-                int runCenterX = playerPoint.getX()+(runBi.getWidth());
-                int runCenterY = playerPoint.getY()+(runBi.getHeight()/2);
-                graphics.drawImage(runBi, null, runCenterX, runCenterY);
-                graphics.setColor(Color.BLACK);
-                drawTextShadow(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
-                graphics.setColor(Color.YELLOW);
-                centerStringOnImage(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
+                    // draw run
+                    int runCenterX = playerPoint.getX()+(runBi.getWidth());
+                    int runCenterY = playerPoint.getY()+(runBi.getHeight()/2);
+                    graphics.drawImage(runBi, null, runCenterX, runCenterY);
+                    graphics.setColor(Color.BLACK);
+                    drawTextShadow(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
+                    graphics.setColor(Color.YELLOW);
+                    centerStringOnImage(graphics, runCenterX, runCenterY, String.valueOf(player.getStatus().getRunEnergy()));
+                    break;
+                case Bars:
+                    int width = 40; // width of each bar
+                    int height = 3; // bar height
+                    int offset = 5; // bar initial offset
+                    int gap = height+1; // gap between bars
+                    int left_start = playerPoint.getX()-width/2;
+
+                    // draw hp
+                    int hpX = playerPoint.getY()+offset+gap;
+                    int hpBar = (int) ((width)*((double) player.getStatus().getHp()/(double) player.getStatus().getBaseHp()));
+                    graphics.setColor(Color.black);
+                    graphics.fillRect(left_start, hpX, width, height);
+                    graphics.setColor(Color.red);
+                    graphics.fillRect(left_start, hpX, hpBar, height);
+
+                    //draw prayer
+                    int prayX = playerPoint.getY()+offset+height+gap;
+                    int prayBar = (int)((width)*((double) player.getStatus().getPrayer()/(double) player.getStatus().getBasePrayer()));
+                    graphics.setColor(Color.black);
+                    graphics.fillRect(left_start, prayX, width, height);
+                    graphics.setColor(Color.CYAN);
+                    graphics.fillRect(left_start, prayX, prayBar, height);
+
+                    //draw run
+                    int runX = playerPoint.getY()+offset+(height*2)+gap;
+                    int runBar = (int) (width *((double) player.getStatus().getRunEnergy()/(double) 100));
+                    graphics.setColor(Color.black);
+                    graphics.fillRect(left_start, runX, width, height);
+                    graphics.setColor(Color.orange.darker().darker());
+                    graphics.fillRect(left_start, runX, runBar, height);
+
+                    break;
+                case None:
+                    break;
             }
         }
     }
