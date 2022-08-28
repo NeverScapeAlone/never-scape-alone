@@ -25,6 +25,7 @@
 
 package com.neverscapealone;
 
+import com.neverscapealone.enums.MapStatsOptionsEnum;
 import com.neverscapealone.enums.SoundEffectSelectionEnum;
 import net.runelite.client.config.*;
 
@@ -222,14 +223,14 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigItem(
             position = 3,
-            keyName = "showPlayerStatsMap",
-            name = "Player Stats",
-            description = "Show Player Stats on Map",
+            keyName = "playerStatsMapOptions",
+            name = "Map Stats Option",
+            description = "What should the visuals of the map stats be?",
             section = mapSection
     )
-    default boolean showPlayerStatsMapBool()
+    default MapStatsOptionsEnum showPlayerStatsMapBool()
     {
-        return true;
+        return MapStatsOptionsEnum.Icons;
     }
 
     @ConfigItem(

@@ -130,6 +130,7 @@ public enum ActivityReferenceEnum
     MAGE_ARENA(Icons.MAGE_ARENA, "minigame", "Mage Arena", "MAGE_ARENA"),
     MAHOGANY_HOMES(Icons.MAHOGANY_HOMES, "minigame", "Mahogany Homes", "MAHOGANY_HOMES"),
     MAGE_TRAINING_ARENA(Icons.MAGE_TRAINING_ARENA, "minigame", "Mage Training Arena", "MAGE_TRAINING_ARENA"),
+    MOTHERLODE_MINE(Icons.MOTHERLODE_MINE, "minigame", "Motherlode Mine", "MOTHERLODE_MINE"),
     NIGHTMARE_ZONE(Icons.NIGHTMARE_ZONE, "minigame", "Nightmare Zone", "NIGHTMARE_ZONE"),
     ORGANIZED_CRIME(Icons.ORGANIZED_CRIME, "minigame", "Organized Crime", "ORGANIZED_CRIME"),
     PEST_CONTROL(Icons.PEST_CONTROL, "minigame", "Pest Control", "PEST_CONTROL"),
@@ -150,6 +151,7 @@ public enum ActivityReferenceEnum
     // raid
     COX(Icons.COX, "raid", "Chambers of Xeric", "COX"),
     HARD_COX(Icons.HARD_COX, "raid", "Chambers of Xeric Challenge Mode", "HARD_COX"),
+    ENTRY_TOB(Icons.ENTRY_TOB, "raid", "Entry Theatre of Blood", "ENTRY_TOB"),
     TOB(Icons.TOB, "raid", "Theatre of Blood", "TOB"),
     HARD_TOB(Icons.HARD_TOB, "raid", "Theatre of Blood Hard Mode", "HARD_TOB"),
     ENTRY_TOA(Icons.ENTRY_TOA, "raid", "Entry Tombs of Amascut", "ENTRY_TOA"),
