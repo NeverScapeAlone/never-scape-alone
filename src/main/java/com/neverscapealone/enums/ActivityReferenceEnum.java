@@ -173,6 +173,7 @@ public enum ActivityReferenceEnum
     CA5(Icons.CA5, "misc", "Combat Achievements (Master)", "CA5"),
     CA6(Icons.CA6, "misc", "Combat Achievements (Grandmaster)", "CA6"),
     ALL_COMBAT_ACHIEVEMENTS(Icons.ALL_COMBAT_ACHIEVEMENTS, "misc", "All Combat Achievements", "ALL_COMBAT_ACHIEVEMENTS"),
+    MONEY_MAKING(Icons.COIN, "misc", "Money-making", "MONEY_MAKING"),
     F2P(Icons.F2P, "misc", "Free-to-Play", "F2P"),
     ;
 

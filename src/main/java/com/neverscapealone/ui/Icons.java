@@ -240,6 +240,7 @@ public class Icons {
     public static final ImageIcon CA5 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca5.png"));
     public static final ImageIcon CA6 = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/ca6.png"));
     public static final ImageIcon ALL_COMBAT_ACHIEVEMENTS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/combat_achievements.png"));
+    public static final ImageIcon COIN = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/coin.png"));
     public static final ImageIcon F2P = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/f2p.png"));
 
 }
