@@ -23,31 +23,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.ui.header;
 
-import com.neverscapealone.ui.utils.Icons;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.neverscapealone.enums.WebLink;
+import net.runelite.client.util.LinkBrowser;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-@Getter
-@RequiredArgsConstructor
-public enum AccountTypeSelectionEnum {
-    NORMAL("Normal", Icons.NSA_ICON),
-    IM("IM", Icons.IM_ICON),
-    HCIM("HCIM", Icons.HCGIM_ICON),
-    UIM("UIM", Icons.UIM_ICON),
-    GIM("GIM", Icons.GIM_ICON),
-    HCGIM("HCGIM", Icons.HCGIM_ICON),
-    UGIM("UGIM", Icons.UGIM_ICON),
-    ANY("Any", Icons.NSA_ICON);
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
 
-    private final String name;
-    private final ImageIcon image;
-
-    @Override
-    public String toString() {
-        return name;
+public class LinksPanelClass {
+    public JPanel linksPanel() {
+        JPanel linksPanel = new JPanel();
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        linksPanel.setBackground(SUB_BACKGROUND_COLOR);
+        for (WebLink w : WebLink.values()) {
+            JLabel link = new JLabel(w.getImage());
+            link.setToolTipText(w.getTooltip());
+            link.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    LinkBrowser.browse(w.getLink());
+                }
+            });
+            linksPanel.add(link);
+        }
+        return linksPanel;
     }
 }

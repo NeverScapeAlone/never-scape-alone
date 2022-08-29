@@ -23,31 +23,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.models.payload.searchmatches;
 
-import com.neverscapealone.ui.utils.Icons;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import javax.swing.*;
+import java.util.List;
 
-@Getter
-@RequiredArgsConstructor
-public enum AccountTypeSelectionEnum {
-    NORMAL("Normal", Icons.NSA_ICON),
-    IM("IM", Icons.IM_ICON),
-    HCIM("HCIM", Icons.HCGIM_ICON),
-    UIM("UIM", Icons.UIM_ICON),
-    GIM("GIM", Icons.GIM_ICON),
-    HCGIM("HCGIM", Icons.HCGIM_ICON),
-    UGIM("UGIM", Icons.UGIM_ICON),
-    ANY("Any", Icons.NSA_ICON);
+public class SearchMatches {
 
-    private final String name;
-    private final ImageIcon image;
+    @SerializedName("search_matches")
+    @Expose
+    private List<SearchMatchData> searchMatches = null;
 
-    @Override
-    public String toString() {
-        return name;
+    public List<SearchMatchData> getSearchMatches() {
+        return searchMatches;
+    }
+
+    public void setSearchMatches(List<SearchMatchData> searchMatches) {
+        this.searchMatches = searchMatches;
+    }
+
+    public SearchMatches withSearchMatches(List<SearchMatchData> searchMatches) {
+        this.searchMatches = searchMatches;
+        return this;
     }
 }

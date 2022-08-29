@@ -27,9 +27,10 @@ package com.neverscapealone.overlays;
 
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import com.neverscapealone.model.MatchData;
-import com.neverscapealone.ui.Icons;
+import com.neverscapealone.models.payload.matchdata.player.Player;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
+import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.ui.utils.Icons;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.RenderOverview;
@@ -105,7 +106,7 @@ public class NeverScapeAloneWorldMapOverlay extends Overlay
     }
 
     private void renderPlayerIcon(final Graphics2D graphics, MatchData matchData) {
-        for (com.neverscapealone.model.Player player : matchData.getPlayers()){
+        for (Player player : matchData.getPlayers()){
             if (player.getLocation() == null){
                 continue;
             }

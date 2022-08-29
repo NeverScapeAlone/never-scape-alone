@@ -32,8 +32,25 @@ import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.SoundPingEnum;
-import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import com.neverscapealone.model.*;
+import com.neverscapealone.models.payload.matchdata.player.Player;
+import com.neverscapealone.models.soundping.SoundPing;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
+import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.models.payload.searchmatches.SearchMatchData;
+import com.neverscapealone.models.payload.searchmatches.SearchMatches;
+import com.neverscapealone.models.payload.servermessage.ServerMessage;
+import com.neverscapealone.ui.connecting.ConnectingPanelClass;
+import com.neverscapealone.ui.create.CreatePanelClass;
+import com.neverscapealone.ui.header.LinksPanelClass;
+import com.neverscapealone.ui.header.SwitchMenuPanelClass;
+import com.neverscapealone.ui.match.ActivityPanelClass;
+import com.neverscapealone.ui.match.DiscordInvitePanelClass;
+import com.neverscapealone.ui.match.MatchPanelClass;
+import com.neverscapealone.ui.match.PlayerPanelClass;
+import com.neverscapealone.ui.quick.QueuePanelClass;
+import com.neverscapealone.ui.search.SearchPanelClass;
+import com.neverscapealone.ui.utils.Components;
+import com.neverscapealone.ui.utils.Icons;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
@@ -56,7 +73,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.neverscapealone.ui.ServerWarningPanelClass.serverWarningPanel;
+import static com.neverscapealone.ui.header.ServerWarningPanelClass.serverWarningPanel;
 
 @Slf4j
 @Singleton

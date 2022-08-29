@@ -31,15 +31,15 @@ import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.SoundEffectSelectionEnum;
 import com.neverscapealone.enums.SoundPingEnum;
-import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import com.neverscapealone.model.MatchData;
-import com.neverscapealone.model.PingData;
-import com.neverscapealone.model.SoundPing;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
+import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.models.payload.pingdata.PingData;
+import com.neverscapealone.models.soundping.SoundPing;
 import com.neverscapealone.overlays.NeverScapeAloneMinimapOverlay;
 import com.neverscapealone.overlays.NeverScapeAlonePingOverlay;
 import com.neverscapealone.overlays.NeverScapeAlonePlayerOverlay;
 import com.neverscapealone.overlays.NeverScapeAloneWorldMapOverlay;
-import com.neverscapealone.ui.ConnectingPanelClass;
+import com.neverscapealone.ui.connecting.ConnectingPanelClass;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import lombok.Getter;
 import lombok.Setter;
@@ -189,7 +189,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
 
         panel = injector.getInstance(NeverScapeAlonePanel.class);
-        final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/tri-icon.png");
+        final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/other/tri-icon.png");
         navButton = NavigationButton.builder()
                 .panel(panel)
                 .tooltip("NeverScapeAlone")
