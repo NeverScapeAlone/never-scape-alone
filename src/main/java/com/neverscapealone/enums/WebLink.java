@@ -25,7 +25,7 @@
 
 package com.neverscapealone.enums;
 
-import com.neverscapealone.ui.Icons;
+import com.neverscapealone.ui.utils.Icons;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

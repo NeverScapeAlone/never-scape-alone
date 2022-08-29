@@ -28,9 +28,9 @@ package com.neverscapealone.overlays;
 
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.http.NeverScapeAloneWebsocket;
-import com.neverscapealone.model.MatchData;
-import com.neverscapealone.ui.Icons;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
+import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.ui.utils.Icons;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.client.ui.overlay.Overlay;
@@ -84,7 +84,7 @@ public class NeverScapeAlonePlayerOverlay extends Overlay
         }
 
         HashMap<String, Boolean> playerPartyleader = new HashMap<>();
-        for (com.neverscapealone.model.Player player : NeverScapeAlonePlugin.matchData.getPlayers()){
+        for (com.neverscapealone.models.payload.matchdata.player.Player player : NeverScapeAlonePlugin.matchData.getPlayers()){
             playerPartyleader.put(player.getLogin(), player.getIsPartyLeader());
         }
 

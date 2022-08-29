@@ -23,31 +23,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
+package com.neverscapealone.models.payload;
 
-import com.neverscapealone.ui.utils.Icons;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.gson.annotations.SerializedName;
+import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.models.payload.pingdata.PingData;
+import com.neverscapealone.models.payload.searchmatches.SearchMatches;
+import com.neverscapealone.models.payload.servermessage.ServerMessage;
+import lombok.Builder;
+import lombok.Value;
 
-import javax.swing.*;
-
-@Getter
-@RequiredArgsConstructor
-public enum AccountTypeSelectionEnum {
-    NORMAL("Normal", Icons.NSA_ICON),
-    IM("IM", Icons.IM_ICON),
-    HCIM("HCIM", Icons.HCGIM_ICON),
-    UIM("UIM", Icons.UIM_ICON),
-    GIM("GIM", Icons.GIM_ICON),
-    HCGIM("HCGIM", Icons.HCGIM_ICON),
-    UGIM("UGIM", Icons.UGIM_ICON),
-    ANY("Any", Icons.NSA_ICON);
-
-    private final String name;
-    private final ImageIcon image;
-
-    @Override
-    public String toString() {
-        return name;
-    }
+@Value
+@Builder
+public class Payload {
+    // General information payload
+    @SerializedName("detail") // server detail, or subject line. What is the message about?
+    ServerStatusCode status;
+    @SerializedName("server_message") // server message, is there any flavor text the server is sending as well?
+    ServerMessage serverMessage;
+    @SerializedName("join") // the group ID to join on a create_match request
+    String group_id;
+    @SerializedName("passcode") // the passcode that is sent on a create_match request
+    String passcode;
+    @SerializedName("search_match_data") // limited data to be sent over to the client, this is mainly for selecting a match
+    SearchMatches search;
+    @SerializedName("match_data") // data regarding the match itself
+    MatchData matchData;
+    @SerializedName("ping_data") // incoming ping data
+    PingData pingData;
 }
+

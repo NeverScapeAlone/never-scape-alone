@@ -23,31 +23,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.enums;
-
-import com.neverscapealone.ui.utils.Icons;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package com.neverscapealone.ui.header;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
-@Getter
-@RequiredArgsConstructor
-public enum AccountTypeSelectionEnum {
-    NORMAL("Normal", Icons.NSA_ICON),
-    IM("IM", Icons.IM_ICON),
-    HCIM("HCIM", Icons.HCGIM_ICON),
-    UIM("UIM", Icons.UIM_ICON),
-    GIM("GIM", Icons.GIM_ICON),
-    HCGIM("HCGIM", Icons.HCGIM_ICON),
-    UGIM("UGIM", Icons.UGIM_ICON),
-    ANY("Any", Icons.NSA_ICON);
+import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+public class ServerWarningPanelClass {
 
-    private final String name;
-    private final ImageIcon image;
+    public static JPanel serverWarningPanel() {
+        JPanel serverWarningPanel = new JPanel();
+        serverWarningPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        serverWarningPanel.setBackground(SUB_BACKGROUND_COLOR);
+        serverWarningPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
 
-    @Override
-    public String toString() {
-        return name;
+        serverWarningPanel.add(Box.createVerticalStrut(3), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(new JLabel(), c);
+        c.gridy += 1;
+
+        serverWarningPanel.add(Box.createVerticalStrut(3), c);
+        return serverWarningPanel;
     }
+
 }
