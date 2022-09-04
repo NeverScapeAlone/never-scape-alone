@@ -51,7 +51,7 @@ public class ConnectingPanelClass {
         c.gridx = 0;
         c.gridy = 0;
 
-        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> panel.panelStateManagerAction(e, PanelStateEnum.QUICK), 20, 20);
+        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> panel.setRefreshView(e, PanelStateEnum.QUICK), 20, 20);
         connectingPanel.add(escape, c);
 
         c.anchor = GridBagConstraints.CENTER;

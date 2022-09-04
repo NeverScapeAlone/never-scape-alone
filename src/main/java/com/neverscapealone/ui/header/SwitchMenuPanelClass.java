@@ -25,19 +25,19 @@ public class SwitchMenuPanelClass {
 
         quickMatchPanelButton.setText("Quick");
         quickMatchPanelButton.setToolTipText("Quickly find a match");
-        quickMatchPanelButton.addActionListener(e->panelStateManagerAction(e, PanelStateEnum.QUICK));
+        quickMatchPanelButton.addActionListener(e-> setRefreshView(e, PanelStateEnum.QUICK));
         switchMenuPanel.add(quickMatchPanelButton, c);
         c.gridx += 1;
 
         createMatchPanelButton.setText("Create");
         createMatchPanelButton.setToolTipText("Create a new match");
-        createMatchPanelButton.addActionListener(e->panelStateManagerAction(e, PanelStateEnum.CREATE));
+        createMatchPanelButton.addActionListener(e-> setRefreshView(e, PanelStateEnum.CREATE));
         switchMenuPanel.add(createMatchPanelButton, c);
         c.gridx += 1;
 
         searchMatchPanelButton.setText("Search");
         searchMatchPanelButton.setToolTipText("Search for active matches");
-        searchMatchPanelButton.addActionListener(e->panelStateManagerAction(e, PanelStateEnum.SEARCH));
+        searchMatchPanelButton.addActionListener(e-> setRefreshView(e, PanelStateEnum.SEARCH));
         switchMenuPanel.add(searchMatchPanelButton, c);
 
         return switchMenuPanel;

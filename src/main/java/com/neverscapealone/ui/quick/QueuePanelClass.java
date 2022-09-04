@@ -132,7 +132,7 @@ public class QueuePanelClass {
                 case "raid":
                     raidPanel.add(button);
                     break;
-                case "misc":
+                case "com/neverscapealone/misc":
                     miscPanel.add(button);
             }
         }

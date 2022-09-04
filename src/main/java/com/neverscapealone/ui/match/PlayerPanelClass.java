@@ -26,10 +26,13 @@
 package com.neverscapealone.ui.match;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.RegionNameEnum;
 import com.neverscapealone.models.payload.matchdata.player.Player;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
+import net.runelite.client.input.MouseListener;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
@@ -70,8 +73,11 @@ public class PlayerPanelClass {
         cp.gridx = 0;
         cp.gridy = 0;
 
-        if (!Objects.equals(player.getLogin(), client_username)) {
-            player_panel.add(playerNameButtonPanel(plugin, player.getLogin(), player.getUserId()), cp);
+        if (Objects.equals(player.getLogin(), client_username)) {
+            player_panel.add(playerNameButtonPanel(player, plugin, player.getLogin(), player.getUserId(), true), cp);
+            cp.gridy += 1;
+        } else {
+            player_panel.add(playerNameButtonPanel(player, plugin, player.getLogin(), player.getUserId(), false), cp);
             cp.gridy += 1;
         }
 
@@ -248,7 +254,7 @@ public class PlayerPanelClass {
         return player_panel;
     }
 
-    private JPanel playerNameButtonPanel(NeverScapeAlonePlugin plugin, String login, Integer userId){
+    private JPanel playerNameButtonPanel(Player player, NeverScapeAlonePlugin plugin, String login, Integer userId, Boolean isSelf){
         JPanel player_name_button_panel = new JPanel();
         player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
@@ -258,40 +264,49 @@ public class PlayerPanelClass {
         pnbp.gridx = 0;
         pnbp.gridy = 0;
 
-        JButton promote_party_leader = new JButton();
-        promote_party_leader.setIcon(Icons.CROWN_ICON);
-        promote_party_leader.setToolTipText("Promote " + login);
-        promote_party_leader.setActionCommand(String.valueOf(userId));
-        promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
-        player_name_button_panel.add(promote_party_leader, pnbp);
-        pnbp.gridx += 1;
+        if (!isSelf){
+            JButton promote_party_leader = new JButton();
+            promote_party_leader.setIcon(Icons.CROWN_ICON);
+            promote_party_leader.setToolTipText("Promote " + login);
+            promote_party_leader.setActionCommand(String.valueOf(userId));
+            promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
+            player_name_button_panel.add(promote_party_leader, pnbp);
+            pnbp.gridx += 1;
 
-        JButton like_button = new JButton();
-        like_button.setIcon(Icons.LIKE_ICON);
-        like_button.setToolTipText("Like " + login);
-        like_button.setActionCommand(String.valueOf(userId));
+            JButton like_button = new JButton();
+            like_button.setIcon(Icons.LIKE_ICON);
+            like_button.setToolTipText("Like " + login);
+            like_button.setActionCommand(String.valueOf(userId));
 
-        like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
-        player_name_button_panel.add(like_button, pnbp);
-        pnbp.gridx += 1;
+            like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
+            player_name_button_panel.add(like_button, pnbp);
+            pnbp.gridx += 1;
 
-        JButton dislike_button = new JButton();
-        dislike_button.setIcon(Icons.DISLIKE_ICON);
-        dislike_button.setToolTipText("Dislike " + login);
-        dislike_button.setActionCommand(String.valueOf(userId));
-        dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
-        player_name_button_panel.add(dislike_button, pnbp);
-        pnbp.gridx += 1;
+            JButton dislike_button = new JButton();
+            dislike_button.setIcon(Icons.DISLIKE_ICON);
+            dislike_button.setToolTipText("Dislike " + login);
+            dislike_button.setActionCommand(String.valueOf(userId));
+            dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
+            player_name_button_panel.add(dislike_button, pnbp);
+            pnbp.gridx += 1;
 
-        JButton kick = new JButton();
-        kick.setIcon(Icons.KICK_ICON);
-        kick.setToolTipText("Kick " + login);
-        kick.setActionCommand(String.valueOf(userId));
-        kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
-        player_name_button_panel.add(kick, pnbp);
+            JButton kick = new JButton();
+            kick.setIcon(Icons.KICK_ICON);
+            kick.setToolTipText("Kick " + login);
+            kick.setActionCommand(String.valueOf(userId));
+            kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
+            player_name_button_panel.add(kick, pnbp);
+            pnbp.gridx += 1;
+        }
+
+        JButton profile = new JButton();
+        profile.setIcon(Icons.PROFILE_ICON);
+        profile.setToolTipText(login+"'s Profile");
+        profile.setActionCommand(String.valueOf(userId));
+        profile.addActionListener(e -> NeverScapeAlonePlugin.displayUserProfile(e, player));
+        player_name_button_panel.add(profile, pnbp);
         pnbp.gridx += 1;
         return player_name_button_panel;
     }
-
 
 }
