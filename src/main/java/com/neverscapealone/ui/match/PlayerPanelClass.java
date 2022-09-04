@@ -26,13 +26,10 @@
 package com.neverscapealone.ui.match;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.RegionNameEnum;
 import com.neverscapealone.models.payload.matchdata.player.Player;
-import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
-import net.runelite.client.input.MouseListener;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;

@@ -45,6 +45,9 @@ public class Status {
     @SerializedName("run_energy")
     @Expose
     private Integer runEnergy;
+    @SerializedName("special_attack")
+    @Expose
+    private Integer specialAttack;
 
     public Integer getHp() {
         return hp;
@@ -108,6 +111,19 @@ public class Status {
 
     public Status withRunEnergy(Integer runEnergy) {
         this.runEnergy = runEnergy;
+        return this;
+    }
+
+    public Integer getSpecialAttack() {
+        return specialAttack;
+    }
+
+    public void setSpecialAttack(Integer specialAttack) {
+        this.specialAttack = specialAttack;
+    }
+
+    public Status withSpecialAttack(Integer specialAttack) {
+        this.specialAttack = specialAttack;
         return this;
     }
 

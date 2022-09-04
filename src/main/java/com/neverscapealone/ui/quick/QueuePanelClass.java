@@ -162,7 +162,7 @@ public class QueuePanelClass {
         NeverScapeAlonePanel.skillPanel = subActivityPanel(4, 6);
         NeverScapeAlonePanel.bossPanel = subActivityPanel(7, 6);
         NeverScapeAlonePanel.raidPanel = subActivityPanel(2, 2);
-        NeverScapeAlonePanel.minigamePanel = subActivityPanel(6, 6);
-        NeverScapeAlonePanel.miscPanel = subActivityPanel(3, 5);
+        NeverScapeAlonePanel.minigamePanel = subActivityPanel(7, 6);
+        NeverScapeAlonePanel.miscPanel = subActivityPanel(4, 4);
     }
 }

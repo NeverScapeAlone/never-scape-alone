@@ -57,7 +57,7 @@ public class CreatePanelClass {
         createPanel.add(instructionTitle("Step 1: Select an Activity"), c);
         c.gridy += 1;
 
-        createPanel.add(Box.createVerticalStrut(5), c);
+        createPanel.add(Box.createVerticalStrut(3), c);
         c.gridy += 1;
         createPanel.add(title("Skills"), c);
         c.gridy += 1;
@@ -285,7 +285,7 @@ public class CreatePanelClass {
         NeverScapeAlonePanel.createskillPanel = subActivityPanel(4, 6);
         NeverScapeAlonePanel.createbossPanel = subActivityPanel(7, 6);
         NeverScapeAlonePanel.createraidPanel = subActivityPanel(2, 2);
-        NeverScapeAlonePanel.createminigamePanel = subActivityPanel(6, 6);
-        NeverScapeAlonePanel.createmiscPanel = subActivityPanel(3, 5);
+        NeverScapeAlonePanel.createminigamePanel = subActivityPanel(7, 6);
+        NeverScapeAlonePanel.createmiscPanel = subActivityPanel(4, 4);
     }
 }
