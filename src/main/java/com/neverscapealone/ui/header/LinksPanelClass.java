@@ -30,6 +30,7 @@ import net.runelite.client.util.LinkBrowser;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -39,6 +40,7 @@ public class LinksPanelClass {
     public JPanel linksPanel() {
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        linksPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         linksPanel.setBackground(SUB_BACKGROUND_COLOR);
         for (WebLink w : WebLink.values()) {
             JLabel link = new JLabel(w.getImage());

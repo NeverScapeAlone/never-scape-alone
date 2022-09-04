@@ -10,6 +10,7 @@ import com.neverscapealone.ui.utils.Icons;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Base64;
@@ -58,8 +59,9 @@ public class UserProfilePanelClass {
 
     public JPanel userProfileIDBlock(Player player){
         JPanel profileID = new JPanel();
-        profileID.setBorder(new EmptyBorder(0, 0, 0, 0));
+        profileID.setBorder(new EmptyBorder(5, 5, 5, 5));
         profileID.setBackground(SUB_BACKGROUND_COLOR);
+        profileID.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         profileID.setLayout(new GridLayout(1,2));
 
         /// left side

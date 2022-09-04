@@ -89,7 +89,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     }
     public void connect(String username, String discord, String discord_id, String token, String groupID, String passcode) {
         if (username.equals("")){
-            this.eventBus.post(new ServerMessage().buildServerMessage("Please Login"));
+            this.eventBus.post(new ServerMessage().buildServerMessage("Login to RuneScape"));
             return;
         }
 
