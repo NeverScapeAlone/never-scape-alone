@@ -9,8 +9,6 @@
 
 🖥[NeverScapeAlone-API](https://github.com/NeverScapeAlone/NeverScapeAlone-API) - The API for the plugin. This is where the data gets sent to.
 
-![match](https://user-images.githubusercontent.com/5789682/178898676-e22351d5-2d0f-4849-9cea-9b824daaabad.png) [NeverScapeAlone-matchmaker](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker) - The matchmaking repository.
-
 ![sql-server](https://user-images.githubusercontent.com/5789682/177053846-3b578ea9-79af-4c50-b8c7-c0f078c537e3.png)
 [NeverScapeAlone-SQL](https://github.com/NeverScapeAlone/NeverScapeAlone-SQL) - The Database files for the plugin. This is where the sql queries that create our tables are stored.
 
@@ -20,9 +18,6 @@
 
 ### API
 [![Deployment workflow](https://github.com/NeverScapeAlone/NeverScapeAlone-API/actions/workflows/workflow.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-API/actions/workflows/workflow.yml) [![Dependency Review](https://github.com/NeverScapeAlone/NeverScapeAlone-API/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-API/actions/workflows/dependency-review.yml) [![DevSkim](https://github.com/NeverScapeAlone/NeverScapeAlone-API/actions/workflows/devskim.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-API/actions/workflows/devskim.yml)
-
-### Matchmaker
-[![Deployment](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker/actions/workflows/workflow.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker/actions/workflows/workflow.yml) [![Dependency Review](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker/actions/workflows/dependency-review.yml) [![DevSkim](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker/actions/workflows/devskim.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-matchmaker/actions/workflows/devskim.yml)
 
 ### Discord
 [![Deployment workflow](https://github.com/NeverScapeAlone/NeverScapeAlone-discord/actions/workflows/workflow.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-discord/actions/workflows/workflow.yml) [![Dependency Review](https://github.com/NeverScapeAlone/NeverScapeAlone-discord/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/NeverScapeAlone/NeverScapeAlone-discord/actions/workflows/dependency-review.yml)
