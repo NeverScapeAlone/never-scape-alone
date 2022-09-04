@@ -29,7 +29,6 @@ import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.models.panelstate.PanelState;
-import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.models.payload.matchdata.MatchData;
 import com.neverscapealone.models.payload.pingdata.PingData;
 import com.neverscapealone.models.soundping.SoundPing;
@@ -37,8 +36,9 @@ import com.neverscapealone.overlays.NeverScapeAloneMinimapOverlay;
 import com.neverscapealone.overlays.NeverScapeAlonePingOverlay;
 import com.neverscapealone.overlays.NeverScapeAlonePlayerOverlay;
 import com.neverscapealone.overlays.NeverScapeAloneWorldMapOverlay;
-import com.neverscapealone.ui.connecting.ConnectingPanelClass;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
+import com.neverscapealone.ui.connecting.ConnectingPanelClass;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +51,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
@@ -117,11 +118,9 @@ public class NeverScapeAlonePlugin extends Plugin {
     private EventBus eventBus;
     @Inject
     DiscordService discordService;
-
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
     public String username = "";
-
     @Getter
     @Setter
     public static String discordUsername = null;
@@ -136,8 +135,6 @@ public class NeverScapeAlonePlugin extends Plugin {
     private static Integer old_ping_y = 0;
     private static Integer old_loc_x = 0;
     private static Integer old_loc_y = 0;
-    private static long oldInventoryHash = 0;
-    private static long oldEquipmentHash = 0;
     public static boolean cycleQueue = false;
     public static JsonObject queuePayload = new JsonObject();
     private String old_username = "";
@@ -146,8 +143,6 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Integer old_prayer = 0;
     private Integer old_base_prayer = 0;
     private Integer old_run_energy = 0;
-
-    //
     public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
     public static MatchData matchData = new MatchData();
     private static final SecureRandom secureRandom = new SecureRandom();
@@ -313,6 +308,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public void onPanelState(PanelState panelState) {
         switch(panelState.getPanelStateEnum()){
             case MATCH:
+                playerGlobalRefresh();
                 NeverScapeAlonePanel.setView(PanelStateEnum.MATCH);
                 NeverScapeAlonePanel.refreshView();
                 break;

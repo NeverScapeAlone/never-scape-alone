@@ -27,6 +27,7 @@ package com.neverscapealone.ui.header;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
 import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
@@ -35,6 +36,7 @@ public class ServerWarningPanelClass {
     public static JPanel serverWarningPanel() {
         JPanel serverWarningPanel = new JPanel();
         serverWarningPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        serverWarningPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         serverWarningPanel.setBackground(SUB_BACKGROUND_COLOR);
         serverWarningPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();

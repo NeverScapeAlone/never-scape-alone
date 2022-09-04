@@ -33,14 +33,13 @@ import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.SoundPingEnum;
-import com.neverscapealone.models.payload.matchdata.player.Player;
-import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
-import com.neverscapealone.models.soundping.SoundPing;
-import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.models.payload.matchdata.player.Player;
 import com.neverscapealone.models.payload.searchmatches.SearchMatchData;
 import com.neverscapealone.models.payload.searchmatches.SearchMatches;
 import com.neverscapealone.models.payload.servermessage.ServerMessage;
+import com.neverscapealone.models.soundping.SoundPing;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.connecting.ConnectingPanelClass;
 import com.neverscapealone.ui.create.CreatePanelClass;
 import com.neverscapealone.ui.header.LinksPanelClass;
@@ -56,6 +55,7 @@ import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.SpriteID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -74,6 +74,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -106,6 +107,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // CLASSES
     public static NeverScapeAlonePlugin plugin;
     public static EventBus eventBus;
+    private final SpriteManager spriteManager;
     private final NeverScapeAloneConfig config;
     private final Components components;
     private static PlayerPanelClass playerPanelClass;
@@ -151,10 +153,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     @Inject
     ConfigManager configManager;
-
-    @Inject
-    static
-    SpriteManager spriteManager;
     public static JPanel randomPanel;
     public static JPanel skillPanel;
     public static JPanel bossPanel;
@@ -184,6 +182,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             SwitchMenuPanelClass switchMenuPanelClass,
             SearchPanelClass searchPanelClass,
             UserProfilePanelClass userProfilePanelClass,
+            SpriteManager spriteManager,
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
             Client user,
@@ -202,6 +201,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.switchMenuPanelClass = switchMenuPanelClass;
         this.searchPanelClass = searchPanelClass;
         this.userProfilePanelClass = userProfilePanelClass;
+        this.spriteManager = spriteManager;
         NeverScapeAlonePanel.websocket = websocket;
         NeverScapeAlonePanel.eventBus = eventBus;
         this.user = user;
@@ -449,7 +449,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.repaint();
     }
 
-    public static void setUserProfilePanel(Player player){
+    public void setUserProfilePanel(Player player){
         JPanel userProfile = (JPanel) userProfilePanel.getComponent(0);
         userProfile.removeAll();
 
@@ -468,6 +468,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
         userProfilePanel.add(userProfileHeader(player), c);
         c.gridy += 1;
         userProfilePanel.add(userProfilePanelClass.userProfileIDBlock(player), c);
+        c.gridy += 1;
+
+        BufferedImage bi = spriteManager.getSprite(SpriteID.EMOTE_AIR_GUITAR,0);
+        ImageIcon i = new ImageIcon(bi);
+        userProfilePanel.add(new JLabel(i),c);
         c.gridy += 1;
 
         userProfile.revalidate();

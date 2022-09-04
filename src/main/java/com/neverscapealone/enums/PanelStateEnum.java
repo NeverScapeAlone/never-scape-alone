@@ -25,7 +25,6 @@
 
 package com.neverscapealone.enums;
 
-import com.neverscapealone.models.soundping.SoundPing;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

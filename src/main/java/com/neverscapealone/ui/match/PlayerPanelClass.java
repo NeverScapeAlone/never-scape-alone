@@ -300,7 +300,7 @@ public class PlayerPanelClass {
         }
 
         JButton profile = new JButton();
-        profile.setIcon(Icons.PROFILE_ICON);
+        profile.setIcon(Icons.NSA_ICON);
         profile.setToolTipText(login+"'s Profile");
         profile.setActionCommand(String.valueOf(userId));
         profile.addActionListener(e -> NeverScapeAlonePlugin.displayUserProfile(e, player));
