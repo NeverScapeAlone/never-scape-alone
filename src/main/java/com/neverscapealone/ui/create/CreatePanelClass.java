@@ -266,7 +266,7 @@ public class CreatePanelClass {
                 case "raid":
                     createraidPanel.add(button);
                     break;
-                case "misc":
+                case "com/neverscapealone/misc":
                     createmiscPanel.add(button);
             }
         }

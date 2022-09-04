@@ -30,7 +30,9 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.SoundPingEnum;
+import com.neverscapealone.models.panelstate.PanelState;
 import com.neverscapealone.models.payload.Payload;
 import com.neverscapealone.models.payload.servermessage.ServerMessage;
 import com.neverscapealone.models.soundping.SoundPing;
@@ -182,6 +184,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 break;
             case SUCCESSFUL_CONNECTION:
                 this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_JOIN));
+                this.eventBus.post(new PanelState().buildPanelState(PanelStateEnum.MATCH));
             case MATCH_UPDATE:
                 this.eventBus.post(payload.getMatchData());
                 break;

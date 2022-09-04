@@ -27,9 +27,11 @@ package com.neverscapealone.models.payload.matchdata.player;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.location.Location;
 import com.neverscapealone.models.payload.matchdata.player.stats.Stats;
 import com.neverscapealone.models.payload.matchdata.player.status.Status;
+import com.neverscapealone.models.payload.matchdata.player.equipment.inventory.Item;
 
 import java.util.List;
 
@@ -44,6 +46,12 @@ public class Player {
     @SerializedName("location")
     @Expose
     private Location location;
+    @SerializedName("inventory")
+    @Expose
+    private List<Item> inventory;
+    @SerializedName("equipment")
+    @Expose
+    private Equipment equipment;
     @SerializedName("status")
     @Expose
     private Status status;
@@ -105,6 +113,28 @@ public class Player {
     }
     public Player withLocation(Location location) {
         this.location = location;
+        return this;
+    }
+
+    public Equipment getEquipment() {
+        return equipment;
+    }
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
+    }
+    public Player withEquipment(Equipment equipment) {
+        this.equipment = equipment;
+        return this;
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
+    }
+    public void setInventory(List<Item> inventory) {
+        this.inventory = inventory;
+    }
+    public Player withInventory(List<Item> inventory) {
+        this.inventory = inventory;
         return this;
     }
 

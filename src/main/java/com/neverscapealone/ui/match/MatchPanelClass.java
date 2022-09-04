@@ -152,7 +152,8 @@ public class MatchPanelClass {
         if (n == 0) {
             NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
             NeverScapeAlonePanel.websocket.logoff("Exiting match");
-            NeverScapeAlonePanel.panelStateManager(PanelStateEnum.QUICK);
+            NeverScapeAlonePanel.setView(PanelStateEnum.QUICK);
+            NeverScapeAlonePanel.refreshView();
         }
     }
 

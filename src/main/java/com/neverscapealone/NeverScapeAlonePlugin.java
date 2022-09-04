@@ -27,10 +27,8 @@ package com.neverscapealone;
 
 import com.google.gson.*;
 import com.google.inject.Provides;
-import com.neverscapealone.enums.PanelStateEnum;
-import com.neverscapealone.enums.PlayerButtonOptionEnum;
-import com.neverscapealone.enums.SoundEffectSelectionEnum;
-import com.neverscapealone.enums.SoundPingEnum;
+import com.neverscapealone.enums.*;
+import com.neverscapealone.models.panelstate.PanelState;
 import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.models.payload.matchdata.MatchData;
 import com.neverscapealone.models.payload.pingdata.PingData;
@@ -138,6 +136,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     private static Integer old_ping_y = 0;
     private static Integer old_loc_x = 0;
     private static Integer old_loc_y = 0;
+    private static long oldInventoryHash = 0;
+    private static long oldEquipmentHash = 0;
     public static boolean cycleQueue = false;
     public static JsonObject queuePayload = new JsonObject();
     private String old_username = "";
@@ -189,7 +189,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
 
         panel = injector.getInstance(NeverScapeAlonePanel.class);
-        final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/other/tri-icon.png");
+        final BufferedImage icon = ImageUtil.loadImageResource(NeverScapeAlonePlugin.class, "/com/neverscapealone/other/tri-icon.png");
         navButton = NavigationButton.builder()
                 .panel(panel)
                 .tooltip("NeverScapeAlone")
@@ -304,6 +304,17 @@ public class NeverScapeAlonePlugin extends Plugin {
                 if (config.soundEffectButtonBool()){
                     clientThread.invoke(() -> client.playSoundEffect(SoundEffectSelectionEnum.UI_BOOP.getID()));
                 }
+                break;
+        }
+    }
+
+
+    @Subscribe
+    public void onPanelState(PanelState panelState) {
+        switch(panelState.getPanelStateEnum()){
+            case MATCH:
+                NeverScapeAlonePanel.setView(PanelStateEnum.MATCH);
+                NeverScapeAlonePanel.refreshView();
                 break;
         }
     }
@@ -437,7 +448,8 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonObject create_request = new JsonObject();
         create_request.addProperty("detail", "quick_match");
         create_request.add("match_list", jsonArray);
-        panel.panelStateManager(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.setView(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.refreshView();
         NeverScapeAlonePlugin.queuePayload = create_request;
         NeverScapeAlonePlugin.cycleQueue = true;
     }
@@ -457,6 +469,102 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
         websocket.send(NeverScapeAlonePlugin.queuePayload);
+    }
+
+    @Schedule(period = 60, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void playerStatsUpdate(){
+        if (client.getGameState() != GameState.LOGGED_IN){
+            return;
+        }
+        if (websocket == null){
+            return;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+
+
+        JsonObject sub_payload = new JsonObject();
+        for (Skill skill : Skill.values()){
+            JsonObject skill_attributes = new JsonObject();
+            skill_attributes.addProperty("boosted", client.getBoostedSkillLevel(skill));
+            skill_attributes.addProperty("real", client.getRealSkillLevel(skill));
+            skill_attributes.addProperty("experience", client.getSkillExperience(skill));
+            sub_payload.add(skill.getName(),skill_attributes);
+        }
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("detail","stats_update");
+        payload.add("stats", sub_payload);
+        websocket.send(payload);
+    }
+
+    @Schedule(period = 6, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void playerEquipmentUpdate(){
+        // sends equipment update every 5 seconds - not on inventory change
+        if (client.getGameState() != GameState.LOGGED_IN){
+            return;
+        }
+        if (websocket == null){
+            return;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+        ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+        if (equipment == null){
+            return;
+        }
+
+        JsonObject sub_payload = new JsonObject();
+        for (EquipmentSlotEnum equipmentSlotEnum : EquipmentSlotEnum.values()){
+            Item item = equipment.getItem(equipmentSlotEnum.getId());
+
+            if (item == null){
+                continue;
+            }
+
+            JsonObject slot_attributes = new JsonObject();
+            slot_attributes.addProperty("item_id", item.getId());
+            slot_attributes.addProperty("item_amount", item.getQuantity());
+
+            sub_payload.add(equipmentSlotEnum.getName(), slot_attributes);
+        }
+        JsonObject payload = new JsonObject();
+        payload.addProperty("detail","equipment_update");
+        payload.add("equipment", sub_payload);
+        websocket.send(payload);
+    }
+
+    @Schedule(period = 5, unit = ChronoUnit.SECONDS, asynchronous = true)
+    public void playerInventoryUpdate(){
+        // sends inventory update every 5 seconds - not on inventory change bc the server would perish.
+        if (client.getGameState() != GameState.LOGGED_IN){
+            return;
+        }
+        if (websocket == null){
+            return;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+
+        ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+        if (itemContainer == null){
+            return;
+        }
+
+        JsonArray itemList = new JsonArray();
+        for (Item item: itemContainer.getItems()){
+            JsonObject i = new JsonObject();
+            i.addProperty("item_id", item.getId());
+            i.addProperty("item_amount", item.getQuantity());
+            itemList.add(i);
+        }
+        JsonObject inventory_payload = new JsonObject();
+        inventory_payload.addProperty("detail","inventory_update");
+        inventory_payload.add("inventory", itemList);
+        websocket.send(inventory_payload);
     }
 
     @Schedule(period = 10, unit = ChronoUnit.SECONDS, asynchronous = true)
@@ -502,6 +610,13 @@ public class NeverScapeAlonePlugin extends Plugin {
         location_payload.add("location", sub_payload);
 
         websocket.send(location_payload);
+    }
+
+    public void playerGlobalRefresh(){
+        playerLocationUpdate();
+        playerInventoryUpdate();
+        playerEquipmentUpdate();
+        playerStatsUpdate();
     }
 
     @Subscribe
@@ -562,16 +677,24 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
+    public static void displayUserProfile(ActionEvent actionEvent, com.neverscapealone.models.payload.matchdata.player.Player player) {
+        NeverScapeAlonePanel.selectedUserProfileData = player;
+        NeverScapeAlonePanel.setView(PanelStateEnum.USER);
+        NeverScapeAlonePanel.refreshView();
+    }
+
     public void privateMatchJoin(String matchID, String passcode) {
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, passcode);
-        panel.panelStateManager(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.setView(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.refreshView();
     }
 
     public void publicMatchJoin(String matchID) {
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, null);
-        panel.panelStateManager(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.setView(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.refreshView();
     }
 
     public void createMatchStart(ActionEvent actionEvent) {
@@ -593,7 +716,8 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
 
-        panel.panelStateManager(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.setView(PanelStateEnum.CONNECTING);
+        NeverScapeAlonePanel.refreshView();
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), "0", null);
 

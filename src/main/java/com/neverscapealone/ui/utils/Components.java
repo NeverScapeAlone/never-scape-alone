@@ -50,7 +50,7 @@ public class Components {
         return button;
     }
 
-    public  static JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
+    public static JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
         JToggleButton headerToggleButton = new JToggleButton();
         headerToggleButton.setIcon(icon);
         headerToggleButton.setToolTipText(toolTip);
