@@ -56,6 +56,7 @@ import com.neverscapealone.ui.utils.Icons;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.SpriteID;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -91,7 +92,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     /// panel match statics
     public static final Color BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
     public static final Color SUB_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
-
     private static JPanel switchMenuPanel;
     public static JPanel connectingPanel;
     private static JPanel matchPanel;
@@ -107,7 +107,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     // CLASSES
     public static NeverScapeAlonePlugin plugin;
     public static EventBus eventBus;
-    private final SpriteManager spriteManager;
     private final NeverScapeAloneConfig config;
     private final Components components;
     private static PlayerPanelClass playerPanelClass;
@@ -153,6 +152,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
     @Inject
     ConfigManager configManager;
+    private final SpriteManager spriteManager;
     public static JPanel randomPanel;
     public static JPanel skillPanel;
     public static JPanel bossPanel;
@@ -183,6 +183,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
             SearchPanelClass searchPanelClass,
             UserProfilePanelClass userProfilePanelClass,
             SpriteManager spriteManager,
+            ClientThread clientThread,
             EventBus eventBus,
             NeverScapeAloneWebsocket websocket,
             Client user,
@@ -251,10 +252,8 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         // ADD PANELS
         add(linksPanel);
-        add(Box.createVerticalStrut(3));
-
+        add(Box.createVerticalStrut(1));
         add(serverWarningPanel);
-
         add(switchMenuPanel);
         add(Box.createVerticalStrut(3));
 
@@ -463,16 +462,18 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
         c.gridy = 0;
 
-        userProfilePanel.add(userProfilePanelClass.returnToMatchButton(), c);
+        userProfile.add(userProfilePanelClass.returnToMatchButton(), c);
         c.gridy += 1;
-        userProfilePanel.add(userProfileHeader(player), c);
+        userProfile.add(userProfileHeader(player), c);
         c.gridy += 1;
-        userProfilePanel.add(userProfilePanelClass.userProfileIDBlock(player), c);
-        c.gridy += 1;
-
-        BufferedImage bi = spriteManager.getSprite(SpriteID.EMOTE_AIR_GUITAR,0);
-        ImageIcon i = new ImageIcon(bi);
-        userProfilePanel.add(new JLabel(i),c);
+        userProfile.add(playerPanelClass.createPlayerPanel(player,
+                plugin.username,
+                plugin,
+                rating_selected,
+                discord_selected,
+                safety_selected,
+                location_selected,
+                stats_selected), c);
         c.gridy += 1;
 
         userProfile.revalidate();

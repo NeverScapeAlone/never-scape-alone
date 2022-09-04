@@ -117,6 +117,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Inject
     private EventBus eventBus;
     @Inject
+    SpriteManager spriteManager;
+    @Inject
     DiscordService discordService;
     public static NeverScapeAlonePanel panel;
     private NavigationButton navButton;
@@ -138,6 +140,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     public static boolean cycleQueue = false;
     public static JsonObject queuePayload = new JsonObject();
     private String old_username = "";
+    private Integer old_special_attack = -1;
     private Integer old_health = 0;
     private Integer old_base_health = 0;
     private Integer old_prayer = 0;
@@ -608,6 +611,19 @@ public class NeverScapeAlonePlugin extends Plugin {
         websocket.send(location_payload);
     }
 
+    public void playerStatusUpdate(){
+        if (client.getGameState() != GameState.LOGGED_IN){
+            return;
+        }
+        if (websocket == null){
+            return;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+
+    }
+
     public void playerGlobalRefresh(){
         playerLocationUpdate();
         playerInventoryUpdate();
@@ -625,13 +641,15 @@ public class NeverScapeAlonePlugin extends Plugin {
             Integer prayer = client.getBoostedSkillLevel(Skill.PRAYER);
             Integer base_prayer = client.getRealSkillLevel(Skill.PRAYER);
             Integer run_energy = client.getEnergy();
+            Integer special_attack = client.getVarpValue(VarPlayer.SPECIAL_ATTACK_PERCENT.getId());
 
             if (username.equals(old_username) &
                     health.equals(old_health) &
                     base_health.equals(old_base_health) &
                     prayer.equals(old_prayer) &
                     base_prayer.equals(old_base_prayer) &
-                    run_energy.equals(old_run_energy)) {
+                    run_energy.equals(old_run_energy) &
+                    special_attack.equals(old_special_attack)) {
                 return;
             }
 
@@ -641,6 +659,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             old_prayer = prayer;
             old_base_prayer = base_prayer;
             old_run_energy = run_energy;
+            old_special_attack = special_attack;
 
             if (websocket.getGroupID().equals("0")) {
                 return;
@@ -653,6 +672,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             status_payload.addProperty("prayer", prayer);
             status_payload.addProperty("base_prayer", base_prayer);
             status_payload.addProperty("run_energy", run_energy);
+            status_payload.addProperty("special_attack", special_attack);
 
             JsonObject create_request = new JsonObject();
             create_request.addProperty("detail", "set_status");
