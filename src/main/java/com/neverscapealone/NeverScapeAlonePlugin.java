@@ -437,7 +437,9 @@ public class NeverScapeAlonePlugin extends Plugin {
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id, config.authToken(), "0", null);
         ArrayList<String> queue_list = NeverScapeAlonePanel.queue_list;
         if (queue_list.size() == 0) {
-            return;
+            queue_list.add("RANDOM");
+        } else {
+            queue_list.remove("RANDOM");
         }
         String queues = new Gson().toJson(queue_list);
         JsonParser parser = new JsonParser();
@@ -724,10 +726,10 @@ public class NeverScapeAlonePlugin extends Plugin {
         String group_notes = NeverScapeAlonePanel.notes.getText();
 
         if (checkPasscode(group_passcode)) {
-            NeverScapeAlonePanel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_GREEN);
+            NeverScapeAlonePanel.passcode.setBackground(NeverScapeAlonePanel.HIGHLIGHT_COLOR);
             NeverScapeAlonePanel.passcode.setToolTipText("Input your group passcode here.");
         } else {
-            NeverScapeAlonePanel.passcode.setBackground(NeverScapeAlonePanel.COLOR_PLUGIN_RED);
+            NeverScapeAlonePanel.passcode.setBackground(NeverScapeAlonePanel.WARNING_COLOR);
             NeverScapeAlonePanel.passcode.setToolTipText("Your passcode contains invalid characters. Try the help button to the right!");
             return;
         }
@@ -775,6 +777,14 @@ public class NeverScapeAlonePlugin extends Plugin {
         search_request.addProperty("detail", "search_match");
         search_request.addProperty("search", target);
         websocket.send(search_request);
+    }
+
+    public static void switchToUserProfile(ActionEvent actionEvent) {
+        // do something in the future
+    }
+
+    public static void switchToHomePanel(ActionEvent actionEvent) {
+        // do something in the future
     }
 
     @Provides

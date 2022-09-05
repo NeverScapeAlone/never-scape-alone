@@ -33,6 +33,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static com.neverscapealone.NeverScapeAlonePlugin.panel;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.ALT_BACKGROUND;
 import static com.neverscapealone.ui.utils.Components.cleanJButton;
 import static com.neverscapealone.ui.utils.Components.title;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.connectingPanel;
@@ -43,6 +44,7 @@ public class ConnectingPanelClass {
         JPanel connectingPanel = new JPanel();
         connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         connectingPanel.setLayout(new GridBagLayout());
+        connectingPanel.setBackground(ALT_BACKGROUND);
         GridBagConstraints c = new GridBagConstraints();
 
         c.weightx = 1;
@@ -56,7 +58,7 @@ public class ConnectingPanelClass {
 
         c.anchor = GridBagConstraints.CENTER;
         c.gridy += 1;
-        connectingPanel.add(title("Connecting..."), c);
+        connectingPanel.add(title("Connecting...", ALT_BACKGROUND), c);
         c.gridy += 1;
         connectingPanel.add(new JLabel("Queue Time: 00:00:00"), c);
 

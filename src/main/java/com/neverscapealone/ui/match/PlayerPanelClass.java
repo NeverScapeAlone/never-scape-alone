@@ -44,8 +44,8 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.COLOR_PLUGIN_RED;
-import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.WARNING_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
 
 public class PlayerPanelClass {
     Map<Integer, String> regionReference = RegionNameEnum.regionReference();
@@ -60,7 +60,7 @@ public class PlayerPanelClass {
                                     boolean stats_selected){
         JPanel player_panel = new JPanel();
         player_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        player_panel.setBackground(SUB_BACKGROUND_COLOR);
+        player_panel.setBackground(BACKGROUND_COLOR);
         player_panel.setLayout(new GridBagLayout());
         player_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints cp = new GridBagConstraints();
@@ -80,7 +80,7 @@ public class PlayerPanelClass {
 
         JPanel player_name_panel = new JPanel();
         player_name_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        player_name_panel.setBackground(SUB_BACKGROUND_COLOR);
+        player_name_panel.setBackground(BACKGROUND_COLOR);
         player_name_panel.setLayout(new GridBagLayout());
         GridBagConstraints pnp = new GridBagConstraints();
         pnp.weightx = 1;
@@ -147,7 +147,7 @@ public class PlayerPanelClass {
             runewatch_label.setToolTipText(player.getRunewatch());
             runewatch_label.setIcon(Icons.RUNEWATCH_ICON);
             runewatch_label.setFont(FontManager.getRunescapeFont());
-            runewatch_label.setForeground(COLOR_PLUGIN_RED);
+            runewatch_label.setForeground(WARNING_COLOR);
             player_panel.add(runewatch_label, cp);
             cp.gridy += 1;
         }
@@ -160,7 +160,7 @@ public class PlayerPanelClass {
             wdr_label.setToolTipText(player.getWdr());
             wdr_label.setIcon(Icons.WDR_ICON);
             wdr_label.setFont(FontManager.getRunescapeFont());
-            wdr_label.setForeground(COLOR_PLUGIN_RED);
+            wdr_label.setForeground(WARNING_COLOR);
             player_panel.add(wdr_label, cp);
             cp.gridy += 1;
         }
@@ -171,7 +171,7 @@ public class PlayerPanelClass {
 
             JPanel player_location = new JPanel();
             player_location.setBorder(new EmptyBorder(0, 0, 0, 0));
-            player_location.setBackground(SUB_BACKGROUND_COLOR);
+            player_location.setBackground(BACKGROUND_COLOR);
             player_location.setLayout(new GridBagLayout());
             GridBagConstraints cs = new GridBagConstraints();
             cs.weightx = 1;
@@ -216,7 +216,7 @@ public class PlayerPanelClass {
 
             JPanel player_status = new JPanel();
             player_status.setBorder(new EmptyBorder(0, 0, 0, 0));
-            player_status.setBackground(SUB_BACKGROUND_COLOR);
+            player_status.setBackground(BACKGROUND_COLOR);
             player_status.setLayout(new GridBagLayout());
             GridBagConstraints cs = new GridBagConstraints();
             cs.weightx = 1;
@@ -254,7 +254,7 @@ public class PlayerPanelClass {
     private JPanel playerNameButtonPanel(Player player, NeverScapeAlonePlugin plugin, String login, Integer userId, Boolean isSelf){
         JPanel player_name_button_panel = new JPanel();
         player_name_button_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        player_name_button_panel.setBackground(SUB_BACKGROUND_COLOR);
+        player_name_button_panel.setBackground(BACKGROUND_COLOR);
         player_name_button_panel.setLayout(new GridBagLayout());
         GridBagConstraints pnbp = new GridBagConstraints();
         pnbp.anchor = GridBagConstraints.LINE_END;

@@ -56,7 +56,7 @@ public class SearchPanelClass {
     private JPanel activitySearchBar() {
         JPanel searchbar_panel = new JPanel();
         searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        searchbar_panel.setBackground(BACKGROUND_COLOR);
+        searchbar_panel.setBackground(ALT_BACKGROUND);
         searchbar_panel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1;
@@ -67,7 +67,7 @@ public class SearchPanelClass {
 
         searchBar.setIcon(IconTextField.Icon.SEARCH);
         searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
-        searchBar.setBackground(SUB_BACKGROUND_COLOR);
+        searchBar.setBackground(BACKGROUND_COLOR);
         searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
         searchBar.setText("*");
         searchBar.addActionListener(plugin::searchActiveMatches);

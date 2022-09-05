@@ -73,10 +73,10 @@ public class MatchPanelClass {
         JToggleButton button = (JToggleButton) actionEvent.getSource();
         boolean b = true;
         if (button.isSelected()){
-            button.setBackground(COLOR_PLUGIN_GREEN);
+            button.setBackground(HIGHLIGHT_COLOR);
             b = true;
         } else {
-            button.setBackground(COLOR_PLUGIN_RED);
+            button.setBackground(WARNING_COLOR);
             b = false;
         }
         switch(matchHeaderSwitch){
@@ -110,23 +110,23 @@ public class MatchPanelClass {
         sc.gridx = 0;
         sc.gridy = 0;
 
-        JToggleButton rating_button = Components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.RATING));
+        JToggleButton rating_button = Components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.RATING));
         headerMatchPanel.add(rating_button, sc);
         sc.gridx +=1;
 
-        JToggleButton discord_button = Components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
+        JToggleButton discord_button = Components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
         headerMatchPanel.add(discord_button, sc);
         sc.gridx +=1;
 
-        JToggleButton location_button = Components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.LOCATION));
+        JToggleButton location_button = Components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.LOCATION));
         headerMatchPanel.add(location_button, sc);
         sc.gridx +=1;
 
-        JToggleButton safety_button = Components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.SAFETY));
+        JToggleButton safety_button = Components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.SAFETY));
         headerMatchPanel.add(safety_button, sc);
         sc.gridx +=1;
 
-        JToggleButton stats_button = Components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", COLOR_PLUGIN_GREEN, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.STATS));
+        JToggleButton stats_button = Components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.STATS));
         headerMatchPanel.add(stats_button, sc);
         sc.gridx +=1;
 
@@ -160,7 +160,7 @@ public class MatchPanelClass {
     public static JPanel matchIDPanel(MatchData matchdata){
         JPanel match_ID_panel = new JPanel();
         match_ID_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        match_ID_panel.setBackground(SUB_BACKGROUND_COLOR);
+        match_ID_panel.setBackground(BACKGROUND_COLOR);
         match_ID_panel.setLayout(new GridBagLayout());
         match_ID_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints cm = new GridBagConstraints();
@@ -174,9 +174,9 @@ public class MatchPanelClass {
         matchID.setIcon(Icons.NSA_ICON);
         matchID.setToolTipText("Your match ID");
         if (matchdata.getIsPrivate()){
-            matchID.setForeground(COLOR_PLUGIN_YELLOW);
+            matchID.setForeground(NOTIFIER_COLOR);
         } else {
-            matchID.setForeground(COLOR_PLUGIN_GREEN);
+            matchID.setForeground(HIGHLIGHT_COLOR);
         }
 
         matchID.setFont(FontManager.getRunescapeBoldFont());
