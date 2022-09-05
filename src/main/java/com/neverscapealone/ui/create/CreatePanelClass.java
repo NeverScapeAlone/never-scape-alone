@@ -31,6 +31,8 @@ import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.components.materialtabs.MaterialTab;
+import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -41,11 +43,14 @@ import static com.neverscapealone.ui.utils.Components.*;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class CreatePanelClass {
+    JPanel display = new JPanel();
+    private final MaterialTabGroup CreatePanelTab = new MaterialTabGroup(display);
 
     public JPanel createPanel() {
         JPanel createPanel = new JPanel();
         createPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         createPanel.setLayout(new GridBagLayout());
+        createPanel.setBackground(ALT_BACKGROUND);
         GridBagConstraints c = new GridBagConstraints();
 
         c.weightx = 1;
@@ -54,42 +59,25 @@ public class CreatePanelClass {
 
         c.gridx = 0;
         c.gridy = 0;
-        createPanel.add(instructionTitle("Step 1: Select an Activity"), c);
+        createPanel.add(instructionTitle("Step 1: Select an Activity", ALT_BACKGROUND), c);
         c.gridy += 1;
 
-        createPanel.add(Box.createVerticalStrut(3), c);
-        c.gridy += 1;
-        createPanel.add(title("Skills"), c);
-        c.gridy += 1;
-        createPanel.add(createskillPanel, c);
-        c.gridy += 1;
+        MaterialTab skillsTab = new MaterialTab(Icons.ALL_SKILLS, CreatePanelTab, createskillPanel);
+        MaterialTab bossesTab = new MaterialTab(Icons.TZ_KAL_ZUK, CreatePanelTab, createbossPanel);
+        MaterialTab raidsTab = new MaterialTab(Icons.COX, CreatePanelTab, createraidPanel);
+        MaterialTab minigamesTab = new MaterialTab(Icons.MAGE_ARENA, CreatePanelTab, createminigamePanel);
+        MaterialTab miscTab = new MaterialTab(Icons.PVP_GENERIC, CreatePanelTab, createmiscPanel);
 
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(title("Bosses"), c);
-        c.gridy += 1;
-        createPanel.add(createbossPanel, c);
-        c.gridy += 1;
+        CreatePanelTab.addTab(skillsTab);
+        CreatePanelTab.addTab(bossesTab);
+        CreatePanelTab.addTab(raidsTab);
+        CreatePanelTab.addTab(minigamesTab);
+        CreatePanelTab.addTab(miscTab);
+        CreatePanelTab.select(skillsTab);
 
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(title("Raids"), c);
-        c.gridy += 1;
-        createPanel.add(createraidPanel, c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(title("Mini-games"), c);
-        c.gridy += 1;
-        createPanel.add(createminigamePanel, c);
-        c.gridy += 1;
-
-        createPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-        createPanel.add(title("Miscellaneous"), c);
-        c.gridy += 1;
-        createPanel.add(createmiscPanel, c);
+        createPanel.add(CreatePanelTab, c);
+        c.gridy+=1;
+        createPanel.add(display, c);
 
         return createPanel;
     }
@@ -107,7 +95,7 @@ public class CreatePanelClass {
         c.gridy = 0;
         c.gridx = 0;
 
-        createPanel2.add(Components.instructionTitle("Step 2: Choose Requirements"), c);
+        createPanel2.add(Components.instructionTitle("Step 2: Choose Requirements", ALT_BACKGROUND), c);
 
         c.gridy += 1;
         JPanel create_selection_panel = createSelectionPanel();
@@ -118,7 +106,7 @@ public class CreatePanelClass {
 
         c.gridy += 1;
         JButton button_confirm = new JButton();
-        button_confirm.setBackground(COLOR_PLUGIN_GREEN);
+        button_confirm.setBackground(HIGHLIGHT_COLOR);
         button_confirm.setText("Create Group");
         button_confirm.setToolTipText("Click here to create a group with your current configuration!");
         button_confirm.setIcon(Icons.NSA_ICON);
@@ -249,6 +237,7 @@ public class CreatePanelClass {
             button.setIcon(value.getIcon());
             button.setPreferredSize(new Dimension(25, 25));
             button.setToolTipText(value.getTooltip());
+            button.setBackground(ALT_BACKGROUND);
             button.setName(value.getLabel());
             button.addActionListener(this::create_activityButtonManager); // add function here
             create_activity_buttons.add(button);
@@ -266,7 +255,7 @@ public class CreatePanelClass {
                 case "raid":
                     createraidPanel.add(button);
                     break;
-                case "com/neverscapealone/misc":
+                case "misc":
                     createmiscPanel.add(button);
             }
         }

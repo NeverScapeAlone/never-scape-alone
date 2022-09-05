@@ -34,7 +34,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.HIGHLIGHT_COLOR;
 
 public class Components {
 
@@ -61,12 +62,13 @@ public class Components {
         return headerToggleButton;
     }
 
-    public static JPanel title(String title_text) {
+    public static JPanel title(String title_text, Color color) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setFont(FontManager.getRunescapeBoldFont());
         label_holder.add(label);
+        label_holder.setBackground(color);
         return label_holder;
     }
 
@@ -79,12 +81,13 @@ public class Components {
         return label_holder;
     }
 
-    public static JPanel instructionTitle(String title_text) {
+    public static JPanel instructionTitle(String title_text, Color color) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setFont(FontManager.getRunescapeBoldFont());
-        label.setForeground(Color.green.darker());
+        label.setForeground(HIGHLIGHT_COLOR);
+        label.setBackground(color);
         label_holder.add(label);
         return label_holder;
     }
@@ -100,9 +103,24 @@ public class Components {
         }
         JPanel subActivityPanel = new JPanel();
         subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        subActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        subActivityPanel.setBackground(BACKGROUND_COLOR);
         subActivityPanel.setLayout(new GridLayout(row, column));
         return subActivityPanel;
+    }
+
+    public static JPanel horizontalBar(int h, Color color){
+        JPanel horizontalBar = new JPanel();
+        horizontalBar.setBorder(new EmptyBorder(0, 0, 0, 0));
+        horizontalBar.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        horizontalBar.setBackground(color);
+        horizontalBar.add(Box.createVerticalStrut(h));
+        return horizontalBar;
     }
 
     public static void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {

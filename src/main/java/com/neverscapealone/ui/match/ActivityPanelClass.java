@@ -194,7 +194,7 @@ public class ActivityPanelClass {
 
         JPanel compressedActivityPanel = new JPanel();
         compressedActivityPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        compressedActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        compressedActivityPanel.setBackground(BACKGROUND_COLOR);
         compressedActivityPanel.setLayout(new GridBagLayout());
         compressedActivityPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints c = new GridBagConstraints();
@@ -218,10 +218,10 @@ public class ActivityPanelClass {
         JLabel private_label = new JLabel();
         if (isPrivate) {
             private_label.setIcon(Icons.PRIVATE_ICON);
-            private_label.setForeground(COLOR_PLUGIN_YELLOW);
+            private_label.setForeground(NOTIFIER_COLOR);
         } else {
             private_label.setIcon(Icons.PUBLIC_ICON);
-            private_label.setForeground(COLOR_PLUGIN_GREEN);
+            private_label.setForeground(HIGHLIGHT_COLOR);
         }
         private_label.setToolTipText("Match ID: " + ID);
 
@@ -334,7 +334,7 @@ public class ActivityPanelClass {
     {
         JPanel current_activity_panel = new JPanel();
         current_activity_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        current_activity_panel.setBackground(SUB_BACKGROUND_COLOR);
+        current_activity_panel.setBackground(BACKGROUND_COLOR);
         current_activity_panel.setLayout(new GridBagLayout());
         current_activity_panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints ca = new GridBagConstraints();
@@ -373,11 +373,11 @@ public class ActivityPanelClass {
         if (isPrivate) {
             privateLabel.setText("Private");
             privateLabel.setIcon(Icons.PRIVATE_ICON);
-            privateLabel.setForeground(COLOR_PLUGIN_YELLOW);
+            privateLabel.setForeground(NOTIFIER_COLOR);
         } else {
             privateLabel.setText("Public");
             privateLabel.setIcon(Icons.PUBLIC_ICON);
-            privateLabel.setForeground(COLOR_PLUGIN_GREEN);
+            privateLabel.setForeground(HIGHLIGHT_COLOR);
         }
         privateLabel.setToolTipText("Match ID: " + ID);
 
@@ -458,7 +458,7 @@ public class ActivityPanelClass {
             JLabel matchVersionLabel = new JLabel(matchVersion);
             matchVersionLabel.setIcon(Icons.CANCEL_ICON);
             matchVersionLabel.setFont(FontManager.getRunescapeSmallFont());
-            matchVersionLabel.setForeground(COLOR_PLUGIN_RED);
+            matchVersionLabel.setForeground(WARNING_COLOR);
             matchVersionLabel.setToolTipText("Current Version Incompatible. Plugin: "+pluginVersion+" Match : "+matchVersion);
             current_activity_panel.add(matchVersionLabel, ca);
             ca.gridy += 1;
@@ -469,7 +469,7 @@ public class ActivityPanelClass {
     private JPanel doubleLabelPanel(JComponent left, JComponent right){
         JPanel doubleLabelPanel = new JPanel();
         doubleLabelPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        doubleLabelPanel.setBackground(SUB_BACKGROUND_COLOR);
+        doubleLabelPanel.setBackground(BACKGROUND_COLOR);
         doubleLabelPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1;

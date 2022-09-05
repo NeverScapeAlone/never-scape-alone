@@ -26,22 +26,51 @@
 package com.neverscapealone.ui.header;
 
 import com.neverscapealone.enums.WebLink;
+import com.neverscapealone.ui.utils.Icons;
 import net.runelite.client.util.LinkBrowser;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+import static com.neverscapealone.NeverScapeAlonePlugin.switchToHomePanel;
+import static com.neverscapealone.NeverScapeAlonePlugin.switchToUserProfile;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
+import static com.neverscapealone.ui.utils.Components.cleanJButton;
 
-public class LinksPanelClass {
-    public JPanel linksPanel() {
+public class HeaderPanelClass {
+    public JPanel headerPanel() {
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        headerPanel.setBackground(BACKGROUND_COLOR);
+        headerPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.LINE_END;
+        c.anchor = GridBagConstraints.LINE_START;
+
+        headerPanel.add(cleanJButton(Icons.PROFILE_ICON, "Access your profile!", e->switchToUserProfile(e), 16, 16), c);
+        c.gridx +=1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        headerPanel.add(linksPanel(),c);
+        c.gridx +=1;
+        c.fill = GridBagConstraints.LINE_START;
+        c.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(cleanJButton(Icons.HOME_ICON, "Head back to the Home Menu", e->switchToHomePanel(e), 16, 16), c);
+
+        return headerPanel;
+    }
+
+    public JPanel linksPanel(){
         JPanel linksPanel = new JPanel();
         linksPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         linksPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        linksPanel.setBackground(SUB_BACKGROUND_COLOR);
+        linksPanel.setBackground(BACKGROUND_COLOR);
         for (WebLink w : WebLink.values()) {
             JLabel link = new JLabel(w.getImage());
             link.setToolTipText(w.getTooltip());
@@ -56,3 +85,4 @@ public class LinksPanelClass {
         return linksPanel;
     }
 }
+

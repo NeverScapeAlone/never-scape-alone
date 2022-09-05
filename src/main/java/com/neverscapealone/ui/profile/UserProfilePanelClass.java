@@ -1,21 +1,14 @@
 package com.neverscapealone.ui.profile;
 
-import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.PanelStateEnum;
-import com.neverscapealone.enums.PlayerButtonOptionEnum;
-import com.neverscapealone.models.payload.matchdata.MatchData;
-import com.neverscapealone.models.payload.matchdata.player.Player;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Base64;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
 
 public class UserProfilePanelClass {
     public JPanel userProfilePanel() {
@@ -36,7 +29,7 @@ public class UserProfilePanelClass {
     public JPanel returnToMatchButton(){
         JPanel returnToMatch = new JPanel();
         returnToMatch.setBorder(new EmptyBorder(0, 0, 0, 0));
-        returnToMatch.setBackground(SUB_BACKGROUND_COLOR);
+        returnToMatch.setBackground(BACKGROUND_COLOR);
         returnToMatch.setLayout(new GridBagLayout());
 
         GridBagConstraints cd = new GridBagConstraints();

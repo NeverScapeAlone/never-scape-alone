@@ -35,13 +35,13 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
 
 public class DiscordInvitePanelClass {
     public JPanel createDiscordInvitePanel(MatchData matchData){
         JPanel discord_invite_panel = new JPanel();
         discord_invite_panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        discord_invite_panel.setBackground(SUB_BACKGROUND_COLOR);
+        discord_invite_panel.setBackground(BACKGROUND_COLOR);
         discord_invite_panel.setLayout(new GridBagLayout());
         GridBagConstraints cd = new GridBagConstraints();
         cd.weightx = 1;
