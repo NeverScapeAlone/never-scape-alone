@@ -22,7 +22,7 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.neverscapealone.models.payload.matchdata.player.equipment.inventory;
+package com.neverscapealone.models.payload.matchdata.player.inventory;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

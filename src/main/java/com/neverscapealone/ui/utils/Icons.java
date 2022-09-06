@@ -34,6 +34,9 @@ public class Icons {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
 
     // web links and references
+    public static final ImageIcon EQUIPMENT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/equipment.png"));
+    public static final ImageIcon INVENTORY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/inventory.png"));
+    public static final ImageIcon HIDE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/hide.png"));
     public static final ImageIcon HOME_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/home_button.png"));
     public static final ImageIcon COORDINATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/coordinate.png"));
     public static final ImageIcon WORLD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/world.png"));

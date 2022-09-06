@@ -25,6 +25,7 @@
 
 package com.neverscapealone.ui.header;
 
+import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.WebLink;
 import com.neverscapealone.ui.utils.Icons;
 import net.runelite.client.util.LinkBrowser;
@@ -36,8 +37,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static com.neverscapealone.NeverScapeAlonePlugin.switchToHomePanel;
-import static com.neverscapealone.NeverScapeAlonePlugin.switchToUserProfile;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
 import static com.neverscapealone.ui.utils.Components.cleanJButton;
 
@@ -53,7 +52,7 @@ public class HeaderPanelClass {
         c.fill = GridBagConstraints.LINE_END;
         c.anchor = GridBagConstraints.LINE_START;
 
-        headerPanel.add(cleanJButton(Icons.PROFILE_ICON, "Access your profile!", e->switchToUserProfile(e), 16, 16), c);
+        headerPanel.add(cleanJButton(Icons.PROFILE_ICON, "Access your profile!", NeverScapeAlonePlugin::switchToUserProfile, 16, 16), c);
         c.gridx +=1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.CENTER;
@@ -61,7 +60,7 @@ public class HeaderPanelClass {
         c.gridx +=1;
         c.fill = GridBagConstraints.LINE_START;
         c.anchor = GridBagConstraints.LINE_END;
-        headerPanel.add(cleanJButton(Icons.HOME_ICON, "Head back to the Home Menu", e->switchToHomePanel(e), 16, 16), c);
+        headerPanel.add(cleanJButton(Icons.HOME_ICON, "Head back to the Home Menu", NeverScapeAlonePlugin::switchToHomePanel, 16, 16), c);
 
         return headerPanel;
     }

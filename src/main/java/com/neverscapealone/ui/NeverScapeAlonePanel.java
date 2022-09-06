@@ -31,7 +31,7 @@ import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.PanelStateEnum;
-import com.neverscapealone.enums.PlayerButtonOptionEnum;
+import com.neverscapealone.enums.PlayerSelectionPanelEnum;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.models.payload.matchdata.MatchData;
 import com.neverscapealone.models.payload.matchdata.player.Player;
@@ -47,7 +47,6 @@ import com.neverscapealone.ui.match.ActivityPanelClass;
 import com.neverscapealone.ui.match.DiscordInvitePanelClass;
 import com.neverscapealone.ui.match.MatchPanelClass;
 import com.neverscapealone.ui.match.PlayerPanelClass;
-import com.neverscapealone.ui.profile.UserProfilePanelClass;
 import com.neverscapealone.ui.quick.QueuePanelClass;
 import com.neverscapealone.ui.search.SearchPanelClass;
 import com.neverscapealone.ui.utils.Components;
@@ -75,6 +74,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.neverscapealone.ui.header.ServerWarningPanelClass.serverWarningPanel;
@@ -97,7 +98,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static JPanel createPanel;
     public static JPanel createPanel2;
     private static JPanel searchPanel;
-    private static JPanel userProfilePanel;
     public static JButton quickMatchButton = new JButton();
     // CLASSES
     public static NeverScapeAlonePlugin plugin;
@@ -107,7 +107,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private static PlayerPanelClass playerPanelClass;
     private static ActivityPanelClass activityPanelClass;
     private static DiscordInvitePanelClass discordInvitePanelClass;
-    private static UserProfilePanelClass userProfilePanelClass;
     private final CreatePanelClass createPanelClass;
     public final QueuePanelClass queuePanelClass;
     public final ConnectingPanelClass connectingPanelClass;
@@ -119,7 +118,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public final ClientThread clientThread;
     private final Client user;
     private final WorldService worldService;
-    // BUTTONS
     public static IconTextField searchBar = new IconTextField();
     public static ArrayList activity_buttons = new ArrayList<JToggleButton>();
     public static ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
@@ -135,7 +133,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static boolean isConnecting = false;
     public static MatchData oldMatchData = null;
     public static SearchMatches oldSearchMatches = null;
-    public static PanelStateEnum panelViewState = PanelStateEnum.QUICK;
+    public static PanelStateEnum panelViewState = PanelStateEnum.HOME;
 
     private static SpinnerNumberModel player_size_model = new SpinnerNumberModel(2, 2, 1000, 1);
     public static final JSpinner party_member_count = new JSpinner(player_size_model);
@@ -161,11 +159,11 @@ public class NeverScapeAlonePanel extends PluginPanel {
     public static JPanel createminigamePanel;
     public static JPanel createmiscPanel;
     // material tab groups
-    private final JPanel homeDisplay = new JPanel();
-    private final MaterialTabGroup mainTabs = new MaterialTabGroup(homeDisplay);
-    private final JPanel matchDisplay = new JPanel();
-    private final MaterialTabGroup matchTabs = new MaterialTabGroup(matchDisplay);
-
+    private static final JPanel homeDisplay = new JPanel();
+    private static final MaterialTabGroup mainTabs = new MaterialTabGroup(homeDisplay);
+    private static final JPanel matchDisplay = new JPanel();
+    private static final MaterialTabGroup matchTabs = new MaterialTabGroup(matchDisplay);
+    public static HashMap<String, PlayerSelectionPanelEnum> playerSelectionPanelEnumHashMap = new HashMap<>();
     @Inject
     public NeverScapeAlonePanel(
                                 NeverScapeAlonePlugin plugin,
@@ -177,10 +175,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
                                 CreatePanelClass createPanelClass,
                                 QueuePanelClass queuePanelClass,
                                 ConnectingPanelClass connectingPanelClass,
-                                HeaderPanelClass linksPanelClass,
+                                HeaderPanelClass headerPanelClass,
                                 MatchPanelClass matchPanelClass,
                                 SearchPanelClass searchPanelClass,
-                                UserProfilePanelClass userProfilePanelClass,
                                 ClientThread clientThread,
                                 SpriteManager spriteManager,
                                 EventBus eventBus,
@@ -198,10 +195,9 @@ public class NeverScapeAlonePanel extends PluginPanel {
         this.createPanelClass = createPanelClass;
         this.queuePanelClass = queuePanelClass;
         this.connectingPanelClass = connectingPanelClass;
-        this.linksPanelClass = linksPanelClass;
+        this.linksPanelClass = headerPanelClass;
         this.matchPanelClass = matchPanelClass;
         this.searchPanelClass = searchPanelClass;
-        this.userProfilePanelClass = userProfilePanelClass;
         this.clientThread = clientThread;
         this.spriteManager = spriteManager;
         NeverScapeAlonePanel.websocket = websocket;
@@ -215,7 +211,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         setBackground(BACKGROUND_COLOR);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel headerPanel = linksPanelClass.headerPanel();
+        JPanel headerPanel = headerPanelClass.headerPanel();
         serverWarningPanel = serverWarningPanel();
         serverWarningPanel.setVisible(false);
         connectingPanel = ConnectingPanelClass.connectingPanel();
@@ -228,8 +224,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         createPanel2 = createPanelClass.createPanel2();
         createPanel2.setVisible(false);
         searchPanel = searchPanelClass.searchPanel();
-        userProfilePanel = userProfilePanelClass.userProfilePanel();
-        userProfilePanel.setVisible(false);
 
         // ADD HEADERS
         add(headerPanel);
@@ -262,7 +256,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
 
         add(createPanel2);
         add(connectingPanel);
-        add(userProfilePanel);
 
         queuePanelClass.addQueueButtons();
         createPanelClass.addCreateButtons();
@@ -276,7 +269,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         SwingUtilities.invokeLater(() -> setSearchPanel(searchMatches));
         setServerWarningPanel("", false);
     }
-
     @Subscribe
     public void onServerMessage(ServerMessage serverMessage) {
         searchBar.setEditable(true);
@@ -284,25 +276,18 @@ public class NeverScapeAlonePanel extends PluginPanel {
         String message = serverMessage.getServerMessage();
         setServerWarningPanel(message, true);
     }
-
     @Subscribe
     public void onMatchData(MatchData matchData) {
         oldMatchData = matchData;
         SwingUtilities.invokeLater(() -> setMatchPanel(matchData));
-        if (selectedUserProfileData != null){
-            SwingUtilities.invokeLater(() -> setUserProfilePanel(selectedUserProfileData));
-        }
         setServerWarningPanel("", false);
     }
-
     public static void refreshMatchPanel(){
         SwingUtilities.invokeLater(() -> setMatchPanel(oldMatchData));
     }
-
     public static void refreshSearchPanel(){
         SwingUtilities.invokeLater(() -> setSearchPanel(oldSearchMatches));
     }
-
     private void setServerWarningPanel(String message, boolean b) {
         JLabel label = (JLabel) serverWarningPanel.getComponent(1);
         label.setFont(FontManager.getRunescapeBoldFont());
@@ -383,7 +368,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
         searchMatchPanel.repaint();
     }
     public static void setMatchPanel(MatchData matchdata) {
-        JPanel mp = (JPanel) matchPanel.getComponent(1);
+        JPanel mp = (JPanel) matchPanel.getComponent(2);
         mp.removeAll();
 
         mp.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -444,160 +429,63 @@ public class NeverScapeAlonePanel extends PluginPanel {
         mp.revalidate();
         mp.repaint();
     }
-
-    public void setUserProfilePanel(Player player){
-        JPanel userProfile = (JPanel) userProfilePanel.getComponent(0);
-        userProfile.removeAll();
-
-        userProfile.setBorder(new EmptyBorder(0, 0, 0, 0));
-        userProfile.setBackground(ALT_BACKGROUND);
-        userProfile.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridx = 0;
-        c.gridy = 0;
-
-        userProfile.add(userProfilePanelClass.returnToMatchButton(), c);
-        c.gridy += 1;
-        userProfile.add(userProfileHeader(player), c);
-        c.gridy += 1;
-        userProfile.add(playerPanelClass.createPlayerPanel(player,
-                plugin.username,
-                plugin,
-                rating_selected,
-                discord_selected,
-                safety_selected,
-                location_selected,
-                stats_selected), c);
-        c.gridy += 1;
-        userProfile.revalidate();
-        userProfile.repaint();
-    }
-
-    public static JPanel userProfileHeader(Player player){
-        JPanel userHeader = new JPanel();
-        userHeader.setBorder(new EmptyBorder(0, 0, 0, 0));
-        userHeader.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.LINE_END;
-        c.gridx = 0;
-        c.gridy = 0;
-
-        JButton favorite_user = new JButton();
-        favorite_user.setIcon(Icons.RATING_ICON);
-        favorite_user.setToolTipText("Favorite " + player.getLogin());
-        favorite_user.setActionCommand(String.valueOf(player.getUserId()));
-        favorite_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.FAVORITE));
-        userHeader.add(favorite_user, c);
-        c.gridx += 1;
-
-        JButton add_user = new JButton();
-        add_user.setIcon(Icons.ADD_USER_ICON);
-        add_user.setToolTipText("Add " + player.getLogin());
-        add_user.setActionCommand(String.valueOf(player.getUserId()));
-        add_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.ADD));
-        userHeader.add(add_user, c);
-        c.gridx += 1;
-
-        JButton block_user = new JButton();
-        block_user.setIcon(Icons.BLOCK_USER_ICON);
-        block_user.setToolTipText("Block " + player.getLogin());
-        block_user.setActionCommand(String.valueOf(player.getUserId()));
-        block_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.BLOCK));
-        userHeader.add(block_user, c);
-        c.gridx += 1;
-
-        JButton message_user = new JButton();
-        message_user.setIcon(Icons.CHAT);
-        message_user.setToolTipText("Message " + player.getLogin());
-        message_user.setActionCommand(String.valueOf(player.getUserId()));
-        message_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.MESSAGE));
-        userHeader.add(message_user, c);
-        c.gridx += 1;
-        return userHeader;
-    }
-
     public static void setRefreshView(ActionEvent event, PanelStateEnum panelStateEnum){
         setView(panelStateEnum);
         refreshView();
     }
-
     public static void setView(PanelStateEnum panelStateEnum){
         panelViewState = panelStateEnum;
     }
-
     public static void refreshView(){
         switch(panelViewState){
-            case USER:
-                userProfilePanel.setVisible(true);
-                NeverScapeAlonePlugin.cycleQueue = false;
-                isConnecting = false;
-                plugin.timer = 0;
-                matchPanel.setVisible(false);
-                connectingPanel.setVisible(false);
-                createPanel.setVisible(false);
-                createPanel2.setVisible(false);
-                quickPanel.setVisible(false);
-                searchPanel.setVisible(false);
-                break;
             case MATCH:
-                NeverScapeAlonePlugin.cycleQueue = false;
-                isConnecting = false;
-                plugin.timer = 0;
-                userProfilePanel.setVisible(false);
+                turnOffAllPanels();
+                startQueue(false);
+                matchTabs.setVisible(true);
+                matchDisplay.setVisible(true);
                 matchPanel.setVisible(true);
-                connectingPanel.setVisible(false);
-                createPanel.setVisible(false);
-                createPanel2.setVisible(false);
-                quickPanel.setVisible(false);
-                searchPanel.setVisible(false);
                 break;
-            case QUICK:
-                NeverScapeAlonePlugin.cycleQueue = false;
-                isConnecting = false;
-                plugin.timer = 0;
-                userProfilePanel.setVisible(false);
-                matchPanel.setVisible(false);
-                connectingPanel.setVisible(false);
-                createPanel.setVisible(false);
-                createPanel2.setVisible(false);
+            case HOME:
+                turnOffAllPanels();
+                startQueue(false);
+                mainTabs.setVisible(true);
+                homeDisplay.setVisible(true);
                 quickPanel.setVisible(true);
-                searchPanel.setVisible(false);
-                break;
-            case CREATE:
-                isConnecting = false;
-                NeverScapeAlonePlugin.cycleQueue = false;
-                userProfilePanel.setVisible(false);
-                matchPanel.setVisible(false);
-                connectingPanel.setVisible(false);
                 createPanel.setVisible(true);
-                createPanel2.setVisible(false);
-                quickPanel.setVisible(false);
-                searchPanel.setVisible(false);
-                break;
-            case SEARCH:
-                isConnecting = false;
-                NeverScapeAlonePlugin.cycleQueue = false;
-                userProfilePanel.setVisible(false);
-                matchPanel.setVisible(false);
-                connectingPanel.setVisible(false);
-                createPanel.setVisible(false);
-                createPanel2.setVisible(false);
-                quickPanel.setVisible(false);
                 searchPanel.setVisible(true);
                 break;
-            case CONNECTING:
-                isConnecting = true;
-                userProfilePanel.setVisible(false);
-                matchPanel.setVisible(false);
-                connectingPanel.setVisible(true);
-                createPanel.setVisible(false);
-                createPanel2.setVisible(false);
-                quickPanel.setVisible(false);
-                searchPanel.setVisible(false);
+            case CREATE_MATCH_PANEL:
+                turnOffAllPanels();
+                startQueue(false);
+                createPanel2.setVisible(true);
                 break;
+            case CONNECTING:
+                turnOffAllPanels();
+                startQueue(true);
+                connectingPanel.setVisible(true);
+                break;
+        }
+    }
+    public static void turnOffAllPanels(){
+        // tabs and displays
+        mainTabs.setVisible(false);
+        homeDisplay.setVisible(false);
+        matchTabs.setVisible(false);
+        matchDisplay.setVisible(false);
+        // panels
+        quickPanel.setVisible(false);
+        createPanel.setVisible(false);
+        createPanel2.setVisible(false);
+        searchPanel.setVisible(false);
+        connectingPanel.setVisible(false);
+    }
+    public static void startQueue(boolean b){
+        if (b){
+            NeverScapeAlonePlugin.cycleQueue = false;
+            isConnecting = false;
+            plugin.timer = 0;
+        } else {
+            isConnecting = true;
         }
     }
 }

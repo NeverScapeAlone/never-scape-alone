@@ -27,10 +27,14 @@ package com.neverscapealone.ui.match;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
+import com.neverscapealone.enums.PlayerSelectionPanelEnum;
 import com.neverscapealone.enums.RegionNameEnum;
 import com.neverscapealone.models.payload.matchdata.player.Player;
 import com.neverscapealone.ui.utils.Icons;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.components.materialtabs.MaterialTab;
+import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -40,12 +44,12 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.WARNING_COLOR;
-import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class PlayerPanelClass {
     Map<Integer, String> regionReference = RegionNameEnum.regionReference();
@@ -248,7 +252,120 @@ public class PlayerPanelClass {
             player_panel.add(player_status, cp);
             cp.gridy += 1;
         }
+
+        JPanel playerContentsDisplay = new JPanel();
+        MaterialTabGroup playerContentTabs = new MaterialTabGroup(playerContentsDisplay);
+        MaterialTab empty = new MaterialTab(Icons.HIDE_ICON, playerContentTabs, emptyPanel(player));
+        MaterialTab inventory = new MaterialTab(Icons.INVENTORY_ICON, playerContentTabs, playerInventory(player));
+        MaterialTab equipment = new MaterialTab(Icons.EQUIPMENT_ICON, playerContentTabs, playerEquipment(player));
+        MaterialTab prayer = new MaterialTab(Icons.PRAYER, playerContentTabs, playerPrayer(player));
+        MaterialTab stats = new MaterialTab(Icons.ALL_SKILLS, playerContentTabs, playerStats(player));
+        empty.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent)
+            {
+                playerSelectionPanelEnumHashMap.put(String.valueOf(player.getUserId()), PlayerSelectionPanelEnum.EMPTY);
+            }
+        });
+
+        inventory.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent)
+            {
+                playerSelectionPanelEnumHashMap.put(String.valueOf(player.getUserId()), PlayerSelectionPanelEnum.INVENTORY);
+            }
+        });
+
+        stats.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent)
+            {
+                playerSelectionPanelEnumHashMap.put(String.valueOf(player.getUserId()), PlayerSelectionPanelEnum.STATS);
+            }
+        });
+
+        equipment.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent)
+            {
+                playerSelectionPanelEnumHashMap.put(String.valueOf(player.getUserId()), PlayerSelectionPanelEnum.EQUIPMENT);
+            }
+        });
+
+        prayer.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent)
+            {
+                playerSelectionPanelEnumHashMap.put(String.valueOf(player.getUserId()), PlayerSelectionPanelEnum.PRAYER);
+            }
+        });
+
+        playerContentTabs.addTab(empty);
+        playerContentTabs.addTab(stats);
+        playerContentTabs.addTab(inventory);
+        playerContentTabs.addTab(equipment);
+        playerContentTabs.addTab(prayer);
+        if (playerSelectionPanelEnumHashMap.get(String.valueOf(player.getUserId())) == null){
+            playerContentTabs.select(empty);
+            playerSelectionPanelEnumHashMap.put(String.valueOf(player.getUserId()), PlayerSelectionPanelEnum.EMPTY);
+        } else {
+            switch (playerSelectionPanelEnumHashMap.get(String.valueOf(player.getUserId()))){
+                case EMPTY:
+                    playerContentTabs.select(empty);
+                    break;
+                case STATS:
+                    playerContentTabs.select(stats);
+                    break;
+                case INVENTORY:
+                    playerContentTabs.select(inventory);
+                    break;
+                case EQUIPMENT:
+                    playerContentTabs.select(equipment);
+                    break;
+                case PRAYER:
+                    playerContentTabs.select(prayer);
+                    break;
+            }
+        }
+
+        player_panel.add(playerContentTabs, cp);
+        cp.gridy += 1;
+        player_panel.add(playerContentsDisplay, cp);
+        cp.gridy += 1;
+
         return player_panel;
+    }
+
+    private JPanel emptyPanel(Player player){
+        JPanel panel = new JPanel();
+        panel.setBackground(BACKGROUND_COLOR);
+        return panel;
+    }
+
+    private JPanel playerInventory(Player player){
+        JPanel panel = new JPanel();
+        panel.setBackground(BACKGROUND_COLOR);
+        return panel;
+    }
+    private JPanel playerEquipment(Player player){
+        JPanel panel = new JPanel();
+        panel.setBackground(BACKGROUND_COLOR);
+        return panel;
+    }
+    private JPanel playerPrayer(Player player){
+        JPanel panel = new JPanel();
+        panel.setBackground(BACKGROUND_COLOR);
+        return panel;
+    }
+    private JPanel playerStats(Player player){
+        JPanel panel = new JPanel();
+        panel.setBackground(BACKGROUND_COLOR);
+        return panel;
     }
 
     private JPanel playerNameButtonPanel(Player player, NeverScapeAlonePlugin plugin, String login, Integer userId, Boolean isSelf){
@@ -294,15 +411,32 @@ public class PlayerPanelClass {
             kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
             player_name_button_panel.add(kick, pnbp);
             pnbp.gridx += 1;
-        }
 
-        JButton profile = new JButton();
-        profile.setIcon(Icons.NSA_ICON);
-        profile.setToolTipText(login+"'s Profile");
-        profile.setActionCommand(String.valueOf(userId));
-        profile.addActionListener(e -> NeverScapeAlonePlugin.displayUserProfile(e, player));
-        player_name_button_panel.add(profile, pnbp);
-        pnbp.gridx += 1;
+            JButton add_user = new JButton();
+            add_user.setIcon(Icons.ADD_USER_ICON);
+            add_user.setToolTipText("Add " + player.getLogin());
+            add_user.setActionCommand(String.valueOf(player.getUserId()));
+            add_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.ADD));
+            player_name_button_panel.add(add_user, pnbp);
+            pnbp.gridx += 1;
+
+            JButton block_user = new JButton();
+            block_user.setIcon(Icons.BLOCK_USER_ICON);
+            block_user.setToolTipText("Block " + player.getLogin());
+            block_user.setActionCommand(String.valueOf(player.getUserId()));
+            block_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.BLOCK));
+            player_name_button_panel.add(block_user, pnbp);
+            pnbp.gridx += 1;
+
+            JButton message_user = new JButton();
+            message_user.setIcon(Icons.CHAT);
+            message_user.setToolTipText("Message " + player.getLogin());
+            message_user.setActionCommand(String.valueOf(player.getUserId()));
+            message_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.MESSAGE));
+            player_name_button_panel.add(message_user, pnbp);
+            pnbp.gridx += 1;
+
+        }
         return player_name_button_panel;
     }
 

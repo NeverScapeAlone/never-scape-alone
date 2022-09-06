@@ -26,6 +26,7 @@
 package com.neverscapealone.ui.connecting;
 
 import com.neverscapealone.enums.PanelStateEnum;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
 
 import javax.swing.*;
@@ -53,7 +54,7 @@ public class ConnectingPanelClass {
         c.gridx = 0;
         c.gridy = 0;
 
-        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> panel.setRefreshView(e, PanelStateEnum.QUICK), 20, 20);
+        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> NeverScapeAlonePanel.setRefreshView(e, PanelStateEnum.HOME), 20, 20);
         connectingPanel.add(escape, c);
 
         c.anchor = GridBagConstraints.CENTER;

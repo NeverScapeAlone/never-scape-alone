@@ -23,45 +23,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.models.payload.matchdata.player.stats.overall;
+package com.neverscapealone.enums;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public class Overall {
-
-    @SerializedName("boosted")
-    @Expose
-    private Integer boosted;
-    @SerializedName("real")
-    @Expose
-    private Integer real;
-    @SerializedName("experience")
-    @Expose
-    private Integer experience;
-
-    public Integer getBoosted() {
-        return boosted;
-    }
-
-    public void setBoosted(Integer boosted) {
-        this.boosted = boosted;
-    }
-
-    public Integer getReal() {
-        return real;
-    }
-
-    public void setReal(Integer real) {
-        this.real = real;
-    }
-
-    public Integer getExperience() {
-        return experience;
-    }
-
-    public void setExperience(Integer experience) {
-        this.experience = experience;
-    }
-
+@Getter
+@RequiredArgsConstructor
+public enum PlayerSelectionPanelEnum {
+    EMPTY,
+    INVENTORY,
+    PRAYER,
+    EQUIPMENT,
+    STATS
 }

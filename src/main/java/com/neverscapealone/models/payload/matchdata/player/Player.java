@@ -31,7 +31,7 @@ import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.location.Location;
 import com.neverscapealone.models.payload.matchdata.player.stats.Stats;
 import com.neverscapealone.models.payload.matchdata.player.status.Status;
-import com.neverscapealone.models.payload.matchdata.player.equipment.inventory.Item;
+import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
 
 import java.util.List;
 

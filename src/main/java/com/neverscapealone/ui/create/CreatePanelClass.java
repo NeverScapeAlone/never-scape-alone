@@ -27,6 +27,7 @@ package com.neverscapealone.ui.create;
 
 import com.neverscapealone.enums.ActivityReferenceEnum;
 import com.neverscapealone.enums.HelpButtonSwitchEnum;
+import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
@@ -39,6 +40,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+import static com.neverscapealone.NeverScapeAlonePlugin.panel;
 import static com.neverscapealone.ui.utils.Components.*;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
@@ -63,9 +65,9 @@ public class CreatePanelClass {
         c.gridy += 1;
 
         MaterialTab skillsTab = new MaterialTab(Icons.ALL_SKILLS, CreatePanelTab, createskillPanel);
-        MaterialTab bossesTab = new MaterialTab(Icons.TZ_KAL_ZUK, CreatePanelTab, createbossPanel);
+        MaterialTab bossesTab = new MaterialTab(Icons.TZ_TOK_JAD, CreatePanelTab, createbossPanel);
         MaterialTab raidsTab = new MaterialTab(Icons.COX, CreatePanelTab, createraidPanel);
-        MaterialTab minigamesTab = new MaterialTab(Icons.MAGE_ARENA, CreatePanelTab, createminigamePanel);
+        MaterialTab minigamesTab = new MaterialTab(Icons.CASTLE_WARS, CreatePanelTab, createminigamePanel);
         MaterialTab miscTab = new MaterialTab(Icons.PVP_GENERIC, CreatePanelTab, createmiscPanel);
 
         CreatePanelTab.addTab(skillsTab);
@@ -93,8 +95,12 @@ public class CreatePanelClass {
         c.anchor = GridBagConstraints.WEST;
 
         c.gridy = 0;
-        c.gridx = 0;
+        c.gridx = 3;
 
+        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> setRefreshView(e, PanelStateEnum.HOME), 20, 20);
+        createPanel2.add(escape, c);
+
+        c.gridx = 0;
         createPanel2.add(Components.instructionTitle("Step 2: Choose Requirements", ALT_BACKGROUND), c);
 
         c.gridy += 1;
@@ -265,8 +271,7 @@ public class CreatePanelClass {
         Object object = actionEvent.getSource();
         if (object instanceof JButton) {
             step1_activity = ((JButton) object).getName();
-            NeverScapeAlonePanel.createPanel.setVisible(false);
-            NeverScapeAlonePanel.createPanel2.setVisible(true);
+            NeverScapeAlonePanel.setRefreshView(actionEvent, PanelStateEnum.CREATE_MATCH_PANEL);
         }
     }
 
