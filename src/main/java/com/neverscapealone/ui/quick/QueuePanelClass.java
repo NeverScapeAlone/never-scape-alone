@@ -67,9 +67,9 @@ public class QueuePanelClass {
         c.gridy += 1;
 
         MaterialTab skillsTab = new MaterialTab(Icons.ALL_SKILLS, QueuePanelTab, skillPanel);
-        MaterialTab bossesTab = new MaterialTab(Icons.TZ_KAL_ZUK, QueuePanelTab, bossPanel);
+        MaterialTab bossesTab = new MaterialTab(Icons.TZ_TOK_JAD, QueuePanelTab, bossPanel);
         MaterialTab raidsTab = new MaterialTab(Icons.COX, QueuePanelTab, raidPanel);
-        MaterialTab minigamesTab = new MaterialTab(Icons.MAGE_ARENA, QueuePanelTab, minigamePanel);
+        MaterialTab minigamesTab = new MaterialTab(Icons.CASTLE_WARS, QueuePanelTab, minigamePanel);
         MaterialTab miscTab = new MaterialTab(Icons.PVP_GENERIC, QueuePanelTab, miscPanel);
 
         QueuePanelTab.addTab(skillsTab);

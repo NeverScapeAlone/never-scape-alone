@@ -695,12 +695,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
-    public static void displayUserProfile(ActionEvent actionEvent, com.neverscapealone.models.payload.matchdata.player.Player player) {
-        NeverScapeAlonePanel.selectedUserProfileData = player;
-        NeverScapeAlonePanel.setView(PanelStateEnum.USER);
-        NeverScapeAlonePanel.refreshView();
-    }
-
     public void privateMatchJoin(String matchID, String passcode) {
         updateDiscordInformation();
         websocket.connect(username, NeverScapeAlonePlugin.discordUsername, NeverScapeAlonePlugin.discord_id,  config.authToken(), matchID, passcode);
@@ -784,7 +778,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public static void switchToHomePanel(ActionEvent actionEvent) {
-        // do something in the future
+        NeverScapeAlonePanel.setRefreshView(actionEvent, PanelStateEnum.HOME);
     }
 
     @Provides

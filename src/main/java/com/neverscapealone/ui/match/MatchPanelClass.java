@@ -61,7 +61,8 @@ public class MatchPanelClass {
         c.gridx = 0;
         c.gridy = 0;
 
-        /// match header
+        matchPanel.add(Box.createVerticalStrut(4), c);
+        c.gridy += 1;
         JPanel headerMatchPanel = headerMatchPanel();
         matchPanel.add(headerMatchPanel, c);
         c.gridy += 1;
@@ -152,7 +153,7 @@ public class MatchPanelClass {
         if (n == 0) {
             NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
             NeverScapeAlonePanel.websocket.logoff("Exiting match");
-            NeverScapeAlonePanel.setView(PanelStateEnum.QUICK);
+            NeverScapeAlonePanel.setView(PanelStateEnum.HOME);
             NeverScapeAlonePanel.refreshView();
         }
     }
