@@ -1,20 +1,19 @@
 package com.neverscapealone.ui.chat;
 
 import com.neverscapealone.models.payload.chatdata.ChatData;
-import net.runelite.api.events.ChatMessage;
+import com.neverscapealone.ui.utils.Icons;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.ui.components.IconTextField;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
-import static com.neverscapealone.ui.utils.Components.htmlWrap;
 
 public class ChatPanelClass {
     public JPanel chatPanel() {
@@ -53,6 +52,7 @@ public class ChatPanelClass {
 
         chatBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
         chatBar.setBackground(BACKGROUND_COLOR);
+        chatBar.setIcon(Icons.CHAT);
         chatBar.setHoverBackgroundColor(BACKGROUND_COLOR);
         chatBar.setText("");
         chatBar.addActionListener(e -> plugin.sendChatMessage(e, chatBar.getText()));

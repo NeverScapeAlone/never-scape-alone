@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 @Singleton
-public class NeverScapeAloneMinimapOverlay extends Overlay
+public class    NeverScapeAloneMinimapOverlay extends Overlay
 {
     private final Client client;
     private final NeverScapeAlonePlugin plugin;
