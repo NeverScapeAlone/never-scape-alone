@@ -124,7 +124,7 @@ public class NeverScapeAlonePanel extends PluginPanel {
     private final Client user;
     private final WorldService worldService;
     public static IconTextField searchBar = new IconTextField();
-    public static com.neverscapealone.ui.utils.IconTextField chatBar = new com.neverscapealone.ui.utils.IconTextField();
+    public static IconTextField chatBar = new IconTextField();
     public static ArrayList activity_buttons = new ArrayList<JToggleButton>();
     public static ArrayList create_activity_buttons = new ArrayList<JToggleButton>();
     // GLOBAL VARIABLES
