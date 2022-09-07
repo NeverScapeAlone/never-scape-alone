@@ -4,7 +4,6 @@ import com.neverscapealone.models.payload.chatdata.ChatData;
 import com.neverscapealone.ui.utils.Icons;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
-import net.runelite.client.ui.components.IconTextField;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
