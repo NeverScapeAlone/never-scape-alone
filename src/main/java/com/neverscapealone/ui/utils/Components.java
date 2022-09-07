@@ -92,8 +92,8 @@ public class Components {
         return label_holder;
     }
 
-    public static String convertNotes(String inputString){
-        String output = "<html><p style=\"overflow-wrap: break-word;\">" + inputString + "</p></html>";
+    public static String htmlWrap(String inputString){
+        String output = "<html><p style=\"overflow-wrap: normal;\">" + inputString + "</p></html>";
         return output;
     }
     public static JPanel subActivityPanel(int row, int column) {
@@ -183,6 +183,26 @@ public class Components {
                         "Leave the passcode field blank in order for your match to be public." + "\n" +
                         "-- Rules --" + "\n" +
                         "Any string of size <64 characters is allowed, with permitted characters: [A-Za-z0-9_- ]";
+                break;
+            case RUNEGUARD:
+                message = "RuneGuard Help" + "\n" +
+                        "Enable or Disable RuneGuard for your match." + "\n" +
+                        "-- ENABLED --" + "\n" +
+                        "RuneGuard requires every member that joins your team displays their:" + "\n" +
+                        "Inventory, Equipment, Prayer, Stats,  Status (HP, Run, Special Attack)" + "\n" +
+                        "Location (World Number and In-Game), Discord, and more. " + "\n" +
+                        "This allows for the match to be moderated properly,\n" +
+                        "and allows the match to be used as evidence in RuneWatch cases." + "\n" +
+                        "-- DISABLED --" + "\n" +
+                        "If you choose to disable RuneGuard, players can turn off transmission of their:" + "\n" +
+                        "Inventory, Equipment, Prayer, Stats,  Status (HP, Run, Special Attack)" + "\n" +
+                        "Location (World Number and In-Game), Discord, and more. " + "\n" +
+                        "This would allow for players to have their statuses more anonymous while in-game,\n" +
+                        "but the lack of transmission leads to lowered evidence in RuneWatch cases."+ "\n" +
+                        "-- WHEN TO USE -- " + "\n" +
+                        "If you're not sure: Enable" + "\n" +
+                        "If you would like to have a group that's doing their own thing in-game,\n" +
+                        "and does not require close activity or splitting (Ex. Chatting): DISABLE.";
                 break;
         }
 

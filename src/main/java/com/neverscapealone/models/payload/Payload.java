@@ -27,6 +27,7 @@ package com.neverscapealone.models.payload;
 
 import com.google.gson.annotations.SerializedName;
 import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.models.payload.chatdata.ChatData;
 import com.neverscapealone.models.payload.matchdata.MatchData;
 import com.neverscapealone.models.payload.pingdata.PingData;
 import com.neverscapealone.models.payload.searchmatches.SearchMatches;
@@ -52,5 +53,7 @@ public class Payload {
     MatchData matchData;
     @SerializedName("ping_data") // incoming ping data
     PingData pingData;
+    @SerializedName("chat_data") // incoming ping data
+    ChatData chatData;
 }
 

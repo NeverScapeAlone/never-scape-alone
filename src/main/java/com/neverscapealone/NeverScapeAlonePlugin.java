@@ -39,6 +39,7 @@ import com.neverscapealone.overlays.NeverScapeAloneWorldMapOverlay;
 import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.connecting.ConnectingPanelClass;
+import com.neverscapealone.ui.utils.Icons;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
@@ -63,6 +65,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.LinkBrowser;
 import net.runelite.discord.DiscordUser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -118,6 +121,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     private EventBus eventBus;
     @Inject
     SpriteManager spriteManager;
+    @Inject
+    ItemManager itemManager;
     @Inject
     DiscordService discordService;
     public static NeverScapeAlonePanel panel;
@@ -455,6 +460,19 @@ public class NeverScapeAlonePlugin extends Plugin {
         NeverScapeAlonePlugin.cycleQueue = true;
     }
 
+    public void addImageToLabel(JLabel jLabel, com.neverscapealone.models.payload.matchdata.player.inventory.Item item){
+        boolean stackable = true;
+        if (item.getQuantity() == 1){
+            stackable = false;
+        }
+        itemManager.getImage(item.getItemID(), item.getQuantity(),stackable).addTo(jLabel);
+    }
+
+    public BufferedImage getSprite(int spriteID, int file){
+        // personally, I prefer diet coke
+        return spriteManager.getSprite(spriteID, file);
+    }
+
     @Schedule(period = 3, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void sendQueueRequest() {
         if (!NeverScapeAloneWebsocket.isSocketConnected){
@@ -556,10 +574,18 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
 
         JsonArray itemList = new JsonArray();
-        for (Item item: itemContainer.getItems()){
+        int containerSize = itemContainer.size();
+        for (int itemSlot = 0; itemSlot < containerSize; itemSlot++) {
+            Item item = itemContainer.getItem(itemSlot);
             JsonObject i = new JsonObject();
-            i.addProperty("item_id", item.getId());
-            i.addProperty("item_amount", item.getQuantity());
+            int itemID = -1;
+            int itemAmount = 0;
+            if (item != null){
+                itemID = item.getId();
+                itemAmount = item.getQuantity();
+            }
+            i.addProperty("item_id", itemID);
+            i.addProperty("item_amount", itemAmount);
             itemList.add(i);
         }
         JsonObject inventory_payload = new JsonObject();
@@ -567,6 +593,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         inventory_payload.add("inventory", itemList);
         websocket.send(inventory_payload);
     }
+
 
     @Schedule(period = 10, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerLocationUpdate(){
@@ -684,15 +711,45 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
-    public void privateMatchPasscode(String matchID) {
+    public void privateMatchRuneGuard(String matchID, boolean RuneGuard) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setAlwaysOnTop(true);
-        String message = "ID: " + matchID + "\n" + "Enter passcode for Private Match:";
+        String rGuardString = "disabled.";
+        if (RuneGuard){
+            rGuardString = "enabled.";
+        }
+        String message = "ID: " + matchID + "\n" +
+                "This match has RuneGuard " + rGuardString + "\n" +
+                "Enter passcode for Private Match:";
         String passcode = JOptionPane.showInputDialog(frame, message);
         if (passcode.length() > 0) {
             privateMatchJoin(matchID, passcode);
         }
+    }
+
+    public void publicMatchRuneGuard(String matchID, boolean RuneGuard) {
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
+        String rGuardString = "disabled.";
+        if (RuneGuard){
+            rGuardString = "enabled.";
+        }
+
+        String message = "ID: " + matchID + "\n" +
+                         "This match has RuneGuard " + rGuardString;
+        if (JOptionPane.showOptionDialog(null,
+                                        message,
+                                        null,
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.INFORMATION_MESSAGE,
+                                        Icons.PUBLIC_ICON,
+                                        new String[]{"JOIN","CANCEL"},
+                                        "JOIN") == JOptionPane.YES_OPTION)
+        {
+            publicMatchJoin(matchID);
+        };
     }
 
     public void privateMatchJoin(String matchID, String passcode) {
@@ -709,6 +766,20 @@ public class NeverScapeAlonePlugin extends Plugin {
         NeverScapeAlonePanel.refreshView();
     }
 
+    public void sendChatMessage(ActionEvent actionEvent, String message){
+        if (message.length() == 0){
+            return;
+        }
+
+        NeverScapeAlonePanel.chatBar.setText("");
+        JsonObject messageJson = new JsonObject();
+        messageJson.addProperty("message", message);
+        JsonObject payload = new JsonObject();
+        payload.addProperty("detail","chat");
+        payload.add("chat_message", messageJson);
+        websocket.send(payload);
+    }
+
     public void createMatchStart(ActionEvent actionEvent) {
         String activity = NeverScapeAlonePanel.step1_activity;
         String party_members = String.valueOf(NeverScapeAlonePanel.party_member_count.getValue());
@@ -716,6 +787,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         String split_type = NeverScapeAlonePanel.party_loot.getSelectedItem().toString();
         String accounts = NeverScapeAlonePanel.account_type.getSelectedItem().toString();
         String regions = NeverScapeAlonePanel.region.getSelectedItem().toString();
+        Boolean runeGuard = NeverScapeAlonePanel.RuneGuard.isSelected();
         String group_passcode = NeverScapeAlonePanel.passcode.getText();
         String group_notes = NeverScapeAlonePanel.notes.getText();
 
@@ -740,6 +812,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         sub_request.addProperty("split_type", split_type);
         sub_request.addProperty("accounts", accounts);
         sub_request.addProperty("regions", regions);
+        sub_request.addProperty("RuneGuard", runeGuard);
         sub_request.addProperty("group_passcode", group_passcode);
         sub_request.addProperty("notes", group_notes);
 
