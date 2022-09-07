@@ -175,6 +175,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 this.eventBus.post(payload.getPingData());
                 break;
             case INCOMING_CHAT:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.CHAT));
                 this.eventBus.post(payload.getChatData());
                 break;
             case DISCONNECTED:
