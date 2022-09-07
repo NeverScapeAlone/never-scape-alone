@@ -306,7 +306,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                 }
                 break;
             case CHAT:
-                if (config.soundEffectTeamLeaveBool()){
+                if (config.soundEffectChatBool()){
                     clientThread.invoke(() -> client.playSoundEffect(config.soundEffectChat().getID()));
                 }
                 break;
