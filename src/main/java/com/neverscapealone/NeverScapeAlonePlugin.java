@@ -29,6 +29,7 @@ import com.google.gson.*;
 import com.google.inject.Provides;
 import com.neverscapealone.enums.*;
 import com.neverscapealone.models.panelstate.PanelState;
+import com.neverscapealone.models.payload.chatdata.ChatData;
 import com.neverscapealone.models.payload.matchdata.MatchData;
 import com.neverscapealone.models.payload.pingdata.PingData;
 import com.neverscapealone.models.soundping.SoundPing;
@@ -48,6 +49,10 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.eventbus.EventBus;
@@ -119,6 +124,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     private KeyManager keyManager;
     @Inject
     private EventBus eventBus;
+    @Inject
+    private ChatMessageManager chatMessageManager;
     @Inject
     SpriteManager spriteManager;
     @Inject
@@ -298,6 +305,11 @@ public class NeverScapeAlonePlugin extends Plugin {
                 clientThread.invoke(() -> client.playSoundEffect(config.soundEffectPlayerLeave().getID()));
                 }
                 break;
+            case CHAT:
+                if (config.soundEffectTeamLeaveBool()){
+                    clientThread.invoke(() -> client.playSoundEffect(config.soundEffectChat().getID()));
+                }
+                break;
             case ERROR:
                 if (config.soundEffectErrorBool()){
                     clientThread.invoke(() -> client.playSoundEffect(config.soundEffectError().getID()));
@@ -323,6 +335,36 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
+    @Subscribe
+    public void onChatData(ChatData chatData) {
+        if (!config.chatShowBoolean()){
+            return;
+        }
+        String displayName = chatData.getUsername();
+        String message = chatData.getMessage();
+        String msg = displayName+": "+message;
+        sendChatStatusMessage(msg);
+    }
+
+    /**
+     * Sends a message to the in-game chatbox.
+     * @param msg The message to send.
+     * Made by @Cyborger1
+     */
+    public void sendChatStatusMessage(String msg)
+    {
+        String CHAT_MESSAGE_HEADER = "[NeverScapeAlone] ";
+        final String message = new ChatMessageBuilder()
+                .append(ChatColorType.HIGHLIGHT)
+                .append(CHAT_MESSAGE_HEADER + msg)
+                .build();
+
+        chatMessageManager.queue(
+                QueuedMessage.builder()
+                        .type(config.chatMessageType())
+                        .runeLiteFormattedMessage(message)
+                        .build());
+    }
 
     public void playerOptionAction(ActionEvent actionEvent, PlayerButtonOptionEnum playerButtonOptionEnum){
         if (!NeverScapeAloneWebsocket.isSocketConnected){

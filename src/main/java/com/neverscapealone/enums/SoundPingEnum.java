@@ -39,8 +39,9 @@ public enum SoundPingEnum {
     ALERT_PING(3),
     PLAYER_JOIN(4),
     PLAYER_LEAVE(5),
-    ERROR(6),
-    BUTTON_PRESS(7)
+    CHAT(6),
+    ERROR(7),
+    BUTTON_PRESS(8)
     ;
 
     private final Integer ID;
