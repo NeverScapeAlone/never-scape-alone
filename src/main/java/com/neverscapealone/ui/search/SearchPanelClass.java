@@ -47,8 +47,7 @@ public class SearchPanelClass {
         c.gridy = 0;
         c.gridx = 0;
 
-        JPanel activitySearchBar = activitySearchBar();
-        searchPanel.add(activitySearchBar, c);
+        searchPanel.add(activitySearchBar(), c);
         c.gridy += 1;
         searchPanel.add(new JPanel(), c);
         return searchPanel;
@@ -68,7 +67,7 @@ public class SearchPanelClass {
         searchBar.setIcon(IconTextField.Icon.SEARCH);
         searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
         searchBar.setBackground(BACKGROUND_COLOR);
-        searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
+        searchBar.setHoverBackgroundColor(BACKGROUND_COLOR);
         searchBar.setText("*");
         searchBar.addActionListener(plugin::searchActiveMatches);
         searchbar_panel.add(searchBar, c);

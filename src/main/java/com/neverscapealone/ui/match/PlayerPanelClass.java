@@ -30,8 +30,8 @@ import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.PlayerSelectionPanelEnum;
 import com.neverscapealone.enums.RegionNameEnum;
 import com.neverscapealone.models.payload.matchdata.player.Player;
+import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
 import com.neverscapealone.ui.utils.Icons;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
@@ -44,12 +44,12 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
+import static com.neverscapealone.ui.utils.Components.title;
 
 public class PlayerPanelClass {
     Map<Integer, String> regionReference = RegionNameEnum.regionReference();
@@ -350,11 +350,64 @@ public class PlayerPanelClass {
     private JPanel playerInventory(Player player){
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.gridy = 0;
+        c.gridx = 0;
+
+        if (player.getInventory() == null){
+            panel.add(title("No Inventory Available", WARNING_COLOR),c);
+            return panel;
+        }
+
+        int real_items = 0;
+        for (Item item : player.getInventory()){
+            if (item.getItemID() == -1){
+                continue;
+            }
+            real_items += 1;
+        }
+        if (real_items == 0){
+            panel.add(title("Empty Inventory", NOTIFIER_COLOR),c);
+            return panel;
+        }
+
+        JPanel inventory = new JPanel();
+        inventory.setBackground(ALT_BACKGROUND);
+        inventory.setBorder(new EmptyBorder(5, 5, 5, 5));
+        inventory.setLayout(new GridLayout(7,4));
+        for (Item item : player.getInventory()){
+            if (item == null){
+                continue;
+            }
+            JLabel i = new JLabel(Icons.INVENTORY_PADDING);
+            if (item.getItemID() != -1){
+                plugin.addImageToLabel(i, item);
+            }
+            i.setMinimumSize(new Dimension(38,38));
+            inventory.add(i);
+        }
+
+        panel.add(inventory, c);
         return panel;
     }
     private JPanel playerEquipment(Player player){
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.gridy = 0;
+        c.gridx = 0;
+
+        if (player.getEquipment() == null){
+            panel.add(title("No Equipment Available", WARNING_COLOR),c);
+            return panel;
+        }
+
         return panel;
     }
     private JPanel playerPrayer(Player player){
@@ -365,6 +418,18 @@ public class PlayerPanelClass {
     private JPanel playerStats(Player player){
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.gridy = 0;
+        c.gridx = 0;
+
+        if (player.getStats() == null){
+            panel.add(title("No Stats Available", WARNING_COLOR),c);
+            return panel;
+        }
+
         return panel;
     }
 

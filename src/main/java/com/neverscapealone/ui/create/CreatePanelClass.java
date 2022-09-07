@@ -40,7 +40,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static com.neverscapealone.NeverScapeAlonePlugin.panel;
 import static com.neverscapealone.ui.utils.Components.*;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
@@ -61,7 +60,7 @@ public class CreatePanelClass {
 
         c.gridx = 0;
         c.gridy = 0;
-        createPanel.add(instructionTitle("Step 1: Select an Activity", ALT_BACKGROUND), c);
+        createPanel.add(instructionTitle("Select an Activity", ALT_BACKGROUND), c);
         c.gridy += 1;
 
         MaterialTab skillsTab = new MaterialTab(Icons.ALL_SKILLS, CreatePanelTab, createskillPanel);
@@ -84,42 +83,53 @@ public class CreatePanelClass {
         return createPanel;
     }
 
-    public JPanel createPanel2() {
-        JPanel createPanel2 = new JPanel();
-        createPanel2.setBorder(new EmptyBorder(0, 0, 0, 0));
-        createPanel2.setLayout(new GridBagLayout());
+    public JPanel createGroupPanel() {
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.WEST;
-
         c.gridy = 0;
-        c.gridx = 3;
-
-        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> setRefreshView(e, PanelStateEnum.HOME), 20, 20);
-        createPanel2.add(escape, c);
-
         c.gridx = 0;
-        createPanel2.add(Components.instructionTitle("Step 2: Choose Requirements", ALT_BACKGROUND), c);
 
+        JPanel createGroupPanel = new JPanel();
+        createGroupPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        createGroupPanel.setLayout(new GridBagLayout());
+        GridBagConstraints cp = new GridBagConstraints();
+        cp.weightx = 1;
+        cp.fill = GridBagConstraints.HORIZONTAL;
+        cp.anchor = GridBagConstraints.WEST;
+        cp.gridy = 0;
+        cp.gridx = 3;
+
+        c.anchor = GridBagConstraints.LINE_END;
+        c.fill = GridBagConstraints.LINE_START;
+        panel.add(cleanJButton(Icons.GO_BACK_ICON, "Back to Main Menu", e -> setRefreshView(e, PanelStateEnum.HOME), 20, 20), c);
         c.gridy += 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+
+        cp.gridx = 0;
+        createGroupPanel.add(Components.instructionTitle("Choose Your Requirements", ALT_BACKGROUND), cp);
+        cp.gridy += 1;
         JPanel create_selection_panel = createSelectionPanel();
-        createPanel2.add(create_selection_panel, c);
-
-        c.gridy += 1;
-        createPanel2.add(Box.createVerticalStrut(6), c);
-
-        c.gridy += 1;
+        createGroupPanel.add(create_selection_panel, cp);
+        cp.gridy += 1;
+        createGroupPanel.add(Box.createVerticalStrut(6), cp);
+        cp.gridy += 1;
         JButton button_confirm = new JButton();
         button_confirm.setBackground(HIGHLIGHT_COLOR);
         button_confirm.setText("Create Group");
         button_confirm.setToolTipText("Click here to create a group with your current configuration!");
         button_confirm.setIcon(Icons.NSA_ICON);
         button_confirm.addActionListener(plugin::createMatchStart);
-        createPanel2.add(button_confirm, c);
+        createGroupPanel.add(button_confirm, cp);
 
-        return createPanel2;
+        panel.add(createGroupPanel, c);
+
+        return panel;
     }
 
     public JPanel createSelectionPanel() {
@@ -131,13 +141,11 @@ public class CreatePanelClass {
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.WEST;
-
         c.gridy = 0;
         c.gridx = 0;
 
         createSelectionPanel.add(Components.header("Group Size"), c);
         c.gridx = 1;
-
         JPanel spinnerPanel = new JPanel();
         spinnerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         spinnerPanel.setLayout(new GridBagLayout());
@@ -150,9 +158,7 @@ public class CreatePanelClass {
         party_member_count.setFont(FontManager.getRunescapeFont());
         party_member_count.setToolTipText("Maximum party size");
         spinnerPanel.add(party_member_count, sp);
-
         createSelectionPanel.add(spinnerPanel, c);
-
         c.gridx = 2;
         c.weightx = 0;
         JButton member_count_help_button = Components.cleanJButton(Icons.HELP_ICON, "Click here for help!", e -> helpButtonSwitchboard(e, HelpButtonSwitchEnum.COUNT), 16, 16);
@@ -160,18 +166,24 @@ public class CreatePanelClass {
         c.weightx = 1;
         c.gridy += 1;
 
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
+
+
         c.gridx = 0;
         createSelectionPanel.add(Components.header("Experience"), c);
         c.gridx = 1;
         ((JLabel) experience_level.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         createSelectionPanel.add(experience_level, c);
-
         c.gridx = 2;
         c.weightx = 0;
         JButton experience_help_button = Components.cleanJButton(Icons.EXPERIENCE_ICON, "Click here for help!", e -> helpButtonSwitchboard(e, HelpButtonSwitchEnum.EXPERIENCE), 16, 16);
         createSelectionPanel.add(experience_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
+
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
 
         c.gridx = 0;
         createSelectionPanel.add(Components.header("Split Type"), c);
@@ -185,6 +197,9 @@ public class CreatePanelClass {
         c.weightx = 1;
         c.gridy += 1;
 
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
+
         c.gridx = 0;
         createSelectionPanel.add(Components.header("Accounts"), c);
         c.gridx = 1;
@@ -196,6 +211,9 @@ public class CreatePanelClass {
         createSelectionPanel.add(accounts_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
+
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
 
         c.gridx = 0;
         createSelectionPanel.add(Components.header("Region"), c);
@@ -209,6 +227,28 @@ public class CreatePanelClass {
         c.weightx = 1;
         c.gridy += 1;
 
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
+
+        c.gridx = 0;
+        createSelectionPanel.add(Components.header("RuneGuard"), c);
+        c.gridx = 1;
+        RuneGuard.setToolTipText("Enable RuneGuard for greater match security.");
+        RuneGuard.setIcon(Icons.RUNEGUARD_DISABLED_ICON);
+        RuneGuard.setSelectedIcon(Icons.RUNEGUARD_ENABLED_ICON);
+        RuneGuard.setSelected(true);
+        RuneGuard.setText("  RuneGuard");
+        createSelectionPanel.add(RuneGuard, c);
+        c.gridx = 2;
+        c.weightx = 0;
+        JButton runeguard_help_button = Components.cleanJButton(Icons.RUNEGUARD_ICON, "Click here for help!", e -> helpButtonSwitchboard(e, HelpButtonSwitchEnum.RUNEGUARD), 16, 16);
+        createSelectionPanel.add(runeguard_help_button, c);
+        c.weightx = 1;
+        c.gridy += 1;
+
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
+
         c.gridx = 0;
         createSelectionPanel.add(Components.header("Passcode"), c);
         c.gridx = 1;
@@ -220,6 +260,9 @@ public class CreatePanelClass {
         createSelectionPanel.add(passcode_help_button, c);
         c.weightx = 1;
         c.gridy += 1;
+
+        createSelectionPanel.add(Box.createVerticalStrut(2), c);
+        c.gridy +=1;
 
         c.gridx = 0;
         createSelectionPanel.add(Components.header("Notes"), c);

@@ -41,7 +41,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.neverscapealone.ui.utils.Components.convertNotes;
+import static com.neverscapealone.ui.utils.Components.htmlWrap;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
 
 public class ActivityPanelClass {
@@ -61,6 +61,7 @@ public class ActivityPanelClass {
             MatchData matchData = ((MatchData) dataInput);
             String activity = matchData.getActivity();
             boolean isPrivate = matchData.getIsPrivate();
+            boolean RuneGuard = matchData.getRuneGuard();
             String ID = matchData.getId();
             String fcLeader = matchData.getPlayers().get(0).getLogin();
             String playerCount = String.valueOf(matchData.getPlayers().size());
@@ -75,6 +76,7 @@ public class ActivityPanelClass {
             if (minimizedMatches.contains(ID)){
                 return compressedActivityPanel(activity,
                         isPrivate,
+                        RuneGuard,
                         ID,
                         null,
                         fcLeader,
@@ -90,6 +92,7 @@ public class ActivityPanelClass {
             } else {
                 return createActivityPanel(activity,
                         isPrivate,
+                        RuneGuard,
                         ID,
                         null,
                         fcLeader,
@@ -110,6 +113,7 @@ public class ActivityPanelClass {
             SearchMatchData searchMatchData = ((SearchMatchData) dataInput);
             String activity = searchMatchData.getActivity();
             boolean isPrivate = searchMatchData.getIsPrivate();
+            boolean RuneGuard = searchMatchData.getRuneGuard();
             String ID = searchMatchData.getId();
             String partyLeader = searchMatchData.getPartyLeader();
             String playerCount = searchMatchData.getPlayerCount();
@@ -124,6 +128,7 @@ public class ActivityPanelClass {
             if (minimizedMatches.contains(ID)){
             return compressedActivityPanel(activity,
                                         isPrivate,
+                                        RuneGuard,
                                         ID,
                                         partyLeader,
                                         null,
@@ -139,6 +144,7 @@ public class ActivityPanelClass {
             } else {
             return createActivityPanel(activity,
                                         isPrivate,
+                                        RuneGuard,
                                         ID,
                                         partyLeader,
                                         null,
@@ -179,6 +185,7 @@ public class ActivityPanelClass {
 
     public JPanel compressedActivityPanel(String activity,
                                           boolean isPrivate,
+                                          boolean RuneGuard,
                                           String ID,
                                           String partyLeader,
                                           String fcLeader,
@@ -285,13 +292,26 @@ public class ActivityPanelClass {
 
         // notes
         if ((Objects.requireNonNull(notes).length() >= 1)){
-            String convertNotes = convertNotes(notes);
+            String convertNotes = htmlWrap(notes);
             JLabel notes_label = new JLabel();
             notes_label.setIcon(Icons.NOTES_ICON);
             notes_label.setToolTipText(convertNotes);
             compressedActivityPanel.add(notes_label, c);
             c.gridx += 1;
         }
+
+        // RuneGuard
+        JLabel runeguard_label = new JLabel();
+        if (RuneGuard){
+            runeguard_label.setIcon(Icons.RUNEGUARD_ENABLED_ICON);
+            runeguard_label.setToolTipText("RuneGuard Enabled");
+        } else {
+            runeguard_label.setIcon(Icons.RUNEGUARD_DISABLED_ICON);
+            runeguard_label.setToolTipText("RuneGuard Disabled");
+        }
+
+        compressedActivityPanel.add(runeguard_label, c);
+        c.gridx += 1;
 
         String pluginVersion = websocket.getPluginVersion();
         if (!Objects.equals(matchVersion, pluginVersion)){
@@ -319,6 +339,7 @@ public class ActivityPanelClass {
 
     public JPanel createActivityPanel(String activity,
                                       boolean isPrivate,
+                                      boolean RuneGuard,
                                       String ID,
                                       String partyLeader,
                                       String fcLeader,
@@ -409,8 +430,7 @@ public class ActivityPanelClass {
         player_count_label.setIcon(Icons.PLAYERS_ICON);
         player_count_label.setToolTipText("Players");
 
-        JPanel experience_player_count = doubleLabelPanel(player_count_label, experience_label);
-        current_activity_panel.add(experience_player_count, ca);
+        current_activity_panel.add(doubleLabelPanel(player_count_label, experience_label), ca);
         ca.gridy += 1;
 
         current_activity_panel.add(Box.createVerticalStrut(1), ca);
@@ -425,8 +445,7 @@ public class ActivityPanelClass {
         accounts_label.setIcon(account_image);
         accounts_label.setToolTipText("Accounts");
 
-        JPanel split_accounts_label = doubleLabelPanel(split_label, accounts_label);
-        current_activity_panel.add(split_accounts_label, ca);
+        current_activity_panel.add(doubleLabelPanel(split_label, accounts_label), ca);
         ca.gridy += 1;
 
         current_activity_panel.add(Box.createVerticalStrut(1), ca);
@@ -435,14 +454,28 @@ public class ActivityPanelClass {
         JLabel region_label = new JLabel(region);
         region_label.setIcon(Icons.WORLD_ICON);
         region_label.setToolTipText("Match Region");
-        current_activity_panel.add(region_label, ca);
+
+        JLabel runeguard_label = new JLabel();
+        if (RuneGuard){
+            runeguard_label.setIcon(Icons.RUNEGUARD_ENABLED_ICON);
+            runeguard_label.setText("Enabled");
+            runeguard_label.setForeground(HIGHLIGHT_COLOR);
+            runeguard_label.setToolTipText("RuneGuard Enabled");
+        } else {
+            runeguard_label.setIcon(Icons.RUNEGUARD_DISABLED_ICON);
+            runeguard_label.setText("Disabled");
+            runeguard_label.setForeground(NOTIFIER_COLOR);
+            runeguard_label.setToolTipText("RuneGuard Disabled");
+        }
+
+        current_activity_panel.add(doubleLabelPanel(region_label, runeguard_label), ca);
         ca.gridy +=1;
 
         if (Objects.requireNonNull(notes).length() >= 1){
             current_activity_panel.add(Box.createVerticalStrut(1), ca);
             ca.gridy += 1;
 
-            String convertNotes = convertNotes(notes);
+            String convertNotes = htmlWrap(notes);
             JLabel notes_label = new JLabel(convertNotes);
             notes_label.setFont(FontManager.getRunescapeSmallFont());
             notes_label.setIcon(Icons.NOTES_ICON);
