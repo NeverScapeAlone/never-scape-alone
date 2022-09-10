@@ -70,7 +70,6 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.client.util.LinkBrowser;
 import net.runelite.discord.DiscordUser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -344,6 +343,10 @@ public class NeverScapeAlonePlugin extends Plugin {
         String message = chatData.getMessage();
         String msg = displayName+": "+message;
         sendChatStatusMessage(msg);
+    }
+
+    public void addSpriteToLabel(JLabel jLabel, int file, int archive){
+        clientThread.invoke(() -> spriteManager.addSpriteTo(jLabel, file, archive));
     }
 
     /**
@@ -809,10 +812,10 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void sendChatMessage(ActionEvent actionEvent, String message){
+
         if (message.length() == 0){
             return;
         }
-
         NeverScapeAlonePanel.chatBar.setText("");
         JsonObject messageJson = new JsonObject();
         messageJson.addProperty("message", message);

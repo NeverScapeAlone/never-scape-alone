@@ -24,6 +24,7 @@ package com.neverscapealone.ui.search;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.neverscapealone.models.payload.searchmatches.SearchMatches;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
@@ -33,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
+import static com.neverscapealone.ui.utils.Components.horizontalBar;
 
 public class SearchPanelClass {
     public JPanel searchPanel() {
@@ -72,6 +74,12 @@ public class SearchPanelClass {
         searchBar.addActionListener(plugin::searchActiveMatches);
         searchbar_panel.add(searchBar, c);
 
+        c.gridy +=1;
+        searchbar_panel.add(Box.createVerticalStrut(4), c);
+        c.gridy +=1;
+        searchbar_panel.add(horizontalBar(4, ACCENT_COLOR), c);
+
         return searchbar_panel;
     }
+
 }

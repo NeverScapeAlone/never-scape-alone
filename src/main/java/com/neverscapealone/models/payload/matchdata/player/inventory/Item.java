@@ -26,6 +26,8 @@ package com.neverscapealone.models.payload.matchdata.player.inventory;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.neverscapealone.enums.SoundPingEnum;
+import com.neverscapealone.models.soundping.SoundPing;
 
 public class Item {
 
@@ -58,6 +60,12 @@ public class Item {
     }
 
     public Item withQuantity(Integer quantity) {
+        this.quantity = quantity;
+        return this;
+    }
+
+    public Item buildItem(int itemID, int quantity) {
+        this.itemID = itemID;
         this.quantity = quantity;
         return this;
     }

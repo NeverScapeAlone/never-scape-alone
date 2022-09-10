@@ -26,17 +26,49 @@
 package com.neverscapealone.ui.match;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.EquipmentSlotEnum;
 import com.neverscapealone.enums.PlayerButtonOptionEnum;
 import com.neverscapealone.enums.PlayerSelectionPanelEnum;
 import com.neverscapealone.enums.RegionNameEnum;
 import com.neverscapealone.models.payload.matchdata.player.Player;
+import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
+import com.neverscapealone.models.payload.matchdata.player.stats.Stats;
+import com.neverscapealone.models.payload.matchdata.player.stats.agility.Agility;
+import com.neverscapealone.models.payload.matchdata.player.stats.attack.Attack;
+import com.neverscapealone.models.payload.matchdata.player.stats.construction.Construction;
+import com.neverscapealone.models.payload.matchdata.player.stats.cooking.Cooking;
+import com.neverscapealone.models.payload.matchdata.player.stats.crafting.Crafting;
+import com.neverscapealone.models.payload.matchdata.player.stats.defence.Defence;
+import com.neverscapealone.models.payload.matchdata.player.stats.farming.Farming;
+import com.neverscapealone.models.payload.matchdata.player.stats.firemaking.Firemaking;
+import com.neverscapealone.models.payload.matchdata.player.stats.fishing.Fishing;
+import com.neverscapealone.models.payload.matchdata.player.stats.fletching.Fletching;
+import com.neverscapealone.models.payload.matchdata.player.stats.herblore.Herblore;
+import com.neverscapealone.models.payload.matchdata.player.stats.hitpoints.Hitpoints;
+import com.neverscapealone.models.payload.matchdata.player.stats.hunter.Hunter;
+import com.neverscapealone.models.payload.matchdata.player.stats.magic.Magic;
+import com.neverscapealone.models.payload.matchdata.player.stats.mining.Mining;
+import com.neverscapealone.models.payload.matchdata.player.stats.overall.Overall;
+import com.neverscapealone.models.payload.matchdata.player.stats.prayer.Prayer;
+import com.neverscapealone.models.payload.matchdata.player.stats.ranged.Ranged;
+import com.neverscapealone.models.payload.matchdata.player.stats.runecraft.Runecraft;
+import com.neverscapealone.models.payload.matchdata.player.stats.slayer.Slayer;
+import com.neverscapealone.models.payload.matchdata.player.stats.smithing.Smithing;
+import com.neverscapealone.models.payload.matchdata.player.stats.strength.Strength;
+import com.neverscapealone.models.payload.matchdata.player.stats.thieving.Thieving;
+import com.neverscapealone.models.payload.matchdata.player.stats.woodcutting.Woodcutting;
 import com.neverscapealone.ui.utils.Icons;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.SpriteID;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
@@ -44,6 +76,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Field;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
@@ -376,7 +409,6 @@ public class PlayerPanelClass {
 
         JPanel inventory = new JPanel();
         inventory.setBackground(ALT_BACKGROUND);
-        inventory.setBorder(new EmptyBorder(5, 5, 5, 5));
         inventory.setLayout(new GridLayout(7,4));
         for (Item item : player.getInventory()){
             if (item == null){
@@ -386,10 +418,8 @@ public class PlayerPanelClass {
             if (item.getItemID() != -1){
                 plugin.addImageToLabel(i, item);
             }
-            i.setMinimumSize(new Dimension(38,38));
             inventory.add(i);
         }
-
         panel.add(inventory, c);
         return panel;
     }
@@ -397,19 +427,80 @@ public class PlayerPanelClass {
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.weightx = 1;
-        c.gridy = 0;
-        c.gridx = 0;
+        panel.setLayout(new GridLayout(4,3));
 
         if (player.getEquipment() == null){
-            panel.add(title("No Equipment Available", WARNING_COLOR),c);
+            panel.setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+            c.weightx = 1;
+            c.gridy = 0;
+            c.gridx = 0;
+            panel.add(title("No Equipment Available", WARNING_COLOR), c);
             return panel;
+        }
+
+        Equipment equipment = player.getEquipment();
+
+        if (equipment.getHead() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getHead().getItemId(), equipment.getHead().getItemAmount()), EquipmentSlotEnum.HEAD));
+        }
+        if (equipment.getCape() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getCape().getItemId(), equipment.getCape().getItemAmount()), EquipmentSlotEnum.CAPE));
+        }
+        if (equipment.getAmulet() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getAmulet().getItemId(), equipment.getAmulet().getItemAmount()), EquipmentSlotEnum.AMULET));
+        }
+        if (equipment.getAmmo() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getAmmo().getItemId(), equipment.getAmmo().getItemAmount()), EquipmentSlotEnum.AMMO));
+        }
+        if (equipment.getWeapon() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getWeapon().getItemId(), equipment.getWeapon().getItemAmount()), EquipmentSlotEnum.WEAPON));
+        }
+        if (equipment.getBody() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getBody().getItemId(), equipment.getBody().getItemAmount()), EquipmentSlotEnum.BODY));
+        }
+        if (equipment.getShield() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getShield().getItemId(), equipment.getShield().getItemAmount()), EquipmentSlotEnum.SHIELD));
+        }
+        if (equipment.getLegs() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getLegs().getItemId(), equipment.getLegs().getItemAmount()), EquipmentSlotEnum.LEGS));
+        }
+        if (equipment.getGloves() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getGloves().getItemId(), equipment.getGloves().getItemAmount()), EquipmentSlotEnum.GLOVES));
+        }
+        if (equipment.getBoots() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getBoots().getItemId(), equipment.getBoots().getItemAmount()), EquipmentSlotEnum.BOOTS));
+        }
+        if (equipment.getRing() != null){
+            panel.add(drawEquipmentItemPanel(new Item().buildItem(equipment.getRing().getItemId(), equipment.getRing().getItemAmount()), EquipmentSlotEnum.RING));
         }
 
         return panel;
     }
+
+    private JPanel drawEquipmentItemPanel(Item item, EquipmentSlotEnum equipmentSlotEnum){
+        JPanel itemPanel =  new JPanel();
+        itemPanel.setBackground(BACKGROUND_COLOR);
+        itemPanel.setLayout(new BorderLayout());
+
+        JLabel name = new JLabel(equipmentSlotEnum.getName());
+        name.setFont(FontManager.getRunescapeFont());
+        name.setForeground(Color.YELLOW);
+        name.setBackground(BACKGROUND_COLOR);
+        itemPanel.add(name, BorderLayout.WEST);
+
+        if (item.getItemID() == -1){
+            itemPanel.add(title("No Item", WARNING_COLOR), BorderLayout.WEST);
+        } else {
+            JLabel itemImage = new JLabel();
+            itemImage.setBackground(BACKGROUND_COLOR);
+            plugin.addImageToLabel(itemImage, item);
+            itemPanel.add(itemImage,BorderLayout.CENTER);
+        }
+
+        return itemPanel;
+    }
+
     private JPanel playerPrayer(Player player){
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
@@ -419,18 +510,106 @@ public class PlayerPanelClass {
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.weightx = 1;
-        c.gridy = 0;
-        c.gridx = 0;
+        panel.setLayout(new GridLayout(8,3));
 
         if (player.getStats() == null){
-            panel.add(title("No Stats Available", WARNING_COLOR),c);
+            panel.setLayout(new GridLayout(1,1));
+            panel.add(title("No Stats Available", WARNING_COLOR));
             return panel;
         }
 
+        Stats stats = player.getStats();
+
+        Attack attack = stats.getAttack();
+        panel.add(drawStat(attack.getBoosted(), attack.getReal(), attack.getExperience(), Icons.ATTACK));
+
+        Hitpoints hitpoints = stats.getHitpoints();
+        panel.add(drawStat(hitpoints.getBoosted(), hitpoints.getReal(), hitpoints.getExperience(), Icons.HITPOINTS));
+
+        Mining mining = stats.getMining();
+        panel.add(drawStat(mining.getBoosted(), mining.getReal(), mining.getExperience(), Icons.MINING));
+
+        Strength strength = stats.getStrength();
+        panel.add(drawStat(strength.getBoosted(), strength.getReal(), strength.getExperience(), Icons.STRENGTH));
+
+        Agility agility = stats.getAgility();
+        panel.add(drawStat(agility.getBoosted(), agility.getReal(), agility.getExperience(), Icons.AGILITY));
+
+        Smithing smithing = stats.getSmithing();
+        panel.add(drawStat(smithing.getBoosted(), smithing.getReal(), smithing.getExperience(), Icons.SMITHING));
+
+        Defence defence = stats.getDefence();
+        panel.add(drawStat(defence.getBoosted(), defence.getReal(), defence.getExperience(), Icons.DEFENCE));
+
+        Herblore herblore = stats.getHerblore();
+        panel.add(drawStat(herblore.getBoosted(), herblore.getReal(), herblore.getExperience(), Icons.HERBLORE));
+
+        Fishing fishing = stats.getFishing();
+        panel.add(drawStat(fishing.getBoosted(), fishing.getReal(), fishing.getExperience(), Icons.FISHING));
+
+        Ranged ranged = stats.getRanged();
+        panel.add(drawStat(ranged.getBoosted(), ranged.getReal(), ranged.getExperience(), Icons.RANGED));
+
+        Thieving thieving = stats.getThieving();
+        panel.add(drawStat(thieving.getBoosted(), thieving.getReal(), thieving.getExperience(), Icons.THIEVING));
+
+        Cooking cooking = stats.getCooking();
+        panel.add(drawStat(cooking.getBoosted(), cooking.getReal(), cooking.getExperience(), Icons.COOKING));
+
+        Prayer prayer = stats.getPrayer();
+        panel.add(drawStat(prayer.getBoosted(), prayer.getReal(), prayer.getExperience(), Icons.PRAYER));
+
+        Crafting crafting = stats.getCrafting();
+        panel.add(drawStat(crafting.getBoosted(), crafting.getReal(), crafting.getExperience(), Icons.CRAFTING));
+
+        Firemaking firemaking = stats.getFiremaking();
+        panel.add(drawStat(firemaking.getBoosted(), firemaking.getReal(), firemaking.getExperience(), Icons.FIREMAKING));
+
+        Magic magic = stats.getMagic();
+        panel.add(drawStat(magic.getBoosted(), magic.getReal(), magic.getExperience(), Icons.MAGIC));
+
+        Fletching fletching = stats.getFletching();
+        panel.add(drawStat(fletching.getBoosted(), fletching.getReal(), fletching.getExperience(), Icons.FLETCHING));
+
+        Woodcutting woodcutting = stats.getWoodcutting();
+        panel.add(drawStat(woodcutting.getBoosted(), woodcutting.getReal(), woodcutting.getExperience(), Icons.WOODCUTTING));
+
+        Runecraft runecraft = stats.getRunecraft();
+        panel.add(drawStat(runecraft.getBoosted(), runecraft.getReal(), runecraft.getExperience(), Icons.RUNECRAFTING));
+
+        Slayer slayer = stats.getSlayer();
+        panel.add(drawStat(slayer.getBoosted(), slayer.getReal(), slayer.getExperience(), Icons.SLAYER));
+
+        Farming farming = stats.getFarming();
+        panel.add(drawStat(farming.getBoosted(), farming.getReal(), farming.getExperience(), Icons.FARMING));
+
+        Construction construction = stats.getConstruction();
+        panel.add(drawStat(construction.getBoosted(), construction.getReal(), construction.getExperience(), Icons.CONSTRUCTION));
+
+        Hunter hunter = stats.getHunter();
+        panel.add(drawStat(hunter.getBoosted(), hunter.getReal(), hunter.getExperience(), Icons.HUNTER));
+
+        Overall overall = stats.getOverall();
+        int overallBase = attack.getReal()+hitpoints.getReal()+mining.getReal()+strength.getReal()+agility.getReal()+smithing.getReal()+defence.getReal()+herblore.getReal()+fishing.getReal()+ranged.getReal()+thieving.getReal()+cooking.getReal()+prayer.getReal()+crafting.getReal()+firemaking.getReal()+magic.getReal()+fletching.getReal()+woodcutting.getReal()+runecraft.getReal()+slayer.getReal()+farming.getReal()+construction.getReal()+hunter.getReal();
+        int overallBoosted = attack.getBoosted()+hitpoints.getBoosted()+mining.getBoosted()+strength.getBoosted()+agility.getBoosted()+smithing.getBoosted()+defence.getBoosted()+herblore.getBoosted()+fishing.getBoosted()+ranged.getBoosted()+thieving.getBoosted()+cooking.getBoosted()+prayer.getBoosted()+crafting.getBoosted()+firemaking.getBoosted()+magic.getBoosted()+fletching.getBoosted()+woodcutting.getBoosted()+runecraft.getBoosted()+slayer.getBoosted()+farming.getBoosted()+construction.getBoosted()+hunter.getBoosted();
+        panel.add(drawStat(overallBoosted, overallBase, overall.getExperience(), Icons.ALL_SKILLS));
+
         return panel;
+    }
+
+    private JLabel drawStat(int boosted, int base, int experience, ImageIcon icon){
+        JLabel stat = new JLabel();
+        stat.setIcon(icon);
+        stat.setToolTipText("XP: "+experience);
+        stat.setText(boosted+"/"+base);
+        if (base > 100){
+            stat.setFont(FontManager.getRunescapeSmallFont());
+        } else {
+            stat.setFont(FontManager.getRunescapeFont());
+        }
+        stat.setForeground(Color.YELLOW);
+        stat.setBackground(ALT_BACKGROUND);
+        return stat;
     }
 
     private JPanel playerNameButtonPanel(Player player, NeverScapeAlonePlugin plugin, String login, Integer userId, Boolean isSelf){
