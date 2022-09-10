@@ -267,18 +267,32 @@ public class PlayerPanelClass {
             Integer prayer = player.getStatus().getPrayer();
             Integer base_prayer = player.getStatus().getBasePrayer();
             Integer run_energy = player.getStatus().getRunEnergy();
+            Integer special_attack = player.getStatus().getSpecialAttack();
 
             JLabel hitpoint_label = new JLabel(hitpoints + "/" + base_hitpoints);
             hitpoint_label.setIcon(Icons.HITPOINTS);
+            double hp_ratio = (double) hitpoints/ (double)base_hitpoints;
+            hitpoint_label.setForeground(convertRatioToColor(hp_ratio));
             player_status.add(hitpoint_label, cs);
 
             cs.gridx = 1;
             JLabel prayer_label = new JLabel(prayer + "/" + base_prayer);
+            double prayer_ratio = (double) prayer/ (double)base_prayer;
+            prayer_label.setForeground(convertRatioToColor(prayer_ratio));
             prayer_label.setIcon(Icons.PRAYER);
             player_status.add(prayer_label, cs);
 
             cs.gridx = 2;
-            JLabel run_label = new JLabel(run_energy + "/100");
+            JLabel special_label = new JLabel((special_attack/10)+"%");
+            double special_ratio = (double) special_attack / (double) 1000;
+            special_label.setForeground(convertRatioToColor(special_ratio));
+            special_label.setIcon(Icons.SPECIAL_ICON);
+            player_status.add(special_label, cs);
+
+            cs.gridx = 3;
+            JLabel run_label = new JLabel(run_energy+"%");
+            double run_ratio = (double) run_energy / (double) 100;
+            run_label.setForeground(convertRatioToColor(run_ratio));
             run_label.setIcon(Icons.AGILITY);
             player_status.add(run_label, cs);
 
@@ -372,6 +386,14 @@ public class PlayerPanelClass {
         cp.gridy += 1;
 
         return player_panel;
+    }
+
+    private Color convertRatioToColor(double ratio){
+        if (ratio > 1){
+            return new Color(0,255,0);
+        }
+        float remainder = 1- (float) ratio;
+        return new Color(remainder, (float) ratio, 0);
     }
 
     private JPanel emptyPanel(Player player){
