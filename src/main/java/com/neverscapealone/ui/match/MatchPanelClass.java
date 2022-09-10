@@ -115,7 +115,7 @@ public class MatchPanelClass {
         headerMatchPanel.add(rating_button, sc);
         sc.gridx +=1;
 
-        JToggleButton discord_button = Components.matchHeaderToggle(Icons.DISCORD_ICON, "Discord Information", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
+        JToggleButton discord_button = Components.matchHeaderToggle(Icons.DISCORD_WHITE_ICON, "Discord Information", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
         headerMatchPanel.add(discord_button, sc);
         sc.gridx +=1;
 

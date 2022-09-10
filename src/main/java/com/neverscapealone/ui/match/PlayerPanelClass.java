@@ -382,16 +382,13 @@ public class PlayerPanelClass {
 
     private JPanel playerInventory(Player player){
         JPanel panel = new JPanel();
-        panel.setBackground(BACKGROUND_COLOR);
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.weightx = 1;
-        c.gridy = 0;
-        c.gridx = 0;
+        panel.setBackground(BACKGROUND_COLOR);
+        panel.setLayout(new GridLayout(7,4));
 
         if (player.getInventory() == null){
-            panel.add(title("No Inventory Available", WARNING_COLOR),c);
+            panel.setLayout(new GridLayout(1,1));
+            panel.add(title("No Inventory Available", WARNING_COLOR));
             return panel;
         }
 
@@ -403,13 +400,11 @@ public class PlayerPanelClass {
             real_items += 1;
         }
         if (real_items == 0){
-            panel.add(title("Empty Inventory", NOTIFIER_COLOR),c);
+            panel.setLayout(new GridLayout(1,1));
+            panel.add(title("Empty Inventory", NOTIFIER_COLOR));
             return panel;
         }
 
-        JPanel inventory = new JPanel();
-        inventory.setBackground(ALT_BACKGROUND);
-        inventory.setLayout(new GridLayout(7,4));
         for (Item item : player.getInventory()){
             if (item == null){
                 continue;
@@ -418,9 +413,8 @@ public class PlayerPanelClass {
             if (item.getItemID() != -1){
                 plugin.addImageToLabel(i, item);
             }
-            inventory.add(i);
+            panel.add(i);
         }
-        panel.add(inventory, c);
         return panel;
     }
     private JPanel playerEquipment(Player player){
@@ -430,12 +424,8 @@ public class PlayerPanelClass {
         panel.setLayout(new GridLayout(4,3));
 
         if (player.getEquipment() == null){
-            panel.setLayout(new GridBagLayout());
-            GridBagConstraints c = new GridBagConstraints();
-            c.weightx = 1;
-            c.gridy = 0;
-            c.gridx = 0;
-            panel.add(title("No Equipment Available", WARNING_COLOR), c);
+            panel.setLayout(new GridLayout(1,1));
+            panel.add(title("No Equipment Available", WARNING_COLOR));
             return panel;
         }
 
@@ -591,22 +581,21 @@ public class PlayerPanelClass {
 
         Overall overall = stats.getOverall();
         int overallBase = attack.getReal()+hitpoints.getReal()+mining.getReal()+strength.getReal()+agility.getReal()+smithing.getReal()+defence.getReal()+herblore.getReal()+fishing.getReal()+ranged.getReal()+thieving.getReal()+cooking.getReal()+prayer.getReal()+crafting.getReal()+firemaking.getReal()+magic.getReal()+fletching.getReal()+woodcutting.getReal()+runecraft.getReal()+slayer.getReal()+farming.getReal()+construction.getReal()+hunter.getReal();
-        int overallBoosted = attack.getBoosted()+hitpoints.getBoosted()+mining.getBoosted()+strength.getBoosted()+agility.getBoosted()+smithing.getBoosted()+defence.getBoosted()+herblore.getBoosted()+fishing.getBoosted()+ranged.getBoosted()+thieving.getBoosted()+cooking.getBoosted()+prayer.getBoosted()+crafting.getBoosted()+firemaking.getBoosted()+magic.getBoosted()+fletching.getBoosted()+woodcutting.getBoosted()+runecraft.getBoosted()+slayer.getBoosted()+farming.getBoosted()+construction.getBoosted()+hunter.getBoosted();
-        panel.add(drawStat(overallBoosted, overallBase, overall.getExperience(), Icons.ALL_SKILLS));
+        panel.add(drawStat(null, overallBase, overall.getExperience(), Icons.ALL_SKILLS));
 
         return panel;
     }
 
-    private JLabel drawStat(int boosted, int base, int experience, ImageIcon icon){
+    private JLabel drawStat(Integer boosted, int base, int experience, ImageIcon icon){
         JLabel stat = new JLabel();
         stat.setIcon(icon);
-        stat.setToolTipText("XP: "+experience);
-        stat.setText(boosted+"/"+base);
-        if (base > 100){
-            stat.setFont(FontManager.getRunescapeSmallFont());
+        stat.setToolTipText("XP: "+String.format("%,d", experience));
+        if (boosted != null){
+            stat.setText(boosted+"/"+base);
         } else {
-            stat.setFont(FontManager.getRunescapeFont());
+            stat.setText(String.valueOf(base));
         }
+        stat.setFont(FontManager.getRunescapeFont());
         stat.setForeground(Color.YELLOW);
         stat.setBackground(ALT_BACKGROUND);
         return stat;

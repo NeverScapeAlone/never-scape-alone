@@ -58,6 +58,7 @@ public class Icons {
     public static final ImageIcon RESET_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/reset.png"));
     public static final ImageIcon GITHUB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/github.png"));
     public static final ImageIcon DISCORD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/discord.png"));
+    public static final ImageIcon DISCORD_WHITE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/discord_white.png"));
     public static final ImageIcon WEB_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/web.png"));
     public static final ImageIcon PATREON_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/patreon.png"));
     public static final ImageIcon TWITTER_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/twitter.png"));
