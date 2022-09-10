@@ -563,6 +563,20 @@ public class NeverScapeAlonePlugin extends Plugin {
         websocket.send(payload);
     }
 
+    public void playerPrayerUpdate(){
+        if (client.getGameState() != GameState.LOGGED_IN){
+            return;
+        }
+        if (websocket == null){
+            return;
+        }
+        if (Objects.equals(websocket.getGroupID(), "0")){
+            return;
+        }
+
+
+    }
+
     @Schedule(period = 6, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerEquipmentUpdate(){
         // sends equipment update every 5 seconds - not on inventory change

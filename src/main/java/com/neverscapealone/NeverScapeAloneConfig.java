@@ -546,5 +546,89 @@ public interface NeverScapeAloneConfig extends Config {
     {
         return 60;
     }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "sendDiscordRuneguard",
+            name = "Send Discord",
+            description = "Send your discord to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendDiscordRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "sendLocationRuneguard",
+            name = "Send Location",
+            description = "Send your location to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendLocationRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 4,
+            keyName = "sendStatusRuneguard",
+            name = "Send Status",
+            description = "Send your status to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendStatusRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 5,
+            keyName = "sendStatsRuneguard",
+            name = "Send Stats",
+            description = "Send your stats to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendStatsRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 6,
+            keyName = "sendInventoryRuneguard",
+            name = "Send Inventory",
+            description = "Send your inventory to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendInventoryRuneguard()
+    {
+        return true;
+    }
+    @ConfigItem(
+            position = 7,
+            keyName = "sendEquipmentRuneguard",
+            name = "Send Equipment",
+            description = "Send your equipment to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendEquipmentRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 8,
+            keyName = "sendPrayerRuneguard",
+            name = "Send Prayer",
+            description = "Send your prayer to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendPrayerRuneguard()
+    {
+        return true;
+    }
+
 }
 
