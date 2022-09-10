@@ -314,7 +314,7 @@ public interface NeverScapeAloneConfig extends Config {
     )
     default SoundEffectSelectionEnum soundEffectPing()
     {
-        return SoundEffectSelectionEnum.BELL_DING;
+        return SoundEffectSelectionEnum.TINDER_STRIKE;
     }
 
     @ConfigItem(
@@ -326,7 +326,7 @@ public interface NeverScapeAloneConfig extends Config {
     )
     default SoundEffectSelectionEnum soundEffectAlertPing()
     {
-        return SoundEffectSelectionEnum.BELL_DONG;
+        return SoundEffectSelectionEnum.MINING_TINK;
     }
 
     @ConfigItem(

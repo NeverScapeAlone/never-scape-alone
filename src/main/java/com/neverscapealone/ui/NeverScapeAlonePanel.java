@@ -413,8 +413,15 @@ public class NeverScapeAlonePanel extends PluginPanel {
             return;
         }
 
+        if (chatDataArrayList.size() > 20){
+            for (int i = chatDataArrayList.size(); i > 20; i = chatDataArrayList.size()){
+                chatDataArrayList.remove(0);
+            }
+        }
+
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.HORIZONTAL;
+
         for (int idx = chatDataArrayList.size() - 1; idx >= 0; idx--) {
             ChatData message = chatDataArrayList.get(idx);
             chatPanelComponent.add(drawMessage(message), c);
