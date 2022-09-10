@@ -34,6 +34,7 @@ public class Icons {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
 
     // icons
+    public static final ImageIcon SPECIAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/special.png"));
     public static final ImageIcon GO_BACK_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/go_back.png"));
     public static final ImageIcon RUNEGUARD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/runeguard.png"));
     public static final ImageIcon RUNEGUARD_ENABLED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/runeguard_enabled.png"));

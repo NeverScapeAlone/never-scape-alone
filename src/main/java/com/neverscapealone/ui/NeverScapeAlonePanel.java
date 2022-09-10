@@ -82,6 +82,7 @@ import java.util.Objects;
 import static com.neverscapealone.ui.chat.ChatPanelClass.drawMessage;
 import static com.neverscapealone.ui.header.ServerWarningPanelClass.serverWarningPanel;
 import static com.neverscapealone.ui.utils.Components.horizontalBar;
+import static com.neverscapealone.ui.utils.Components.title;
 
 @Slf4j
 @Singleton
@@ -327,31 +328,14 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.gridx = 0;
         c.gridy = 0;
 
-        searchMatchPanel.add(Box.createVerticalStrut(5), c);
-        c.gridy += 1;
-
         if (searchMatches.getSearchMatches() == null) {
-            JPanel sMatch = new JPanel();
-            sMatch.setBorder(new EmptyBorder(5, 5, 5, 5));
-            sMatch.setBackground(BACKGROUND_COLOR);
-            sMatch.setLayout(new GridBagLayout());
-            sMatch.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-            GridBagConstraints cMatch = new GridBagConstraints();
-            cMatch.weightx = 1;
-            cMatch.fill = GridBagConstraints.HORIZONTAL;
-            cMatch.anchor = GridBagConstraints.CENTER;
-            cMatch.gridx = 0;
-            cMatch.gridy = 0;
-
-            JLabel no_matches_label = new JLabel("No Matches Found");
-            no_matches_label.setForeground(WARNING_COLOR);
-            no_matches_label.setIcon(Icons.CANCEL_ICON);
-            no_matches_label.setToolTipText("No matches found with this current search, try again!");
-            no_matches_label.setFont(FontManager.getRunescapeBoldFont());
-
-            searchMatchPanel.add(no_matches_label, c);
+            searchMatchPanel.setLayout(new GridLayout(1,1));
+            searchMatchPanel.add(title("No Matches Found", WARNING_COLOR));
             return;
         }
+
+        searchMatchPanel.add(Box.createVerticalStrut(5), c);
+        c.gridy += 1;
 
         for (SearchMatchData match : searchMatches.getSearchMatches()) {
             JPanel sMatch = activityPanelClass.createSearchMatchDataPanel(match);
@@ -443,8 +427,6 @@ public class NeverScapeAlonePanel extends PluginPanel {
         c.anchor = GridBagConstraints.CENTER;
         c.gridx = 0;
         c.gridy = 0;
-
-
         return chatTimestampPanel;
     }
 
