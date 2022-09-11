@@ -504,10 +504,11 @@ public class PlayerPanelClass {
 
     private Color convertRatioToColor(double ratio){
         if (ratio > 1){
-            return new Color(0,255,0);
+            return new Color(0, 255, 200); // show cyan for above 100
         }
-        float remainder = 1- (float) ratio;
-        return new Color(remainder, (float) ratio, 0);
+        float g = ((float) ratio >= (float) 0.5 ? (float) 1 : (float) ratio/(float) 0.5);
+        float r = ((float) ratio <= (float) 0.5 ? (float) 1 : (float)2 - ((float)2*(float)ratio));
+        return new Color(r, g, 0);
     }
 
     private JPanel emptyPanel(Player player){
