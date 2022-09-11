@@ -369,6 +369,7 @@ public class ActivityPanelClass {
         ActivityReferenceEnum activityReferenceEnum = ActivityReferenceEnum.valueOf(activity);
         ImageIcon activity_icon = activityReferenceEnum.getIcon();
         String activity_name = activityReferenceEnum.getTooltip();
+
         JLabel match_title = new JLabel("<html><p style=\"overflow-wrap: break-word;\">" + activity_name + "</p></html>");
         match_title.setIcon(activity_icon);
         match_title.setFont(FontManager.getRunescapeBoldFont());

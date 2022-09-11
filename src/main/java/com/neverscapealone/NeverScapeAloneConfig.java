@@ -294,7 +294,7 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Teammate color on the map",
             section = colorSection
     )
-    default Color mapColor(){return new Color(0, 255, 174);};
+    default Color mapColor(){return new Color(0, 255, 174);}
 
     @ConfigItem(
             position = 3,
@@ -303,7 +303,71 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Teammate overlay color",
             section = colorSection
     )
-    default Color overlayColor(){return new Color(0, 255, 174);};
+    default Color overlayColor(){return new Color(0, 255, 174);}
+
+    @ConfigItem(
+            position = 4,
+            keyName = "inProgressColor",
+            name = "In Progress Color",
+            description = "Color for in-progress panel items",
+            section = colorSection
+    )
+    default Color inProgressColor(){return new Color(144, 50, 61);}
+
+    @ConfigItem(
+            position = 5,
+            keyName = "highlightColor",
+            name = "Highlight Color",
+            description = "Color for highlighted panel items",
+            section = colorSection
+    )
+    default Color highlightColor(){return new Color(95, 173, 86);}
+
+    @ConfigItem(
+            position = 6,
+            keyName = "altBackgroundColor",
+            name = "Alt Background Color",
+            description = "Color for sub-background items in the panel",
+            section = colorSection
+    )
+    default Color altBackgroundColor(){return new Color(39, 39, 39);}
+
+    @ConfigItem(
+            position = 7,
+            keyName = "backgroundColor",
+            name = "Background Color",
+            description = "Color for the panel background",
+            section = colorSection
+    )
+    default Color backgroundColor(){return new Color(27, 32, 33);}
+
+    @ConfigItem(
+            position = 8,
+            keyName = "accentColor",
+            name = "Accent Color",
+            description = "Color for the panel accented items",
+            section = colorSection
+    )
+    default Color accentColor(){return new Color(75, 88, 66);}
+
+    @ConfigItem(
+            position = 9,
+            keyName = "warningColor",
+            name = "Warning Color",
+            description = "Color for the panel warning items",
+            section = colorSection
+    )
+    default Color warningColor(){return new Color(191, 33, 30);}
+
+    @ConfigItem(
+            position = 10,
+            keyName = "notifierColor",
+            name = "Notifier Color",
+            description = "Color for panel notifiers",
+            section = colorSection
+    )
+    default Color notifierColor(){return new Color(226, 132, 19);}
+
 
     @ConfigItem(
             position = 1,
