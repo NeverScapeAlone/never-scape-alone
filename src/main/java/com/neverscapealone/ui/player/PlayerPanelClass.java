@@ -23,13 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.neverscapealone.ui.match;
+package com.neverscapealone.ui.player;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.enums.EquipmentSlotEnum;
-import com.neverscapealone.enums.PlayerButtonOptionEnum;
-import com.neverscapealone.enums.PlayerSelectionPanelEnum;
-import com.neverscapealone.enums.RegionNameEnum;
+import com.neverscapealone.enums.*;
 import com.neverscapealone.models.payload.matchdata.player.Player;
 import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
@@ -58,6 +55,9 @@ import com.neverscapealone.models.payload.matchdata.player.stats.smithing.Smithi
 import com.neverscapealone.models.payload.matchdata.player.stats.strength.Strength;
 import com.neverscapealone.models.payload.matchdata.player.stats.thieving.Thieving;
 import com.neverscapealone.models.payload.matchdata.player.stats.woodcutting.Woodcutting;
+import com.neverscapealone.models.soundping.SoundPing;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
+import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.SpriteID;
@@ -74,6 +74,7 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
@@ -86,6 +87,119 @@ import static com.neverscapealone.ui.utils.Components.title;
 
 public class PlayerPanelClass {
     Map<Integer, String> regionReference = RegionNameEnum.regionReference();
+
+    public JPanel playerPanel() {
+        JPanel playerPanel = new JPanel();
+        playerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        playerPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        playerPanel.add(Box.createVerticalStrut(4), c);
+        c.gridy += 1;
+
+        playerPanel.add(headerMatchPanel(), c);
+        c.gridy += 1;
+
+        playerPanel.add(Box.createVerticalStrut(4), c);
+        c.gridy += 1;
+
+        playerPanel.add(new JPanel(), c);
+        return playerPanel;
+    }
+
+    public void switchHeaderButtonListener(ActionEvent actionEvent, MatchHeaderSwitchEnum matchHeaderSwitch){
+        JToggleButton button = (JToggleButton) actionEvent.getSource();
+        boolean b = true;
+        if (button.isSelected()){
+            button.setBackground(HIGHLIGHT_COLOR);
+            b = true;
+        } else {
+            button.setBackground(WARNING_COLOR);
+            b = false;
+        }
+        switch(matchHeaderSwitch){
+            case RATING:
+                NeverScapeAlonePanel.rating_selected = b;
+                break;
+            case STATS:
+                NeverScapeAlonePanel.stats_selected = b;
+                break;
+            case SAFETY:
+                NeverScapeAlonePanel.safety_selected = b;
+                break;
+            case DISCORD:
+                NeverScapeAlonePanel.discord_selected = b;
+                break;
+            case LOCATION:
+                NeverScapeAlonePanel.location_selected = b;
+                break;
+        }
+    }
+
+    public JPanel headerMatchPanel(){
+        JPanel headerMatchPanel = new JPanel();
+        headerMatchPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        headerMatchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints sc = new GridBagConstraints();
+
+        sc.weightx = 1;
+        sc.anchor = GridBagConstraints.LINE_END;
+        sc.fill = GridBagConstraints.LINE_END;
+        sc.gridx = 0;
+        sc.gridy = 0;
+
+        JToggleButton rating_button = Components.matchHeaderToggle(Icons.RATING_ICON, "User Ratings", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.RATING));
+        headerMatchPanel.add(rating_button, sc);
+        sc.gridx +=1;
+
+        JToggleButton discord_button = Components.matchHeaderToggle(Icons.DISCORD_WHITE_ICON, "Discord Information", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.DISCORD));
+        headerMatchPanel.add(discord_button, sc);
+        sc.gridx +=1;
+
+        JToggleButton location_button = Components.matchHeaderToggle(Icons.WORLD_ICON, "Location Information", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.LOCATION));
+        headerMatchPanel.add(location_button, sc);
+        sc.gridx +=1;
+
+        JToggleButton safety_button = Components.matchHeaderToggle(Icons.SAFETY_ICON, "RuneWatch and WDR Safety", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.SAFETY));
+        headerMatchPanel.add(safety_button, sc);
+        sc.gridx +=1;
+
+        JToggleButton stats_button = Components.matchHeaderToggle(Icons.HITPOINTS, "User Stats", HIGHLIGHT_COLOR, e->switchHeaderButtonListener(e, MatchHeaderSwitchEnum.STATS));
+        headerMatchPanel.add(stats_button, sc);
+        sc.gridx +=1;
+
+        JButton leaveMatch = Components.cleanJButton(Icons.LOGOUT_ICON, "Leave Match", this::leaveMatch, 20, 20);
+        headerMatchPanel.add(leaveMatch, sc);
+        return headerMatchPanel;
+    }
+
+    public void leaveMatch(ActionEvent actionEvent) {
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
+        Object[] options = {"Leave",
+                "Stay"};
+        int n = JOptionPane.showOptionDialog(frame,
+                "Would you like to leave this match?",
+                "Match Logout",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);
+        if (n == 0) {
+            NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
+            NeverScapeAlonePanel.websocket.logoff("Exiting match");
+            NeverScapeAlonePanel.setView(PanelStateEnum.HOME);
+            NeverScapeAlonePanel.refreshView();
+        }
+    }
 
     public JPanel createPlayerPanel(Player player,
                                     String client_username,

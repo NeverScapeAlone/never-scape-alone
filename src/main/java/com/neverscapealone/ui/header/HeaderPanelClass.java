@@ -27,6 +27,7 @@ package com.neverscapealone.ui.header;
 
 import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.WebLink;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
 import net.runelite.client.util.LinkBrowser;
 
@@ -60,7 +61,9 @@ public class HeaderPanelClass {
         c.gridx +=1;
         c.fill = GridBagConstraints.LINE_START;
         c.anchor = GridBagConstraints.LINE_END;
-        headerPanel.add(cleanJButton(Icons.HOME_ICON, "Head back to the Home Menu", NeverScapeAlonePlugin::switchToHomePanel, 16, 16), c);
+        NeverScapeAlonePanel.homeButton = cleanJButton(Icons.HOME_ICON, "Head back to the Home Menu", NeverScapeAlonePlugin::switchToHomePanel, 16, 16);
+        NeverScapeAlonePanel.homeButton.setDisabledIcon(Icons.HOME_DISABLED_ICON);
+        headerPanel.add(NeverScapeAlonePanel.homeButton, c);
 
         return headerPanel;
     }
