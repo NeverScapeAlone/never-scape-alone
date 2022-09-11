@@ -59,16 +59,11 @@ import com.neverscapealone.models.soundping.SoundPing;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
-import net.runelite.api.ItemComposition;
-import net.runelite.api.SpriteID;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
@@ -77,7 +72,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
@@ -749,6 +743,19 @@ public class PlayerPanelClass {
         pnbp.gridy = 0;
 
         if (!isSelf){
+            JButton ping_sound = new JButton();
+            if (NeverScapeAlonePlugin.playerMutePingSoundArrayList.contains(player.getLogin())){
+                ping_sound.setIcon(Icons.PING_SOUND_OFF_ICON);
+                ping_sound.setToolTipText("Unmute " + player.getLogin()+"'s pings");
+            } else {
+                ping_sound.setIcon(Icons.PING_SOUND_ON_ICON);
+                ping_sound.setToolTipText("Mute" + player.getLogin()+"'s pings");
+            }
+            ping_sound.setActionCommand(String.valueOf(player.getUserId()));
+            ping_sound.addActionListener(e -> NeverScapeAlonePlugin.togglePingSound(player.getLogin(), e));
+            player_name_button_panel.add(ping_sound, pnbp);
+            pnbp.gridx += 1;
+
             JButton promote_party_leader = new JButton();
             promote_party_leader.setIcon(Icons.CROWN_ICON);
             promote_party_leader.setToolTipText("Promote " + login);
@@ -796,14 +803,6 @@ public class PlayerPanelClass {
             block_user.setActionCommand(String.valueOf(player.getUserId()));
             block_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.BLOCK));
             player_name_button_panel.add(block_user, pnbp);
-            pnbp.gridx += 1;
-
-            JButton message_user = new JButton();
-            message_user.setIcon(Icons.CHAT);
-            message_user.setToolTipText("Message " + player.getLogin());
-            message_user.setActionCommand(String.valueOf(player.getUserId()));
-            message_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.MESSAGE));
-            player_name_button_panel.add(message_user, pnbp);
             pnbp.gridx += 1;
 
         }

@@ -37,6 +37,8 @@ public class Icons {
     public static final ImageIcon COPY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/copy.png"));
     public static final ImageIcon SEARCH_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/search.png"));
     public static final ImageIcon QUICK_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/quick.png"));
+    public static final ImageIcon PING_SOUND_ON_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/ping_sound_on.png"));
+    public static final ImageIcon PING_SOUND_OFF_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/ping_sound_off.png"));
     public static final ImageIcon SPECIAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/special.png"));
     public static final ImageIcon GO_BACK_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/go_back.png"));
     public static final ImageIcon RUNEGUARD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/runeguard.png"));
