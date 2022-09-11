@@ -79,10 +79,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,6 +155,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Integer old_base_prayer = 0;
     private Integer old_run_energy = 0;
     public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
+    public static ArrayList<String> playerMutePingSoundArrayList = new ArrayList<>();
     public static MatchData matchData = new MatchData();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
@@ -221,11 +219,18 @@ public class NeverScapeAlonePlugin extends Plugin {
         log.info("NeverScapeAlone stopped!");
     }
 
+    public static void togglePingSound(String playerLogin, ActionEvent actionEvent){
+        if (playerMutePingSoundArrayList.contains(playerLogin)){
+         playerMutePingSoundArrayList.remove(playerLogin);
+        } else {
+            playerMutePingSoundArrayList.add(playerLogin);
+        }
+    }
+
     public void updateDiscordInformation(){
         if ((NeverScapeAlonePlugin.discord_id != null) & (NeverScapeAlonePlugin.discordUsername != null)){
             return;
         }
-
         DiscordUser discordUser = discordService.getCurrentUser();
         if (discordUser == null){
             setDiscordUsername(null);

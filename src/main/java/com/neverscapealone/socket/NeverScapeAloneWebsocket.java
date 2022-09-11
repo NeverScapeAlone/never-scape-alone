@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.models.panelstate.PanelState;
@@ -172,7 +173,9 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 connect(username, discord, discord_id, token, groupID, passcode);
                 break;
             case INCOMING_PING:
-                this.eventBus.post(payload.getPingData());
+                if (!NeverScapeAlonePlugin.playerMutePingSoundArrayList.contains(payload.getPingData().getUsername())){
+                    this.eventBus.post(payload.getPingData());
+                }
                 break;
             case INCOMING_CHAT:
                 this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.CHAT));
