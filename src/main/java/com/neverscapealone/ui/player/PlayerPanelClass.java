@@ -756,53 +756,88 @@ public class PlayerPanelClass {
             player_name_button_panel.add(ping_sound, pnbp);
             pnbp.gridx += 1;
 
-            JButton promote_party_leader = new JButton();
-            promote_party_leader.setIcon(Icons.CROWN_ICON);
-            promote_party_leader.setToolTipText("Promote " + login);
-            promote_party_leader.setActionCommand(String.valueOf(userId));
-            promote_party_leader.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
-            player_name_button_panel.add(promote_party_leader, pnbp);
+            // promote button
+
+            JButton promote_button = new JButton();
+            if (NeverScapeAlonePlugin.playerPromoteButtonArrayList.contains(player.getLogin())){
+                promote_button.setBackground(HIGHLIGHT_COLOR);
+            }
+            promote_button.setIcon(Icons.CROWN_ICON);
+            promote_button.setToolTipText("Promote " + login);
+            promote_button.setActionCommand(String.valueOf(userId));
+            promote_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.PROMOTE));
+            promote_button.addActionListener(e -> NeverScapeAlonePlugin.togglePromoteButton(player.getLogin(), e));
+            player_name_button_panel.add(promote_button, pnbp);
             pnbp.gridx += 1;
 
+            // kick button
+
+            JButton kick_button = new JButton();
+            if (NeverScapeAlonePlugin.playerKickButtonArrayList.contains(player.getLogin())){
+                kick_button.setBackground(NOTIFIER_COLOR);
+            }
+            kick_button.setIcon(Icons.KICK_ICON);
+            kick_button.setToolTipText("Kick " + login);
+            kick_button.setActionCommand(String.valueOf(userId));
+            kick_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
+            kick_button.addActionListener(e -> NeverScapeAlonePlugin.toggleKickButton(player.getLogin(), e));
+            player_name_button_panel.add(kick_button, pnbp);
+            pnbp.gridx += 1;
+
+            // like button
+
             JButton like_button = new JButton();
+            if (NeverScapeAlonePlugin.playerLikeButtonArrayList.contains(player.getLogin())){
+                like_button.setBackground(HIGHLIGHT_COLOR);
+            }
             like_button.setIcon(Icons.LIKE_ICON);
             like_button.setToolTipText("Like " + login);
             like_button.setActionCommand(String.valueOf(userId));
-
             like_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.LIKE));
+            like_button.addActionListener(e -> NeverScapeAlonePlugin.toggleLikeButton(player.getLogin(), e));
             player_name_button_panel.add(like_button, pnbp);
             pnbp.gridx += 1;
 
+            // dislike button
+
             JButton dislike_button = new JButton();
+            if (NeverScapeAlonePlugin.playerDislikeButtonArrayList.contains(player.getLogin())){
+                dislike_button.setBackground(NOTIFIER_COLOR);
+            }
             dislike_button.setIcon(Icons.DISLIKE_ICON);
             dislike_button.setToolTipText("Dislike " + login);
             dislike_button.setActionCommand(String.valueOf(userId));
             dislike_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.DISLIKE));
+            dislike_button.addActionListener(e -> NeverScapeAlonePlugin.toggleDisikeButton(player.getLogin(), e));
             player_name_button_panel.add(dislike_button, pnbp);
             pnbp.gridx += 1;
 
-            JButton kick = new JButton();
-            kick.setIcon(Icons.KICK_ICON);
-            kick.setToolTipText("Kick " + login);
-            kick.setActionCommand(String.valueOf(userId));
-            kick.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.KICK));
-            player_name_button_panel.add(kick, pnbp);
+            // add button
+
+            JButton add_button = new JButton();
+            if (NeverScapeAlonePlugin.playerAddButtonArrayList.contains(player.getLogin())){
+                add_button.setBackground(HIGHLIGHT_COLOR);
+            }
+            add_button.setIcon(Icons.ADD_USER_ICON);
+            add_button.setToolTipText("Add " + player.getLogin());
+            add_button.setActionCommand(String.valueOf(player.getUserId()));
+            add_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.ADD));
+            add_button.addActionListener(e -> NeverScapeAlonePlugin.toggleAddButton(player.getLogin(), e));
+            player_name_button_panel.add(add_button, pnbp);
             pnbp.gridx += 1;
 
-            JButton add_user = new JButton();
-            add_user.setIcon(Icons.ADD_USER_ICON);
-            add_user.setToolTipText("Add " + player.getLogin());
-            add_user.setActionCommand(String.valueOf(player.getUserId()));
-            add_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.ADD));
-            player_name_button_panel.add(add_user, pnbp);
-            pnbp.gridx += 1;
+            // block button
 
-            JButton block_user = new JButton();
-            block_user.setIcon(Icons.BLOCK_USER_ICON);
-            block_user.setToolTipText("Block " + player.getLogin());
-            block_user.setActionCommand(String.valueOf(player.getUserId()));
-            block_user.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.BLOCK));
-            player_name_button_panel.add(block_user, pnbp);
+            JButton block_button = new JButton();
+            if (NeverScapeAlonePlugin.playerBlockButtonArrayList.contains(player.getLogin())){
+                block_button.setBackground(NOTIFIER_COLOR);
+            }
+            block_button.setIcon(Icons.BLOCK_USER_ICON);
+            block_button.setToolTipText("Block " + player.getLogin());
+            block_button.setActionCommand(String.valueOf(player.getUserId()));
+            block_button.addActionListener(e -> plugin.playerOptionAction(e, PlayerButtonOptionEnum.BLOCK));
+            block_button.addActionListener(e -> NeverScapeAlonePlugin.toggleBlockButton(player.getLogin(), e));
+            player_name_button_panel.add(block_button, pnbp);
             pnbp.gridx += 1;
 
         }

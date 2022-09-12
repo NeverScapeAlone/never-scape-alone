@@ -40,6 +40,7 @@ import com.neverscapealone.overlays.NeverScapeAloneWorldMapOverlay;
 import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.connecting.ConnectingPanelClass;
+import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
 import lombok.Getter;
 import lombok.Setter;
@@ -156,6 +157,12 @@ public class NeverScapeAlonePlugin extends Plugin {
     private Integer old_run_energy = 0;
     public static ArrayList<PingData> pingDataArrayList = new ArrayList<>();
     public static ArrayList<String> playerMutePingSoundArrayList = new ArrayList<>();
+    public static ArrayList<String> playerLikeButtonArrayList = new ArrayList<>();
+    public static ArrayList<String> playerDislikeButtonArrayList = new ArrayList<>();
+    public static ArrayList<String> playerPromoteButtonArrayList = new ArrayList<>();
+    public static ArrayList<String> playerKickButtonArrayList = new ArrayList<>();
+    public static ArrayList<String> playerAddButtonArrayList = new ArrayList<>();
+    public static ArrayList<String> playerBlockButtonArrayList = new ArrayList<>();
     public static MatchData matchData = new MatchData();
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
@@ -225,6 +232,53 @@ public class NeverScapeAlonePlugin extends Plugin {
         } else {
             playerMutePingSoundArrayList.add(playerLogin);
         }
+        NeverScapeAlonePanel.refreshPlayerPanel();
+    }
+
+    public static void toggleLikeButton(String playerLogin, ActionEvent actionEvent){
+        if (!playerLikeButtonArrayList.contains(playerLogin)){
+            playerLikeButtonArrayList.add(playerLogin);
+        }
+        playerDislikeButtonArrayList.remove(playerLogin);
+        NeverScapeAlonePanel.refreshPlayerPanel();
+    }
+
+    public static void toggleDisikeButton(String playerLogin, ActionEvent actionEvent){
+        if (!playerDislikeButtonArrayList.contains(playerLogin)){
+            playerDislikeButtonArrayList.add(playerLogin);
+        }
+        playerLikeButtonArrayList.remove(playerLogin);
+        NeverScapeAlonePanel.refreshPlayerPanel();
+    }
+
+    public static void toggleKickButton(String playerLogin, ActionEvent actionEvent){
+        if (!playerKickButtonArrayList.contains(playerLogin)){
+            playerKickButtonArrayList.add(playerLogin);
+        }
+        NeverScapeAlonePanel.refreshPlayerPanel();
+    }
+
+    public static void togglePromoteButton(String playerLogin, ActionEvent actionEvent){
+        if (!playerPromoteButtonArrayList.contains(playerLogin)) {
+            playerPromoteButtonArrayList.add(playerLogin);
+        }
+        NeverScapeAlonePanel.refreshPlayerPanel();
+    }
+
+    public static void toggleAddButton(String playerLogin, ActionEvent actionEvent){
+        if (!playerAddButtonArrayList.contains(playerLogin)){
+            playerAddButtonArrayList.add(playerLogin);
+        }
+        playerBlockButtonArrayList.remove(playerLogin);
+        NeverScapeAlonePanel.refreshPlayerPanel();
+    }
+
+    public static void toggleBlockButton(String playerLogin, ActionEvent actionEvent){
+        if (!playerBlockButtonArrayList.contains(playerLogin)){
+            playerBlockButtonArrayList.add(playerLogin);
+        }
+        playerAddButtonArrayList.remove(playerLogin);
+        NeverScapeAlonePanel.refreshPlayerPanel();
     }
 
     public void updateDiscordInformation(){
@@ -391,7 +445,7 @@ public class NeverScapeAlonePlugin extends Plugin {
             timer = 0;
             return;
         }
-        String timer_string = "Queue Time: " + formatSeconds(timer);
+        String timer_string = "Queue Time: " + Components.formatSeconds(timer);
         ConnectingPanelClass.setConnectingPanelQueueTime(timer_string);
         timer += 1;
     }
@@ -466,25 +520,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         create_request.addProperty("detail","ping");
         create_request.add("ping_payload",ping_payload);
         websocket.send(create_request);
-    }
-
-    public static String formatSeconds(int timeInSeconds) {
-        int hours = timeInSeconds / 3600;
-        int secondsLeft = timeInSeconds - hours * 3600;
-        int minutes = secondsLeft / 60;
-        int seconds = secondsLeft - minutes * 60;
-
-        String formattedTime = "";
-        if (hours < 10) formattedTime += "0";
-        formattedTime += hours + ":";
-
-        if (minutes < 10) formattedTime += "0";
-        formattedTime += minutes + ":";
-
-        if (seconds < 10) formattedTime += "0";
-        formattedTime += seconds;
-
-        return formattedTime;
     }
 
     public void quickMatchQueueStart(ActionEvent actionEvent) {

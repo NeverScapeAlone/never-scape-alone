@@ -317,6 +317,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         SwingUtilities.invokeLater(() -> setMatchPanel(oldMatchData));
         SwingUtilities.invokeLater(() -> setPlayerPanel(oldMatchData));
     }
+
+    public static void refreshPlayerPanel(){
+        SwingUtilities.invokeLater(() -> setPlayerPanel(oldMatchData));
+    }
     public static void refreshSearchPanel(){
         SwingUtilities.invokeLater(() -> setSearchPanel(oldSearchMatches));
     }
@@ -449,8 +453,10 @@ public class NeverScapeAlonePanel extends PluginPanel {
         for (Player player : matchdata.getPlayers()) {
             Integer matchPlayerSize = matchdata.getPlayers().size();
             if (matchPlayerSize > NeverScapeAlonePlugin.matchSize){
+                NeverScapeAlonePanel.playerTab.setForeground(NOTIFIER_COLOR);
                 NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_JOIN));
             } else if (matchPlayerSize < NeverScapeAlonePlugin.matchSize) {
+                NeverScapeAlonePanel.playerTab.setForeground(NOTIFIER_COLOR);
                 NeverScapeAlonePanel.eventBus.post(new SoundPing().buildSound(SoundPingEnum.PLAYER_LEAVE));
             };
             NeverScapeAlonePlugin.matchSize = matchPlayerSize;
