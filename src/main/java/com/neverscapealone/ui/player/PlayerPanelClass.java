@@ -59,7 +59,9 @@ import com.neverscapealone.models.soundping.SoundPing;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
+import net.runelite.api.GameState;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 
@@ -236,15 +238,47 @@ public class PlayerPanelClass {
 
         JLabel player_name = new JLabel(player.getLogin());
         player_name.setFont(FontManager.getRunescapeBoldFont());
-        if (player.getIsPartyLeader()) {
-            player_name.setIcon(Icons.CROWN_ICON);
+
+        if (player.getGamestate() != null) {
+            switch (GameState.of(player.getGamestate())) {
+                case LOGIN_SCREEN:
+                    player_name.setIcon(Icons.LOGIN_ICON);
+                    break;
+                case LOGGING_IN:
+                case LOADING:
+                case HOPPING:
+                    player_name.setIcon(Icons.WAITING_ICON);
+                    break;
+                case CONNECTION_LOST:
+                case UNKNOWN:
+                    player_name.setIcon(Icons.ERROR_ICON);
+                    break;
+                case LOGGED_IN:
+                default:
+                    if (player.getIsPartyLeader()) {
+                        player_name.setIcon(Icons.CROWN_ICON);
+                    } else {
+                        if (player.getVerified()) {
+                            player_name.setIcon(Icons.VERIFIED_ICON);
+                        } else {
+                            player_name.setIcon(Icons.UNVERIFIED_ICON);
+                        }
+                    }
+                    break;
+            }
         } else {
-            if (player.getVerified()) {
-                player_name.setIcon(Icons.VERIFIED_ICON);
+            if (player.getIsPartyLeader()) {
+                player_name.setIcon(Icons.CROWN_ICON);
             } else {
-                player_name.setIcon(Icons.UNVERIFIED_ICON);
+                if (player.getVerified()) {
+                    player_name.setIcon(Icons.VERIFIED_ICON);
+                } else {
+                    player_name.setIcon(Icons.UNVERIFIED_ICON);
+                }
             }
         }
+
+
         player_name.setToolTipText("ID: " + String.valueOf(player.getUserId()));
         player_name.addMouseListener(new MouseAdapter() {
             @Override

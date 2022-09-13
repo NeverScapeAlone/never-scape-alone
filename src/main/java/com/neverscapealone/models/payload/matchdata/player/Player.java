@@ -61,6 +61,9 @@ public class Player {
     @SerializedName("wdr")
     @Expose
     private String wdr;
+    @SerializedName("gamestate")
+    @Expose
+    private Integer gamestate;
     @SerializedName("verified")
     @Expose
     private Boolean verified;
@@ -169,6 +172,17 @@ public class Player {
     }
     public Player withWdr(String wdr) {
         this.wdr = wdr;
+        return this;
+    }
+
+    public Integer getGamestate() {
+        return gamestate;
+    }
+    public void setGamestate(Integer gamestate) {
+        this.gamestate = gamestate;
+    }
+    public Player withGameState(Integer gamestate) {
+        this.gamestate = gamestate;
         return this;
     }
 
