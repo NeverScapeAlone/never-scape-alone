@@ -223,6 +223,7 @@ public class Icons {
     public static final ImageIcon PYRAMID_PLUNDER = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/pyramid_plunder.png"));
     public static final ImageIcon ROGUES_DEN = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/rogues_den.png"));
     public static final ImageIcon SHADES_OF_MORTON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/shades_of_morton.png"));
+    public static final ImageIcon SHOOTING_STARS = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/shooting_stars.png"));
     public static final ImageIcon SORCERESS_GARDEN = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/sorceress_garden.png"));
     public static final ImageIcon TAI_BWO_WANNAI = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/tai_bwo_wannai.png"));
     public static final ImageIcon TITHE_FARM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/minigames/tithe_farm.png"));

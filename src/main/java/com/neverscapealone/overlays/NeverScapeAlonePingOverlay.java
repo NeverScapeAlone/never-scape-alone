@@ -28,8 +28,8 @@ package com.neverscapealone.overlays;
 
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.models.payload.pingdata.PingData;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
