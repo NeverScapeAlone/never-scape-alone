@@ -137,6 +137,7 @@ public enum ActivityReferenceEnum
     PYRAMID_PLUNDER(Icons.PYRAMID_PLUNDER, "minigame", "Pyramid Plunder", "PYRAMID_PLUNDER"),
     ROGUES_DEN(Icons.ROGUES_DEN, "minigame", "Rogues Den", "ROGUES_DEN"),
     SHADES_OF_MORTON(Icons.SHADES_OF_MORTON, "minigame", "Shades of Morton", "SHADES_OF_MORTON"),
+    SHOOTING_STARS(Icons.SHOOTING_STARS, "minigame", "Shooting Stars", "SHOOTING_STARS"),
     SORCERESS_GARDEN(Icons.SORCERESS_GARDEN, "minigame", "Sorceress's Garden", "SORCERESS_GARDEN"),
     TAI_BWO_WANNAI(Icons.TAI_BWO_WANNAI, "minigame", "Tai Bwo Wannai", "TAI_BWO_WANNAI"),
     TITHE_FARM(Icons.TITHE_FARM, "minigame", "Tithe Farm", "TITHE_FARM"),
