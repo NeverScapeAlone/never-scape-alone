@@ -246,6 +246,7 @@ public class Icons {
     public static final ImageIcon EXPERT_TOA = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/raids/toa_expert.png"));
 
     // MISC
+    public static final ImageIcon BANKSTANDING = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/misc/bankstanding.png"));
     public static final ImageIcon CLUES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/misc/cluescrollsall.png"));
     public static final ImageIcon FALADOR_PARTY_ROOM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/misc/faladorpartyroom.png"));
     public static final ImageIcon PVP_GENERIC = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/misc/wilderness.png"));

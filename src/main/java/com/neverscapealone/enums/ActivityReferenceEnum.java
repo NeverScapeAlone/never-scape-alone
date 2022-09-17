@@ -160,6 +160,7 @@ public enum ActivityReferenceEnum
     EXPERT_TOA(Icons.EXPERT_TOA, "raid", "Expert Tombs of Amascut", "EXPERT_TOA"),
 
     // misc
+    BANKSTANDING(Icons.BANKSTANDING, "misc", "Bankstanding", "BANKSTANDING"),
     CLUES(Icons.CLUES, "misc", "Clues", "CLUES"),
     FALADOR_PARTY_ROOM(Icons.FALADOR_PARTY_ROOM, "misc", "Falador Party Room", "FALADOR_PARTY_ROOM"),
     PVP_GENERIC(Icons.PVP_GENERIC, "misc", "PKing", "PVP_GENERIC"),
