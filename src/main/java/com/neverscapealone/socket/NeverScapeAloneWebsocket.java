@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 public class NeverScapeAloneWebsocket extends WebSocketListener {
     private static final int NORMAL_CLOSURE = 1000;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final HttpUrl BASE_HTTP = HttpUrl.parse(System.getProperty("NeverScapeAloneAPIPath", "http://touchgrass.online:5500/V2/lobby"));
+    private static final HttpUrl BASE_HTTP = HttpUrl.parse(System.getProperty("NeverScapeAloneAPIPath", "http://neverscapealone.com:5500/V2/lobby"));
     private static final Supplier<String> CURRENT_EPOCH_SUPPLIER = () -> String.valueOf(Instant.now().getEpochSecond());
     @Inject
     private OkHttpClient okHttpClient;
