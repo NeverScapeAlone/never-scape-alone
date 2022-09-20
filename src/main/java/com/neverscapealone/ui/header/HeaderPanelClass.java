@@ -53,7 +53,7 @@ public class HeaderPanelClass {
         c.fill = GridBagConstraints.LINE_END;
         c.anchor = GridBagConstraints.LINE_START;
 
-        headerPanel.add(cleanJButton(Icons.PROFILE_ICON, "Access your profile!", NeverScapeAlonePlugin::switchToUserProfile, 16, 16), c);
+        headerPanel.add(cleanJButton(Icons.TUTORIAL_ICON, "Open a basic plugin tutorial", NeverScapeAlonePlugin::startPluginTutorial, 16, 16), c);
         c.gridx +=1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.CENTER;

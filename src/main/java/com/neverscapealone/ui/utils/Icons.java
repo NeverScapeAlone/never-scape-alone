@@ -47,6 +47,7 @@ public class Icons {
     public static final ImageIcon EQUIPMENT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/equipment.png"));
     public static final ImageIcon INVENTORY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/inventory.png"));
     public static final ImageIcon HIDE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/hide.png"));
+    public static final ImageIcon TUTORIAL_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/tutorial_button.png"));
     public static final ImageIcon HOME_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/home_button.png"));
     public static final ImageIcon HOME_DISABLED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/home_button_disabled.png"));
     public static final ImageIcon COORDINATE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/coordinate.png"));

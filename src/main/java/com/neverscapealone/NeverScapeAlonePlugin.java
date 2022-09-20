@@ -957,7 +957,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         websocket.send(search_request);
     }
 
-    public static void switchToUserProfile(ActionEvent actionEvent) {
+    public static void startPluginTutorial(ActionEvent actionEvent) {
         // do something in the future
     }
 
