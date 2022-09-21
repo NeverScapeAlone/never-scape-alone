@@ -567,12 +567,12 @@ public class NeverScapeAlonePanel extends PluginPanel {
     }
     public static void startQueue(boolean b){
         if (b){
-            NeverScapeAlonePlugin.cycleQueue = false;
-            isConnecting = false;
-            plugin.timer = 0;
-        } else {
             NeverScapeAlonePlugin.cycleQueue = true;
             isConnecting = true;
+            plugin.timer = 0;
+        } else {
+            NeverScapeAlonePlugin.cycleQueue = false;
+            isConnecting = false;
         }
     }
 }

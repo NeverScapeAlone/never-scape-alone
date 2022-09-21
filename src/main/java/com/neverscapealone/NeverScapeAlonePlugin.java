@@ -770,7 +770,6 @@ public class NeverScapeAlonePlugin extends Plugin {
         }
     }
 
-
     @Subscribe
     public void onGameTick(GameTick gameTick) {
 

@@ -50,21 +50,22 @@ public class HeaderPanelClass {
         GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
         c.gridx = 0;
+
         c.fill = GridBagConstraints.LINE_END;
         c.anchor = GridBagConstraints.LINE_START;
-
-        headerPanel.add(cleanJButton(Icons.TUTORIAL_ICON, "Open a basic plugin tutorial", NeverScapeAlonePlugin::startPluginTutorial, 16, 16), c);
-        c.gridx +=1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.CENTER;
-        headerPanel.add(linksPanel(),c);
-        c.gridx +=1;
-        c.fill = GridBagConstraints.LINE_START;
-        c.anchor = GridBagConstraints.LINE_END;
         NeverScapeAlonePanel.homeButton = cleanJButton(Icons.HOME_ICON, "Head back to the Home Menu", NeverScapeAlonePlugin::switchToHomePanel, 16, 16);
         NeverScapeAlonePanel.homeButton.setDisabledIcon(Icons.HOME_DISABLED_ICON);
         headerPanel.add(NeverScapeAlonePanel.homeButton, c);
 
+        c.gridx +=1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        headerPanel.add(linksPanel(),c);
+
+        c.gridx +=1;
+        c.fill = GridBagConstraints.LINE_START;
+        c.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(cleanJButton(Icons.TUTORIAL_ICON, "Open a basic plugin tutorial", NeverScapeAlonePlugin::startPluginTutorial, 16, 16), c);
         return headerPanel;
     }
 
