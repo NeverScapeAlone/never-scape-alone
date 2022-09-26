@@ -620,7 +620,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         JsonArray prayerList = new JsonArray();
         for (Prayer prayer : Prayer.values()){
             if (!client.isPrayerActive(prayer)){
-                return;
+                continue;
             }
             JsonObject pray_attributes = new JsonObject();
             pray_attributes.addProperty("prayer_name", prayer.name());
