@@ -121,6 +121,39 @@ public class Icons {
     public static final ImageIcon LOOTBAG_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/lootbag.png"));
     public static final ImageIcon YELLOW_PARTYHAT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/yellow_partyhat.png"));
 
+    // prayers
+
+    public static final ImageIcon AUGURY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/augury.png"));
+    public static final ImageIcon BURST_OF_STRENGTH = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/burst_of_strength.png"));
+    public static final ImageIcon CHIVALRY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/chivalry.png"));
+    public static final ImageIcon CLARITY_OF_THOUGHT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/clarity_of_thought.png"));
+    public static final ImageIcon EAGLE_EYE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/eagle_eye.png"));
+    public static final ImageIcon HAWK_EYE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/hawk_eye.png"));
+    public static final ImageIcon IMPROVED_REFLEXES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/improved_reflexes.png"));
+    public static final ImageIcon INCREDIBLE_REFLEXES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/incredible_reflexes.png"));
+    public static final ImageIcon MYSTIC_LORE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/mystic_lore.png"));
+    public static final ImageIcon MYSTIC_MIGHT = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/mystic_might.png"));
+    public static final ImageIcon MYSTIC_WILL = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/mystic_will.png"));
+    public static final ImageIcon PIETY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/piety.png"));
+    public static final ImageIcon PRESERVE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/preserve.png"));
+    public static final ImageIcon PROTECT_FROM_MAGIC = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/protect_from_magic.png"));
+    public static final ImageIcon PROTECT_FROM_MELEE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/protect_from_melee.png"));
+    public static final ImageIcon PROTECT_FROM_MISSILES = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/protect_from_missiles.png"));
+    public static final ImageIcon PROTECT_ITEM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/protect_item.png"));
+    public static final ImageIcon RAPID_HEAL = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/rapid_heal.png"));
+    public static final ImageIcon RAPID_RESTORE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/rapid_restore.png"));
+    public static final ImageIcon REDEMPTION = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/redemption.png"));
+    public static final ImageIcon RETRIBUTION = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/retribution.png"));
+    public static final ImageIcon RIGOUR = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/rigour.png"));
+    public static final ImageIcon ROCK_SKIN = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/rock_skin.png"));
+    public static final ImageIcon SHARP_EYE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/sharp_eye.png"));
+    public static final ImageIcon SMITE = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/smite.png"));
+    public static final ImageIcon STEEL_SKIN = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/steel_skin.png"));
+    public static final ImageIcon SUPERHUMAN_STRENGTH = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/superhuman_strength.png"));
+    public static final ImageIcon THICK_SKIN = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/thick_skin.png"));
+    public static final ImageIcon ULTIMATE_STRENGTH = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/prayers/ultimate_strength.png"));
+
+
     // "skill", "boss", "minigame", "misc", "solo", "raids"
     public static final ImageIcon RANDOM = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/random.png"));
     // SKILLS

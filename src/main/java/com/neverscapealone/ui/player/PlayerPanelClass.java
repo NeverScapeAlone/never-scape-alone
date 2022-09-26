@@ -30,6 +30,7 @@ import com.neverscapealone.enums.*;
 import com.neverscapealone.models.payload.matchdata.player.Player;
 import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
+import com.neverscapealone.models.payload.matchdata.player.prayer.PrayerSlot;
 import com.neverscapealone.models.payload.matchdata.player.stats.Stats;
 import com.neverscapealone.models.payload.matchdata.player.stats.agility.Agility;
 import com.neverscapealone.models.payload.matchdata.player.stats.attack.Attack;
@@ -64,6 +65,7 @@ import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
+import org.apache.commons.text.WordUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -659,6 +661,35 @@ public class PlayerPanelClass {
     private JPanel playerPrayer(Player player){
         JPanel panel = new JPanel();
         panel.setBackground(BACKGROUND_COLOR);
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.LINE_START;
+        c.fill = GridBagConstraints.LINE_END;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        if (player.getPrayer() == null){
+            panel.setLayout(new GridLayout(1,1));
+            panel.add(title("No Prayers Available", WARNING_COLOR));
+            return panel;
+        }
+        if (player.getPrayer().size() == 0){
+            panel.setLayout(new GridLayout(1,1));
+            panel.add(title("Player Not Praying", NOTIFIER_COLOR));
+            return panel;
+        }
+        for (PrayerSlot prayerSlot : player.getPrayer()){
+            ImageIcon prayerIcon = PrayerTypeEnum.valueOf(prayerSlot.getPrayerName()).getIcon();
+            JLabel prayerName = new JLabel(WordUtils.capitalize(prayerSlot.getPrayerName().replace("_"," ").toLowerCase()));
+            prayerName.setIcon(prayerIcon);
+            prayerName.setForeground(Color.YELLOW);
+            prayerName.setFont(FontManager.getRunescapeFont());
+            c.gridy +=1;
+            panel.add(Box.createVerticalStrut(2));
+            c.gridy +=1;
+            panel.add(prayerName, c);
+        }
         return panel;
     }
     private JPanel playerStats(Player player){
