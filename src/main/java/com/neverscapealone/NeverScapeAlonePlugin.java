@@ -66,6 +66,7 @@ import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
+import net.runelite.client.plugins.prayer.PrayerPlugin;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -600,6 +601,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         websocket.send(payload);
     }
 
+    @Schedule(period = 5, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerPrayerUpdate() {
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
@@ -611,7 +613,25 @@ public class NeverScapeAlonePlugin extends Plugin {
             return;
         }
 
+        clientThread.invoke( ()-> sendPrayerData());
+    }
 
+    public void sendPrayerData(){
+        JsonArray prayerList = new JsonArray();
+        for (Prayer prayer : Prayer.values()){
+            if (!client.isPrayerActive(prayer)){
+                return;
+            }
+            JsonObject pray_attributes = new JsonObject();
+            pray_attributes.addProperty("prayer_name", prayer.name());
+            pray_attributes.addProperty("prayer_varbit", prayer.getVarbit());
+            prayerList.add(pray_attributes);
+        }
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("detail", "prayer_update");
+        payload.add("prayer", prayerList);
+        websocket.send(payload);
     }
 
     @Schedule(period = 6, unit = ChronoUnit.SECONDS, asynchronous = true)
@@ -740,6 +760,7 @@ public class NeverScapeAlonePlugin extends Plugin {
         playerLocationUpdate();
         playerInventoryUpdate();
         playerEquipmentUpdate();
+        playerPrayerUpdate();
         playerStatsUpdate();
     }
 

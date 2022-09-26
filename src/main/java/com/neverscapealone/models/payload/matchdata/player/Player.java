@@ -29,6 +29,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.location.Location;
+import com.neverscapealone.models.payload.matchdata.player.prayer.PrayerSlot;
 import com.neverscapealone.models.payload.matchdata.player.stats.Stats;
 import com.neverscapealone.models.payload.matchdata.player.status.Status;
 import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
@@ -49,6 +50,9 @@ public class Player {
     @SerializedName("inventory")
     @Expose
     private List<Item> inventory;
+    @SerializedName("prayer")
+    @Expose
+    private List<PrayerSlot> prayer;
     @SerializedName("equipment")
     @Expose
     private Equipment equipment;
@@ -138,6 +142,17 @@ public class Player {
     }
     public Player withInventory(List<Item> inventory) {
         this.inventory = inventory;
+        return this;
+    }
+
+    public List<PrayerSlot> getPrayer() {
+        return prayer;
+    }
+    public void setPrayer(List<PrayerSlot> prayer) {
+        this.prayer = prayer;
+    }
+    public Player withPrayer(List<PrayerSlot> prayer) {
+        this.prayer = prayer;
         return this;
     }
 

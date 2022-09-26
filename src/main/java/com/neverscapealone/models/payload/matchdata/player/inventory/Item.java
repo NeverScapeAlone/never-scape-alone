@@ -26,8 +26,6 @@ package com.neverscapealone.models.payload.matchdata.player.inventory;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.neverscapealone.enums.SoundPingEnum;
-import com.neverscapealone.models.soundping.SoundPing;
 
 public class Item {
 
