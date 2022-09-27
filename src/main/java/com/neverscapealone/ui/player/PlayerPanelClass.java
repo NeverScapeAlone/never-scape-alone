@@ -254,7 +254,7 @@ public class PlayerPanelClass {
                     break;
                 case CONNECTION_LOST:
                     player_name.setIcon(Icons.CONNECTION_LOST_ICON);
-                    player_name.setToolTipText(player.getLogin()+" lost connection to OSRS");
+                    player_name.setToolTipText(player.getLogin()+"has lost connection to RuneScape");
                     break;
                 case UNKNOWN:
                     player_name.setIcon(Icons.ERROR_ICON);
