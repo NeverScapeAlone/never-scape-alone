@@ -47,6 +47,8 @@ public class Payload {
     String group_id;
     @SerializedName("passcode") // the passcode that is sent on a create_match request
     String passcode;
+    @SerializedName("RuneGuard") // the passcode that is sent on a create_match request
+    boolean RuneGuard;
     @SerializedName("search_match_data") // limited data to be sent over to the client, this is mainly for selecting a match
     SearchMatches search;
     @SerializedName("match_data") // data regarding the match itself

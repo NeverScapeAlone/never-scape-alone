@@ -170,6 +170,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                     passcode = payload.getPasscode();
                 }
                 socket.close(1000, "Ending connection to join a new match");
+                NeverScapeAlonePlugin.inRuneGuardMatch = payload.isRuneGuard();
                 connect(username, discord, discord_id, token, groupID, passcode);
                 break;
             case INCOMING_PING:

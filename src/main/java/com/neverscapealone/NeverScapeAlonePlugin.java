@@ -143,6 +143,8 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Getter
     @Setter
     public static String discord_id = null;
+    @Getter
+    @Setter
     public static boolean inRuneGuardMatch = false;
     public Integer timer = 0;
     public Integer tileTimer = 0;
@@ -585,6 +587,7 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Schedule(period = 60, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerStatsUpdate() {
+        System.out.println(NeverScapeAlonePlugin.inRuneGuardMatch);
         if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendStatsRuneguard()){
             return;
         }
@@ -888,7 +891,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                 "Enter passcode for Private Match:";
         String passcode = JOptionPane.showInputDialog(frame, message);
         if (passcode.length() > 0) {
-            NeverScapeAlonePlugin.inRuneGuardMatch = RuneGuard;
+            setInRuneGuardMatch(RuneGuard);
             privateMatchJoin(matchID, passcode);
         }
     }
@@ -913,7 +916,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                                         new String[]{"JOIN","CANCEL"},
                                         "JOIN") == JOptionPane.YES_OPTION)
         {
-            NeverScapeAlonePlugin.inRuneGuardMatch = RuneGuard;
+            setInRuneGuardMatch(RuneGuard);
             publicMatchJoin(matchID);
         };
     }
