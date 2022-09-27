@@ -143,6 +143,7 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Getter
     @Setter
     public static String discord_id = null;
+    public static boolean inRuneGuardMatch = false;
     public Integer timer = 0;
     public Integer tileTimer = 0;
     public static Integer matchSize = 0;
@@ -284,6 +285,12 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public void updateDiscordInformation() {
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendDiscordRuneguard()){
+            setDiscordUsername(null);
+            setDiscord_id(null);
+            return;
+        }
+
         if ((NeverScapeAlonePlugin.discord_id != null) & (NeverScapeAlonePlugin.discordUsername != null)) {
             return;
         }
@@ -578,6 +585,10 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Schedule(period = 60, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerStatsUpdate() {
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendStatsRuneguard()){
+            return;
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
@@ -606,6 +617,10 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Schedule(period = 5, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerPrayerUpdate() {
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendPrayerRuneguard()){
+            return;
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
@@ -640,6 +655,10 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Schedule(period = 6, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerEquipmentUpdate() {
         // sends equipment update every 5 seconds - not on inventory change
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendEquipmentRuneguard()){
+            return;
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
@@ -677,6 +696,10 @@ public class NeverScapeAlonePlugin extends Plugin {
     @Schedule(period = 5, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerInventoryUpdate() {
         // sends inventory update every 5 seconds - not on inventory change bc the server would perish.
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendInventoryRuneguard()){
+            return;
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
@@ -716,6 +739,10 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Schedule(period = 10, unit = ChronoUnit.SECONDS, asynchronous = true)
     public void playerLocationUpdate() {
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendLocationRuneguard()){
+            return;
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
@@ -796,6 +823,9 @@ public class NeverScapeAlonePlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick gameTick) {
+        if (NeverScapeAlonePlugin.inRuneGuardMatch & !config.sendStatusRuneguard()){
+            return;
+        }
 
         if (client.getGameState() == GameState.LOGGED_IN) {
             username = client.getLocalPlayer().getName();
@@ -858,6 +888,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                 "Enter passcode for Private Match:";
         String passcode = JOptionPane.showInputDialog(frame, message);
         if (passcode.length() > 0) {
+            NeverScapeAlonePlugin.inRuneGuardMatch = RuneGuard;
             privateMatchJoin(matchID, passcode);
         }
     }
@@ -882,6 +913,7 @@ public class NeverScapeAlonePlugin extends Plugin {
                                         new String[]{"JOIN","CANCEL"},
                                         "JOIN") == JOptionPane.YES_OPTION)
         {
+            NeverScapeAlonePlugin.inRuneGuardMatch = RuneGuard;
             publicMatchJoin(matchID);
         };
     }
