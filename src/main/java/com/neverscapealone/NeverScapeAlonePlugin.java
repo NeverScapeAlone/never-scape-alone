@@ -72,6 +72,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.LinkBrowser;
 import net.runelite.discord.DiscordUser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -980,7 +981,14 @@ public class NeverScapeAlonePlugin extends Plugin {
     }
 
     public static void startPluginTutorial(ActionEvent actionEvent) {
-        // do something in the future
+        final JFrame frame = new JFrame();
+        frame.setAlwaysOnTop(true);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        String message = "Clicking 'Okay' will take you to the\nNeverScapeAlone plugin readme and tutorial.";
+        String title = "NeverScapeAlone Tutorial Selection";
+        if (JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, Icons.NSA_ICON, new String[]{"Okay","Cancel"}, "Okay") == JOptionPane.YES_OPTION){
+            LinkBrowser.browse("https://runelite.net/plugin-hub/show/neverscapealone");
+        }
     }
 
     public static void switchToHomePanel(ActionEvent actionEvent) {
