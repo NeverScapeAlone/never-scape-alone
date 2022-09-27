@@ -33,7 +33,7 @@ import javax.swing.*;
 public class Icons {
     private static final Class<?> PLUGIN_CLASS = NeverScapeAlonePlugin.class;
 
-    public static final ImageIcon LOGIN_ICON = new ImageIcon("/com/neverscapealone/other/login.png");
+    public static final ImageIcon LOGIN_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/login.png"));
     // icons
     public static final ImageIcon CONNECTION_LOST_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/connection_lost.png"));
     public static final ImageIcon PING_SOUND_ON_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/ping_sound_on.png"));
@@ -108,7 +108,7 @@ public class Icons {
     // status icons
     public static final ImageIcon WARNING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/warning.png"));
     public static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/error.png"));
-    public static final ImageIcon WAITING_ICON = new ImageIcon("/com/neverscapealone/other/waiting.png");
+    public static final ImageIcon WAITING_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/waiting.png"));
 
     // other
 

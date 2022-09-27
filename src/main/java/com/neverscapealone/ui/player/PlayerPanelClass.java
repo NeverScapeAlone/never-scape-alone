@@ -244,25 +244,34 @@ public class PlayerPanelClass {
             switch (GameState.of(player.getGamestate())) {
                 case LOGIN_SCREEN:
                     player_name.setIcon(Icons.LOGIN_ICON);
+                    player_name.setToolTipText(player.getLogin()+" is at the login screen");
                     break;
                 case LOGGING_IN:
                 case LOADING:
                 case HOPPING:
                     player_name.setIcon(Icons.WAITING_ICON);
+                    player_name.setToolTipText(player.getLogin()+" is hopping, loading, or logging in");
                     break;
                 case CONNECTION_LOST:
+                    player_name.setIcon(Icons.CONNECTION_LOST_ICON);
+                    player_name.setToolTipText(player.getLogin()+" lost connection to OSRS");
+                    break;
                 case UNKNOWN:
                     player_name.setIcon(Icons.ERROR_ICON);
+                    player_name.setToolTipText(player.getLogin()+" has error'd out!");
                     break;
                 case LOGGED_IN:
                 default:
                     if (player.getIsPartyLeader()) {
                         player_name.setIcon(Icons.CROWN_ICON);
+                        player_name.setToolTipText(player.getLogin()+" is the party leader");
                     } else {
                         if (player.getVerified()) {
                             player_name.setIcon(Icons.VERIFIED_ICON);
+                            player_name.setToolTipText(player.getLogin()+" is verified");
                         } else {
                             player_name.setIcon(Icons.UNVERIFIED_ICON);
+                            player_name.setToolTipText(player.getLogin()+" is unverified");
                         }
                     }
                     break;
@@ -270,17 +279,18 @@ public class PlayerPanelClass {
         } else {
             if (player.getIsPartyLeader()) {
                 player_name.setIcon(Icons.CROWN_ICON);
+                player_name.setToolTipText(player.getLogin()+" is the party leader");
             } else {
                 if (player.getVerified()) {
                     player_name.setIcon(Icons.VERIFIED_ICON);
+                    player_name.setToolTipText(player.getLogin()+" is verified");
                 } else {
                     player_name.setIcon(Icons.UNVERIFIED_ICON);
+                    player_name.setToolTipText(player.getLogin()+" is unverified");
                 }
             }
         }
 
-
-        player_name.setToolTipText("ID: " + String.valueOf(player.getUserId()));
         player_name.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
