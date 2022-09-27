@@ -24,8 +24,6 @@ package com.neverscapealone.ui.search;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.neverscapealone.models.payload.searchmatches.SearchMatches;
-import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 

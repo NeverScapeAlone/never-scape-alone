@@ -41,8 +41,8 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.neverscapealone.ui.utils.Components.htmlWrap;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
+import static com.neverscapealone.ui.utils.Components.htmlWrap;
 
 public class ActivityPanelClass {
 

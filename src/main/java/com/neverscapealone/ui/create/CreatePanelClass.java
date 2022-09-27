@@ -28,9 +28,9 @@ package com.neverscapealone.ui.create;
 import com.neverscapealone.enums.ActivityReferenceEnum;
 import com.neverscapealone.enums.HelpButtonSwitchEnum;
 import com.neverscapealone.enums.PanelStateEnum;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
-import com.neverscapealone.ui.NeverScapeAlonePanel;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
@@ -40,8 +40,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static com.neverscapealone.ui.utils.Components.*;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
+import static com.neverscapealone.ui.utils.Components.*;
 
 public class CreatePanelClass {
     JPanel display = new JPanel();

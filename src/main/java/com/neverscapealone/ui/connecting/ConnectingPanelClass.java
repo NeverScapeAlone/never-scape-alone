@@ -33,11 +33,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-import static com.neverscapealone.NeverScapeAlonePlugin.panel;
 import static com.neverscapealone.ui.NeverScapeAlonePanel.ALT_BACKGROUND;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.connectingPanel;
 import static com.neverscapealone.ui.utils.Components.cleanJButton;
 import static com.neverscapealone.ui.utils.Components.title;
-import static com.neverscapealone.ui.NeverScapeAlonePanel.connectingPanel;
 
 public class ConnectingPanelClass {
 

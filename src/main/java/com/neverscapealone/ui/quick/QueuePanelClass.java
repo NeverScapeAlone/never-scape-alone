@@ -29,7 +29,6 @@ import com.neverscapealone.NeverScapeAlonePlugin;
 import com.neverscapealone.enums.ActivityReferenceEnum;
 import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 

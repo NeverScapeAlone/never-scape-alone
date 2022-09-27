@@ -25,7 +25,6 @@
 
 package com.neverscapealone.ui.match;
 
-import com.neverscapealone.enums.MatchHeaderSwitchEnum;
 import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.SoundPingEnum;
 import com.neverscapealone.models.payload.matchdata.MatchData;

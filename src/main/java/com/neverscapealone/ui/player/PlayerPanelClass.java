@@ -62,7 +62,6 @@ import com.neverscapealone.ui.utils.Components;
 import com.neverscapealone.ui.utils.Icons;
 import net.runelite.api.GameState;
 import net.runelite.client.ui.FontManager;
-import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 import org.apache.commons.text.WordUtils;
