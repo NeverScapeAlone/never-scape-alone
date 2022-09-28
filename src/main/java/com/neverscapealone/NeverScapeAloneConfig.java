@@ -27,6 +27,7 @@ package com.neverscapealone;
 
 import com.neverscapealone.enums.MapStatsOptionsEnum;
 import com.neverscapealone.enums.SoundEffectSelectionEnum;
+import net.runelite.api.ChatMessageType;
 import net.runelite.client.config.*;
 
 import java.awt.*;
@@ -41,7 +42,7 @@ public interface NeverScapeAloneConfig extends Config {
             name = "Interactive Settings",
             description = "Select the interactive settings for the plugin."
     )
-    String interactiveSettings = "interactiveSettings";
+    String interactiveSection = "interactiveSettings";
 
     @ConfigSection(
             position = 2,
@@ -76,10 +77,18 @@ public interface NeverScapeAloneConfig extends Config {
             name = "Sound Settings",
             description = "Plugin Sound Settings"
     )
-    String soundSelection = "soundSelection";
+    String soundSection = "soundSection";
+
 
     @ConfigSection(
             position = 7,
+            name = "Chat Settings",
+            description = "Plugin Chat Settings"
+    )
+    String chatSection = "chatSection";
+
+    @ConfigSection(
+            position = 8,
             name = "Connectivity Settings",
             description = "Plugin Connectivity Settings"
     )
@@ -103,7 +112,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "hotkey",
             name = "Ping Hotkey",
             description = "Configures the Ping selection Hotkey",
-            section = interactiveSettings
+            section = interactiveSection
     )
     default Keybind hotkey()
     {
@@ -115,7 +124,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "alertDelay",
             name = "Alert Delay",
             description = "How long you should have to hold down the hot-key before the Ping is converted to an Alert.",
-            section = interactiveSettings
+            section = interactiveSection
     )
     @Range(max = 2000)
     @Units(Units.MILLISECONDS)
@@ -129,7 +138,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "maxPingCount",
             name = "Max Ping Count",
             description = "Max number of active pings and alerts displayed on the screen.",
-            section = interactiveSettings
+            section = interactiveSection
     )
     @Range(max = 100)
     default int maxPingCount()
@@ -141,7 +150,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "pingDecay",
             name = "Ping Decay",
             description = "Maximum number of seconds that a ping can live for",
-            section = interactiveSettings
+            section = interactiveSection
     )
     @Range(max = 3600)
     @Units(Units.SECONDS)
@@ -155,7 +164,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "pingColor",
             name = "Ping Color",
             description = "This is the color that other players see when you ping a tile.",
-            section = interactiveSettings
+            section = interactiveSection
     )
     default Color pingColor(){return new Color(247, 241, 49);};
 
@@ -285,7 +294,7 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Teammate color on the map",
             section = colorSection
     )
-    default Color mapColor(){return new Color(0, 255, 174);};
+    default Color mapColor(){return new Color(0, 255, 174);}
 
     @ConfigItem(
             position = 3,
@@ -294,18 +303,18 @@ public interface NeverScapeAloneConfig extends Config {
             description = "Teammate overlay color",
             section = colorSection
     )
-    default Color overlayColor(){return new Color(0, 255, 174);};
+    default Color overlayColor(){return new Color(0, 255, 174);}
 
     @ConfigItem(
             position = 1,
             keyName = "pingSoundEffect",
             name = "Ping",
             description = "The normal 'ping' sound effect.",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectPing()
     {
-        return SoundEffectSelectionEnum.BELL_DING;
+        return SoundEffectSelectionEnum.TINDER_STRIKE;
     }
 
     @ConfigItem(
@@ -313,11 +322,11 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "alertPingSoundEffect",
             name = "Alert",
             description = "The alert 'ping' sound effect.",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectAlertPing()
     {
-        return SoundEffectSelectionEnum.BELL_DONG;
+        return SoundEffectSelectionEnum.MINING_TINK;
     }
 
     @ConfigItem(
@@ -325,7 +334,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "matchJoinSound",
             name = "Match Join",
             description = "The sound when you join a match",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectMatchJoin()
     {
@@ -337,7 +346,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "matchCloseSound",
             name = "Match Leave",
             description = "The sound when you leave a match",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectMatchLeave()
     {
@@ -349,7 +358,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "playerJoinSound",
             name = "Team Join",
             description = "The sound of a player joining the match",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectPlayerJoin()
     {
@@ -361,7 +370,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "playerLeaveSound",
             name = "Team Leave",
             description = "The sound of a player leaving the match",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectPlayerLeave()
     {
@@ -373,7 +382,7 @@ public interface NeverScapeAloneConfig extends Config {
             keyName = "errorSound",
             name = "Error",
             description = "The sound when there's an error",
-            section = soundSelection
+            section = soundSection
     )
     default SoundEffectSelectionEnum soundEffectError()
     {
@@ -382,10 +391,22 @@ public interface NeverScapeAloneConfig extends Config {
 
     @ConfigItem(
             position = 8,
+            keyName = "chatSound",
+            name = "Chat",
+            description = "The sound when there's a new Chat message",
+            section = soundSection
+    )
+    default SoundEffectSelectionEnum soundEffectChat()
+    {
+        return SoundEffectSelectionEnum.PICK_PLANT;
+    }
+
+    @ConfigItem(
+            position = 9,
             keyName = "pingBool",
             name = "Ping Sound",
             description = "Enable or disable the Ping sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectPingBool()
     {
@@ -393,11 +414,11 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 10,
             keyName = "alertBool",
             name = "Alert Sound",
             description = "Enable or disable the Alert sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectAlertBool()
     {
@@ -405,11 +426,11 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 11,
             keyName = "matchJoinBool",
             name = "Match Join Sound",
             description = "Enable or disable the match join sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectMatchJoinBool()
     {
@@ -417,11 +438,11 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 12,
             keyName = "matchLeaveBool",
             name = "Match Leave Sound",
             description = "Enable or disable the match leave sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectMatchLeaveBool()
     {
@@ -429,11 +450,11 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 12,
+            position = 13,
             keyName = "TeamJoinBool",
             name = "Team Join Sound",
             description = "Enable or disable the Teammate join sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectTeamJoinBool()
     {
@@ -441,11 +462,11 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 13,
+            position = 14,
             keyName = "TeamLeaveBool",
             name = "Team Leave Sound",
             description = "Enable or disable the Teammate leave sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectTeamLeaveBool()
     {
@@ -453,11 +474,23 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 14,
+            position = 15,
+            keyName = "chatBool",
+            name = "Chat Sound",
+            description = "Enable or disable the Chat sound effect",
+            section = soundSection
+    )
+    default boolean soundEffectChatBool()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 16,
             keyName = "ErrorBool",
             name = "Error Sound",
             description = "Enable or disable the Error sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectErrorBool()
     {
@@ -465,15 +498,39 @@ public interface NeverScapeAloneConfig extends Config {
     }
 
     @ConfigItem(
-            position = 15,
+            position = 17,
             keyName = "ButtonBool",
             name = "Button Sound",
             description = "Enable or disable the Button sound effect",
-            section = soundSelection
+            section = soundSection
     )
     default boolean soundEffectButtonBool()
     {
         return true;
+    }
+
+    @ConfigItem(
+            position = 1,
+            keyName = "chatShowBool",
+            name = "Show Chat In-game",
+            description = "Show chat in-game, as well as in the plugin 'chat' panel.",
+            section = chatSection
+    )
+    default boolean chatShowBoolean()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "chatType",
+            name = "Chat",
+            description = "Selects where chat should show up in-game.",
+            section = chatSection
+    )
+    default ChatMessageType chatMessageType()
+    {
+        return ChatMessageType.CONSOLE;
     }
 
 
@@ -489,5 +546,89 @@ public interface NeverScapeAloneConfig extends Config {
     {
         return 60;
     }
+
+    @ConfigItem(
+            position = 2,
+            keyName = "sendDiscordRuneguard",
+            name = "Send Discord",
+            description = "Send your discord to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendDiscordRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 3,
+            keyName = "sendLocationRuneguard",
+            name = "Send Location",
+            description = "Send your location to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendLocationRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 4,
+            keyName = "sendStatusRuneguard",
+            name = "Send Status",
+            description = "Send your status to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendStatusRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 5,
+            keyName = "sendStatsRuneguard",
+            name = "Send Stats",
+            description = "Send your stats to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendStatsRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 6,
+            keyName = "sendInventoryRuneguard",
+            name = "Send Inventory",
+            description = "Send your inventory to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendInventoryRuneguard()
+    {
+        return true;
+    }
+    @ConfigItem(
+            position = 7,
+            keyName = "sendEquipmentRuneguard",
+            name = "Send Equipment",
+            description = "Send your equipment to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendEquipmentRuneguard()
+    {
+        return true;
+    }
+
+    @ConfigItem(
+            position = 8,
+            keyName = "sendPrayerRuneguard",
+            name = "Send Prayer",
+            description = "Send your prayer to non-RuneGuard parties",
+            section = connectivitySection
+    )
+    default boolean sendPrayerRuneguard()
+    {
+        return true;
+    }
+
 }
 

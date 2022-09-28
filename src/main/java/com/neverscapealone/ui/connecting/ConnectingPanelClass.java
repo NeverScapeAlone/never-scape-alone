@@ -26,16 +26,17 @@
 package com.neverscapealone.ui.connecting;
 
 import com.neverscapealone.enums.PanelStateEnum;
+import com.neverscapealone.ui.NeverScapeAlonePanel;
 import com.neverscapealone.ui.utils.Icons;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-import static com.neverscapealone.NeverScapeAlonePlugin.panel;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.ALT_BACKGROUND;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.connectingPanel;
 import static com.neverscapealone.ui.utils.Components.cleanJButton;
 import static com.neverscapealone.ui.utils.Components.title;
-import static com.neverscapealone.ui.NeverScapeAlonePanel.connectingPanel;
 
 public class ConnectingPanelClass {
 
@@ -43,6 +44,7 @@ public class ConnectingPanelClass {
         JPanel connectingPanel = new JPanel();
         connectingPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         connectingPanel.setLayout(new GridBagLayout());
+        connectingPanel.setBackground(ALT_BACKGROUND);
         GridBagConstraints c = new GridBagConstraints();
 
         c.weightx = 1;
@@ -51,12 +53,12 @@ public class ConnectingPanelClass {
         c.gridx = 0;
         c.gridy = 0;
 
-        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> panel.panelStateManagerAction(e, PanelStateEnum.QUICK), 20, 20);
+        JButton escape = cleanJButton(Icons.CANCEL_ICON, "Exit", e -> NeverScapeAlonePanel.setRefreshView(e, PanelStateEnum.HOME), 20, 20);
         connectingPanel.add(escape, c);
 
         c.anchor = GridBagConstraints.CENTER;
         c.gridy += 1;
-        connectingPanel.add(title("Connecting..."), c);
+        connectingPanel.add(title("Connecting...", ALT_BACKGROUND), c);
         c.gridy += 1;
         connectingPanel.add(new JLabel("Queue Time: 00:00:00"), c);
 

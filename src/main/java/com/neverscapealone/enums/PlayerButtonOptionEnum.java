@@ -34,7 +34,10 @@ public enum PlayerButtonOptionEnum {
     DISLIKE("dislike"),
     LIKE("like"),
     KICK("kick"),
-    PROMOTE("promote")
+    PROMOTE("promote"),
+    ADD("add"),
+    BLOCK("block"),
+    MESSAGE("message"),
     ;
 
     private final String detail;

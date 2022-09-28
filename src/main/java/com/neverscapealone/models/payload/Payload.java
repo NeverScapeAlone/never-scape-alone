@@ -27,6 +27,7 @@ package com.neverscapealone.models.payload;
 
 import com.google.gson.annotations.SerializedName;
 import com.neverscapealone.enums.ServerStatusCode;
+import com.neverscapealone.models.payload.chatdata.ChatData;
 import com.neverscapealone.models.payload.matchdata.MatchData;
 import com.neverscapealone.models.payload.pingdata.PingData;
 import com.neverscapealone.models.payload.searchmatches.SearchMatches;
@@ -46,11 +47,15 @@ public class Payload {
     String group_id;
     @SerializedName("passcode") // the passcode that is sent on a create_match request
     String passcode;
+    @SerializedName("RuneGuard") // the passcode that is sent on a create_match request
+    boolean RuneGuard;
     @SerializedName("search_match_data") // limited data to be sent over to the client, this is mainly for selecting a match
     SearchMatches search;
     @SerializedName("match_data") // data regarding the match itself
     MatchData matchData;
     @SerializedName("ping_data") // incoming ping data
     PingData pingData;
+    @SerializedName("chat_data") // incoming ping data
+    ChatData chatData;
 }
 

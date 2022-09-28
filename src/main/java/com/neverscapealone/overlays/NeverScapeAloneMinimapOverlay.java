@@ -27,8 +27,8 @@ package com.neverscapealone.overlays;
 
 import com.neverscapealone.NeverScapeAloneConfig;
 import com.neverscapealone.NeverScapeAlonePlugin;
-import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.models.payload.matchdata.MatchData;
+import com.neverscapealone.socket.NeverScapeAloneWebsocket;
 import com.neverscapealone.ui.utils.Icons;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 @Singleton
-public class NeverScapeAloneMinimapOverlay extends Overlay
+public class    NeverScapeAloneMinimapOverlay extends Overlay
 {
     private final Client client;
     private final NeverScapeAlonePlugin plugin;

@@ -24,7 +24,6 @@ package com.neverscapealone.ui.search;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 
@@ -33,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static com.neverscapealone.ui.NeverScapeAlonePanel.*;
+import static com.neverscapealone.ui.utils.Components.horizontalBar;
 
 public class SearchPanelClass {
     public JPanel searchPanel() {
@@ -47,8 +47,7 @@ public class SearchPanelClass {
         c.gridy = 0;
         c.gridx = 0;
 
-        JPanel activitySearchBar = activitySearchBar();
-        searchPanel.add(activitySearchBar, c);
+        searchPanel.add(activitySearchBar(), c);
         c.gridy += 1;
         searchPanel.add(new JPanel(), c);
         return searchPanel;
@@ -56,7 +55,7 @@ public class SearchPanelClass {
     private JPanel activitySearchBar() {
         JPanel searchbar_panel = new JPanel();
         searchbar_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        searchbar_panel.setBackground(BACKGROUND_COLOR);
+        searchbar_panel.setBackground(ALT_BACKGROUND);
         searchbar_panel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1;
@@ -67,12 +66,18 @@ public class SearchPanelClass {
 
         searchBar.setIcon(IconTextField.Icon.SEARCH);
         searchBar.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH, 30));
-        searchBar.setBackground(SUB_BACKGROUND_COLOR);
-        searchBar.setHoverBackgroundColor(ColorScheme.DARK_GRAY_HOVER_COLOR);
+        searchBar.setBackground(BACKGROUND_COLOR);
+        searchBar.setHoverBackgroundColor(BACKGROUND_COLOR);
         searchBar.setText("*");
         searchBar.addActionListener(plugin::searchActiveMatches);
         searchbar_panel.add(searchBar, c);
 
+        c.gridy +=1;
+        searchbar_panel.add(Box.createVerticalStrut(4), c);
+        c.gridy +=1;
+        searchbar_panel.add(horizontalBar(4, ACCENT_COLOR), c);
+
         return searchbar_panel;
     }
+
 }

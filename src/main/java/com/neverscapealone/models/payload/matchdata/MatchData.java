@@ -55,6 +55,9 @@ public class MatchData {
     @SerializedName("isPrivate")
     @Expose
     private Boolean isPrivate;
+    @SerializedName("RuneGuard")
+    @Expose
+    private Boolean RuneGuard;
     @SerializedName("notes")
     @Expose
     private String notes;
@@ -156,6 +159,17 @@ public class MatchData {
 
     public MatchData withIsPrivate(Boolean isPrivate) {
         this.isPrivate = isPrivate;
+        return this;
+    }
+
+    public Boolean getRuneGuard() {
+        return RuneGuard;
+    }
+    public void setRuneGuard(Boolean RuneGuard) {
+        this.RuneGuard = RuneGuard;
+    }
+    public MatchData withRuneGuard(Boolean RuneGuard) {
+        this.RuneGuard = RuneGuard;
         return this;
     }
 

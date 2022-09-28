@@ -31,9 +31,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PanelStateEnum {
-    MATCH,
-    CONNECTING,
-    QUICK,
-    CREATE,
-    SEARCH
+    MATCH, // switching to match panel
+    CONNECTING, // transition panel
+    HOME, // home panel
+    CREATE_MATCH_PANEL, // create match panel
 }

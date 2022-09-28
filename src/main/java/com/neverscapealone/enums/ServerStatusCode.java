@@ -43,6 +43,8 @@ public enum ServerStatusCode {
     @SerializedName("search match data")
     SEARCH_MATCH_DATA,
     @SerializedName("incoming ping")
-    INCOMING_PING;
+    INCOMING_PING,
+    @SerializedName("incoming chat")
+    INCOMING_CHAT;
 }
 

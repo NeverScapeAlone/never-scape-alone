@@ -30,7 +30,10 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neverscapealone.NeverScapeAloneConfig;
+import com.neverscapealone.NeverScapeAlonePlugin;
+import com.neverscapealone.enums.PanelStateEnum;
 import com.neverscapealone.enums.SoundPingEnum;
+import com.neverscapealone.models.panelstate.PanelState;
 import com.neverscapealone.models.payload.Payload;
 import com.neverscapealone.models.payload.servermessage.ServerMessage;
 import com.neverscapealone.models.soundping.SoundPing;
@@ -87,7 +90,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
     }
     public void connect(String username, String discord, String discord_id, String token, String groupID, String passcode) {
         if (username.equals("")){
-            this.eventBus.post(new ServerMessage().buildServerMessage("Please Login"));
+            this.eventBus.post(new ServerMessage().buildServerMessage("Login to RuneScape"));
             return;
         }
 
@@ -167,10 +170,17 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                     passcode = payload.getPasscode();
                 }
                 socket.close(1000, "Ending connection to join a new match");
+                NeverScapeAlonePlugin.inRuneGuardMatch = payload.isRuneGuard();
                 connect(username, discord, discord_id, token, groupID, passcode);
                 break;
             case INCOMING_PING:
-                this.eventBus.post(payload.getPingData());
+                if (!NeverScapeAlonePlugin.playerMutePingSoundArrayList.contains(payload.getPingData().getUsername())){
+                    this.eventBus.post(payload.getPingData());
+                }
+                break;
+            case INCOMING_CHAT:
+                this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.CHAT));
+                this.eventBus.post(payload.getChatData());
                 break;
             case DISCONNECTED:
                 this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_LEAVE));
@@ -182,6 +192,7 @@ public class NeverScapeAloneWebsocket extends WebSocketListener {
                 break;
             case SUCCESSFUL_CONNECTION:
                 this.eventBus.post(new SoundPing().buildSound(SoundPingEnum.MATCH_JOIN));
+                this.eventBus.post(new PanelState().buildPanelState(PanelStateEnum.MATCH));
             case MATCH_UPDATE:
                 this.eventBus.post(payload.getMatchData());
                 break;

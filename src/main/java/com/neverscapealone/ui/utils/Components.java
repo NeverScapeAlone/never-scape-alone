@@ -34,7 +34,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static com.neverscapealone.ui.NeverScapeAlonePanel.SUB_BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.BACKGROUND_COLOR;
+import static com.neverscapealone.ui.NeverScapeAlonePanel.HIGHLIGHT_COLOR;
 
 public class Components {
 
@@ -50,7 +51,7 @@ public class Components {
         return button;
     }
 
-    public  static JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
+    public static JToggleButton matchHeaderToggle(Icon icon, String toolTip, Color color, ActionListener actionListener){
         JToggleButton headerToggleButton = new JToggleButton();
         headerToggleButton.setIcon(icon);
         headerToggleButton.setToolTipText(toolTip);
@@ -61,12 +62,13 @@ public class Components {
         return headerToggleButton;
     }
 
-    public static JPanel title(String title_text) {
+    public static JPanel title(String title_text, Color color) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setFont(FontManager.getRunescapeBoldFont());
         label_holder.add(label);
+        label_holder.setBackground(color);
         return label_holder;
     }
 
@@ -79,18 +81,19 @@ public class Components {
         return label_holder;
     }
 
-    public static JPanel instructionTitle(String title_text) {
+    public static JPanel instructionTitle(String title_text, Color color) {
         JPanel label_holder = new JPanel();
         JLabel label = new JLabel(title_text);
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setFont(FontManager.getRunescapeBoldFont());
-        label.setForeground(Color.green.darker());
+        label.setForeground(HIGHLIGHT_COLOR);
+        label.setBackground(color);
         label_holder.add(label);
         return label_holder;
     }
 
-    public static String convertNotes(String inputString){
-        String output = "<html><p style=\"overflow-wrap: break-word;\">" + inputString + "</p></html>";
+    public static String htmlWrap(String inputString){
+        String output = "<html><p style=\"overflow-wrap: normal;\">" + inputString + "</p></html>";
         return output;
     }
     public static JPanel subActivityPanel(int row, int column) {
@@ -100,9 +103,24 @@ public class Components {
         }
         JPanel subActivityPanel = new JPanel();
         subActivityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        subActivityPanel.setBackground(SUB_BACKGROUND_COLOR);
+        subActivityPanel.setBackground(BACKGROUND_COLOR);
         subActivityPanel.setLayout(new GridLayout(row, column));
         return subActivityPanel;
+    }
+
+    public static JPanel horizontalBar(int h, Color color){
+        JPanel horizontalBar = new JPanel();
+        horizontalBar.setBorder(new EmptyBorder(0, 0, 0, 0));
+        horizontalBar.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.weightx = 1;
+        c.gridy = 0;
+        c.gridx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        horizontalBar.setBackground(color);
+        horizontalBar.add(Box.createVerticalStrut(h));
+        return horizontalBar;
     }
 
     public static void helpButtonSwitchboard(ActionEvent actionEvent, HelpButtonSwitchEnum helpButtonSwitchEnum) {
@@ -166,9 +184,47 @@ public class Components {
                         "-- Rules --" + "\n" +
                         "Any string of size <64 characters is allowed, with permitted characters: [A-Za-z0-9_- ]";
                 break;
+            case RUNEGUARD:
+                message = "RuneGuard Help" + "\n" +
+                        "Enable or Disable RuneGuard for your match." + "\n" +
+                        "-- ENABLED --" + "\n" +
+                        "RuneGuard requires every member that joins your team displays their:" + "\n" +
+                        "Inventory, Equipment, Prayer, Stats,  Status (HP, Run, Special Attack)" + "\n" +
+                        "Location (World Number and In-Game), Discord, and more. " + "\n" +
+                        "This allows for the match to be moderated properly,\n" +
+                        "and allows the match to be used as evidence in RuneWatch cases." + "\n" +
+                        "-- DISABLED --" + "\n" +
+                        "If you choose to disable RuneGuard, players can turn off transmission of their:" + "\n" +
+                        "Inventory, Equipment, Prayer, Stats,  Status (HP, Run, Special Attack)" + "\n" +
+                        "Location (World Number and In-Game), Discord, and more. " + "\n" +
+                        "This would allow for players to have their statuses more anonymous while in-game,\n" +
+                        "but the lack of transmission leads to lowered evidence in RuneWatch cases."+ "\n" +
+                        "-- WHEN TO USE -- " + "\n" +
+                        "If you're not sure: Enable" + "\n" +
+                        "If you would like to have a group that's doing their own thing in-game,\n" +
+                        "and does not require close activity or splitting (Ex. Chatting): DISABLE.";
+                break;
         }
 
         JOptionPane.showMessageDialog(frame, message);
     }
 
+    public static String formatSeconds(int timeInSeconds) {
+        int hours = timeInSeconds / 3600;
+        int secondsLeft = timeInSeconds - hours * 3600;
+        int minutes = secondsLeft / 60;
+        int seconds = secondsLeft - minutes * 60;
+
+        String formattedTime = "";
+        if (hours < 10) formattedTime += "0";
+        formattedTime += hours + ":";
+
+        if (minutes < 10) formattedTime += "0";
+        formattedTime += minutes + ":";
+
+        if (seconds < 10) formattedTime += "0";
+        formattedTime += seconds;
+
+        return formattedTime;
+    }
 }

@@ -11,5 +11,6 @@ public enum HelpButtonSwitchEnum {
     SPLIT,
     ACCOUNTS,
     REGION,
-    PASSCODE
+    PASSCODE,
+    RUNEGUARD
 }

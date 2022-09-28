@@ -27,9 +27,12 @@ package com.neverscapealone.models.payload.matchdata.player;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.neverscapealone.models.payload.matchdata.player.equipment.Equipment;
 import com.neverscapealone.models.payload.matchdata.player.location.Location;
+import com.neverscapealone.models.payload.matchdata.player.prayer.PrayerSlot;
 import com.neverscapealone.models.payload.matchdata.player.stats.Stats;
 import com.neverscapealone.models.payload.matchdata.player.status.Status;
+import com.neverscapealone.models.payload.matchdata.player.inventory.Item;
 
 import java.util.List;
 
@@ -44,6 +47,15 @@ public class Player {
     @SerializedName("location")
     @Expose
     private Location location;
+    @SerializedName("inventory")
+    @Expose
+    private List<Item> inventory;
+    @SerializedName("prayer")
+    @Expose
+    private List<PrayerSlot> prayer;
+    @SerializedName("equipment")
+    @Expose
+    private Equipment equipment;
     @SerializedName("status")
     @Expose
     private Status status;
@@ -53,6 +65,9 @@ public class Player {
     @SerializedName("wdr")
     @Expose
     private String wdr;
+    @SerializedName("gamestate")
+    @Expose
+    private Integer gamestate;
     @SerializedName("verified")
     @Expose
     private Boolean verified;
@@ -108,6 +123,39 @@ public class Player {
         return this;
     }
 
+    public Equipment getEquipment() {
+        return equipment;
+    }
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
+    }
+    public Player withEquipment(Equipment equipment) {
+        this.equipment = equipment;
+        return this;
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
+    }
+    public void setInventory(List<Item> inventory) {
+        this.inventory = inventory;
+    }
+    public Player withInventory(List<Item> inventory) {
+        this.inventory = inventory;
+        return this;
+    }
+
+    public List<PrayerSlot> getPrayer() {
+        return prayer;
+    }
+    public void setPrayer(List<PrayerSlot> prayer) {
+        this.prayer = prayer;
+    }
+    public Player withPrayer(List<PrayerSlot> prayer) {
+        this.prayer = prayer;
+        return this;
+    }
+
 
     public Status getStatus() {
         return status;
@@ -139,6 +187,17 @@ public class Player {
     }
     public Player withWdr(String wdr) {
         this.wdr = wdr;
+        return this;
+    }
+
+    public Integer getGamestate() {
+        return gamestate;
+    }
+    public void setGamestate(Integer gamestate) {
+        this.gamestate = gamestate;
+    }
+    public Player withGameState(Integer gamestate) {
+        this.gamestate = gamestate;
         return this;
     }
 
