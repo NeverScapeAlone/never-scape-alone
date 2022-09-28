@@ -1,7 +1,9 @@
-package com.neverscapealone.models.payload.chatdata; ;
+package com.neverscapealone.models.payload.chatdata;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+;
 
 public class ChatData {
 
