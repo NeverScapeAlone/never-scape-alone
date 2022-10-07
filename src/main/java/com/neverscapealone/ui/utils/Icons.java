@@ -43,7 +43,7 @@ public class Icons {
     public static final ImageIcon RUNEGUARD_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/runeguard.png"));
     public static final ImageIcon RUNEGUARD_ENABLED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/runeguard_enabled.png"));
     public static final ImageIcon RUNEGUARD_DISABLED_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/runeguard_disabled.png"));
-    public static final ImageIcon INVENTORY_PADDING = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/inventory_padding.png"));
+    public static final ImageIcon PADDING_INVENTORY = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/padding_inventory.png"));
     public static final ImageIcon EQUIPMENT_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/equipment.png"));
     public static final ImageIcon INVENTORY_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/inventory.png"));
     public static final ImageIcon HIDE_ICON = new ImageIcon(ImageUtil.loadImageResource(PLUGIN_CLASS, "/com/neverscapealone/other/hide.png"));

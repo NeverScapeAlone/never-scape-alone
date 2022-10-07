@@ -585,7 +585,7 @@ public class PlayerPanelClass {
             if (item == null){
                 continue;
             }
-            JLabel i = new JLabel(Icons.INVENTORY_PADDING);
+            JLabel i = new JLabel(Icons.PADDING_INVENTORY);
             if (item.getItemID() != -1){
                 plugin.addImageToLabel(i, item);
             }
